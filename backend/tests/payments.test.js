@@ -111,6 +111,12 @@ test("callback reporting failed/cancelled leaves the order in 'quoted'", async (
   assert.equal(orderRow.rows[0].status, "quoted");
 });
 
+test("GET /payments/sslcommerz/return redirects the browser to the order's page in the frontend app", async () => {
+  const res = await request(app).get("/payments/sslcommerz/return").query({ orderId: "42" });
+  assert.equal(res.status, 302);
+  assert.equal(res.headers.location, `${process.env.FRONTEND_URL || "http://localhost:5173"}/orders/42`);
+});
+
 test("POST /admin/orders/:id/payments records a manual balance payment, admin-only, no gateway_transaction_id", async () => {
   const admin = await insertTestUser({ role: "admin" });
   const customer = await insertTestUser({ role: "customer" });

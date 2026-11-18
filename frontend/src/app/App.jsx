@@ -11,6 +11,7 @@ import Notifications from "../pages/Notifications.jsx";
 import AdminOrderBoard from "../pages/AdminOrderBoard.jsx";
 import AdminOrderDetail from "../pages/AdminOrderDetail.jsx";
 import AdminReports from "../pages/AdminReports.jsx";
+import NavBar from "../components/NavBar.jsx";
 
 // Role-dependent landing page; the admin side arrives in Task 13.
 function Home() {
@@ -23,6 +24,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <NavBar />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -69,7 +71,7 @@ function App() {
           <Route
             path="/notifications"
             element={
-              <ProtectedRoute role="customer">
+              <ProtectedRoute>
                 <Notifications />
               </ProtectedRoute>
             }

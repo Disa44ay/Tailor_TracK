@@ -30,9 +30,21 @@ export async function confirmOrder(req, res) {
   res.json({ gatewayUrl });
 }
 
-// SSLCommerz's own server posts here (success/fail/cancel/IPN all point at
-// this one route) — no requireAuth; trust comes from validating the
-// transaction with SSLCommerz itself, not from a bearer token.
+// SSLCommerz redirects the customer's own browser here after checkout
+// (success_url/fail_url/cancel_url) — a thin redirect back into the app,
+// never JSON. The actual status change happens through the IPN hitting
+// sslcommerzCallback below (SSLCommerz posts both), so this route doesn't
+// re-run validation itself — just lands the customer on their order page,
+// which shows whatever status the IPN has (or hasn't yet) applied.
+export function sslcommerzReturn(req, res) {
+  const { orderId } = req.query;
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+  res.redirect(`${frontendUrl}/orders/${orderId}`);
+}
+
+// SSLCommerz's own server posts here (the IPN) — no requireAuth; trust
+// comes from validating the transaction with SSLCommerz itself, not from
+// a bearer token.
 export async function sslcommerzCallback(req, res) {
   const { tran_id: tranId, val_id: valId, status } = req.body;
   if (!tranId) {

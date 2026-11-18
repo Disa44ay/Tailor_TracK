@@ -83,7 +83,7 @@ function OrderDetail() {
         <OrderStatusBadge status={order.status} />
       </div>
 
-      {order.status === "quoted" && (
+      {order.quoted_price != null && (
         <div className="mt-6 rounded-lg border border-slate-200 p-4">
           <h2 className="font-medium text-slate-900">Invoice</h2>
           <dl className="mt-2 space-y-1 text-sm text-slate-700">
@@ -100,22 +100,24 @@ function OrderDetail() {
               <dd>৳{order.advance_required}</dd>
             </div>
           </dl>
-          <div className="mt-4 flex gap-2">
-            <button
-              onClick={handleConfirm}
-              disabled={busy}
-              className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-            >
-              Confirm
-            </button>
-            <button
-              onClick={handleDecline}
-              disabled={busy}
-              className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 disabled:opacity-60"
-            >
-              Decline
-            </button>
-          </div>
+          {order.status === "quoted" && (
+            <div className="mt-4 flex gap-2">
+              <button
+                onClick={handleConfirm}
+                disabled={busy}
+                className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+              >
+                Confirm
+              </button>
+              <button
+                onClick={handleDecline}
+                disabled={busy}
+                className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 disabled:opacity-60"
+              >
+                Decline
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -159,6 +161,7 @@ function OrderDetail() {
             </label>
             <textarea
               id="styleNotes"
+              required={edit.garmentType === "other"}
               value={edit.styleNotes}
               onChange={(e) => setEdit((f) => ({ ...f, styleNotes: e.target.value }))}
               className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"

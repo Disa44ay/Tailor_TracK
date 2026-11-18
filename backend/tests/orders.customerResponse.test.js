@@ -46,6 +46,21 @@ test("PATCH /orders/:id edits garment_type/style_notes/fabric_note/priority whil
   assert.equal(res.body.priority, "fast");
 });
 
+test("PATCH /orders/:id switching garment_type to 'other' with no style_notes returns 400", async () => {
+  const admin = await insertTestUser({ role: "admin" });
+  const customer = await insertTestUser({ role: "customer" });
+  const adminAuth = `Bearer ${signToken(admin)}`;
+  const customerAuth = `Bearer ${signToken(customer)}`;
+  const order = await createNeedsChangesOrder(adminAuth, customerAuth);
+
+  const res = await request(app)
+    .patch(`/orders/${order.id}`)
+    .set("Authorization", customerAuth)
+    .send({ garmentType: "other", styleNotes: "" });
+
+  assert.equal(res.status, 400);
+});
+
 test("PATCH /orders/:id on an order not in needs_changes returns 409", async () => {
   const admin = await insertTestUser({ role: "admin" });
   const customer = await insertTestUser({ role: "customer" });

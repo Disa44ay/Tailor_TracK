@@ -28,6 +28,22 @@ describe("AdminOrderDetail", () => {
     apiFetch.mockReset();
   });
 
+  test("shows the order's notes, priority and fabric note so the admin isn't quoting blind", async () => {
+    renderAt({
+      id: 5,
+      garment_type: "shirt",
+      status: "requested",
+      customer_id: 1,
+      style_notes: "slightly loose collar",
+      fabric_note: "customer's own cotton fabric",
+      priority: "urgent",
+    });
+
+    expect(await screen.findByText(/slightly loose collar/i)).toBeInTheDocument();
+    expect(screen.getByText(/customer's own cotton fabric/i)).toBeInTheDocument();
+    expect(screen.getByText(/urgent/i)).toBeInTheDocument();
+  });
+
   test("on a 'requested' order shows Reject (with a reason field) and Quote (due date/price/advance fields) actions", async () => {
     renderAt({ id: 5, garment_type: "shirt", status: "requested", customer_id: 1 });
 

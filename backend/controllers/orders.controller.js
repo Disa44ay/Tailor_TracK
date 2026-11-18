@@ -8,7 +8,8 @@ const PRIORITIES = ["normal", "fast", "urgent"];
 const ORDER_COLUMNS = `
   id, customer_id, garment_type, style_notes, fabric_note, fit_type, lapel_style,
   priority, status,
-  measurements_snapshot, due_date,
+  measurements_snapshot,
+  due_date::text AS due_date,
   quoted_price::double precision AS quoted_price,
   advance_required::double precision AS advance_required,
   created_at, updated_at
@@ -276,13 +277,21 @@ export async function patchOrder(req, res) {
   if (priority !== undefined && !PRIORITIES.includes(priority)) {
     return res.status(400).json({ message: "Unrecognized priority" });
   }
-  // Validate fit_type against the (possibly updated) garment type — if
-  // garmentType isn't being changed this PATCH, fall back to the order's
-  // current one so a fit_type change alone is still checked correctly.
+  // Validate against the (possibly updated) garment type and style notes —
+  // if either isn't being changed this PATCH, fall back to the order's
+  // current value so a partial edit is still checked against the whole
+  // resulting order, not just the fields this request happens to send.
   let effectiveGarmentType = garmentType;
-  if (effectiveGarmentType === undefined && fitType !== undefined) {
-    const current = await pool.query(`SELECT garment_type FROM orders WHERE id = $1`, [req.params.id]);
-    effectiveGarmentType = current.rows[0]?.garment_type;
+  let effectiveStyleNotes = styleNotes;
+  if (effectiveGarmentType === undefined || effectiveStyleNotes === undefined) {
+    const current = await pool.query(`SELECT garment_type, style_notes FROM orders WHERE id = $1`, [
+      req.params.id,
+    ]);
+    if (effectiveGarmentType === undefined) effectiveGarmentType = current.rows[0]?.garment_type;
+    if (effectiveStyleNotes === undefined) effectiveStyleNotes = current.rows[0]?.style_notes;
+  }
+  if (effectiveGarmentType === "other" && !effectiveStyleNotes?.trim()) {
+    return res.status(400).json({ message: "A note is required when garment type is 'other'" });
   }
   const fitError = fitTypeError(effectiveGarmentType, fitType);
   if (fitError) return res.status(400).json({ message: fitError });

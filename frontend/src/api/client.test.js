@@ -34,6 +34,30 @@ describe("apiFetch", () => {
     expect(toast.error).toHaveBeenCalledWith("Something went wrong");
   });
 
+  test("clears the stored session and redirects to /login on a 401 response", async () => {
+    localStorage.setItem("token", "stale-token");
+    localStorage.setItem("user", JSON.stringify({ id: 1, role: "customer" }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 401,
+        json: async () => ({ message: "jwt expired" }),
+      })
+    );
+    const assignSpy = vi.fn();
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { ...window.location, assign: assignSpy },
+    });
+
+    await expect(apiFetch("/orders")).rejects.toThrow();
+
+    expect(localStorage.getItem("token")).toBeNull();
+    expect(localStorage.getItem("user")).toBeNull();
+    expect(assignSpy).toHaveBeenCalledWith("/login");
+  });
+
   test("attaches the stored JWT as an Authorization header when present", async () => {
     localStorage.setItem("token", "abc123");
     const fetchMock = vi.fn().mockResolvedValue({

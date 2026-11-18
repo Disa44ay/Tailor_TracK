@@ -140,6 +140,31 @@ function AdminOrderDetail() {
         <OrderStatusBadge status={order.status} />
       </div>
 
+      <dl className="mt-4 grid grid-cols-2 gap-2 rounded-lg border border-slate-200 p-4 text-sm text-slate-700">
+        <dt className="text-slate-500">Priority</dt>
+        <dd className="capitalize">{order.priority}</dd>
+        <dt className="text-slate-500">Fabric note</dt>
+        <dd>{order.fabric_note || "—"}</dd>
+        <dt className="text-slate-500">Style notes</dt>
+        <dd className="col-span-2">{order.style_notes || "—"}</dd>
+      </dl>
+
+      {order.measurements_snapshot && (
+        <div className="mt-4 rounded-lg border border-slate-200 p-4">
+          <h2 className="font-medium text-slate-900">Measurements</h2>
+          <dl className="mt-2 grid grid-cols-4 gap-2 text-sm text-slate-700">
+            {Object.entries(order.measurements_snapshot)
+              .filter(([key, value]) => key !== "customer_id" && value != null)
+              .map(([key, value]) => (
+                <div key={key}>
+                  <dt className="text-xs text-slate-500 capitalize">{key.replace(/_/g, " ")}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+          </dl>
+        </div>
+      )}
+
       {order.status === "requested" && (
         <div className="mt-6 space-y-6">
           <form onSubmit={handleReject} className="rounded-lg border border-slate-200 p-4">

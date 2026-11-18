@@ -43,11 +43,38 @@ describe("OrderDetail", () => {
     expect(screen.queryByRole("button", { name: /decline/i })).not.toBeInTheDocument();
   });
 
+  test("keeps showing the invoice (without Confirm/Decline) once the order is confirmed", async () => {
+    renderAt({
+      id: 5,
+      garment_type: "shirt",
+      status: "cutting",
+      due_date: "2026-12-01",
+      quoted_price: 1000,
+      advance_required: 300,
+    });
+
+    expect(await screen.findByText(/due date/i)).toBeInTheDocument();
+    expect(screen.getByText(/1000/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /confirm/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /decline/i })).not.toBeInTheDocument();
+  });
+
   test("shows an editable form only when status is 'needs_changes'", async () => {
     renderAt({ id: 5, garment_type: "shirt", status: "needs_changes", style_notes: "", fabric_note: "", priority: "normal" });
 
     expect(await screen.findByRole("button", { name: /save/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/style notes/i)).toBeInTheDocument();
+  });
+
+  test("requires style notes in the edit form once garment type is switched to 'other'", async () => {
+    renderAt({ id: 5, garment_type: "shirt", status: "needs_changes", style_notes: "", fabric_note: "", priority: "normal" });
+
+    await screen.findByRole("button", { name: /save/i });
+    expect(screen.getByLabelText(/style notes/i)).not.toBeRequired();
+
+    fireEvent.change(screen.getByLabelText(/garment type/i), { target: { value: "other" } });
+
+    expect(screen.getByLabelText(/style notes/i)).toBeRequired();
   });
 
   test("clicking Confirm calls POST /orders/:id/confirm and redirects to the returned gatewayUrl", async () => {
