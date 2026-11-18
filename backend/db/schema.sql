@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS orders (
   due_date date,
   quoted_price numeric,
   advance_required numeric,
+  pending_tran_id text,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -98,6 +99,7 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS country_code text;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_number text
   CHECK (phone_number IS NULL OR phone_number ~ '^[0-9]{11}$');
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS measurements_snapshot jsonb;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS pending_tran_id text;
 ALTER TABLE measurements ADD COLUMN IF NOT EXISTS bicep numeric;
 ALTER TABLE measurements ADD COLUMN IF NOT EXISTS wrist numeric;
 ALTER TABLE measurements ADD COLUMN IF NOT EXISTS thigh numeric;

@@ -69,6 +69,11 @@ test("PATCH /admin/orders/:id/quote sets due_date/quoted_price/advance_required 
   assert.equal(res.body.status, "quoted");
   assert.equal(res.body.quoted_price, 3000);
   assert.equal(res.body.advance_required, 1000);
+  // pg's default DATE parser returns a JS Date at local midnight, which
+  // JSON-serializes shifted to a different calendar day in any timezone
+  // ahead of UTC (e.g. Asia/Dhaka, UTC+6) — must come back as the exact
+  // date string, not a shifted ISO timestamp.
+  assert.equal(res.body.due_date, "2026-12-01");
 });
 
 test("quote on a non-requested order returns 409", async () => {
