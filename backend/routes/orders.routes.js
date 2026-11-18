@@ -8,6 +8,7 @@ import {
   listAllOrders,
   patchOrder,
   declineOrder,
+  advanceStage,
 } from "../controllers/orders.controller.js";
 import { requireAuth } from "../middlewares/requireAuth.js";
 import { requireAdmin } from "../middlewares/requireAdmin.js";
@@ -24,5 +25,6 @@ router.post("/orders/:id/decline", requireAuth, asyncHandler(declineOrder));
 router.get("/admin/orders", requireAuth, requireAdmin, asyncHandler(listAllOrders));
 router.patch("/admin/orders/:id/reject", requireAuth, requireAdmin, asyncHandler(rejectOrder));
 router.patch("/admin/orders/:id/quote", requireAuth, requireAdmin, asyncHandler(quoteOrder));
+router.patch("/admin/orders/:id/status", requireAuth, requireAdmin, asyncHandler(advanceStage));
 
 export default router;

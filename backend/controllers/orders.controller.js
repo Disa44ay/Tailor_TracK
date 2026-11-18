@@ -294,6 +294,43 @@ export async function declineOrder(req, res) {
   }
 }
 
+// Maps each production stage to the single status it's allowed to follow,
+// so skipping a stage (or acting on a declined/needs_changes order) is
+// just a mismatch against the order's actual current status.
+const PREV_STAGE = {
+  cutting: "confirmed",
+  stitching: "cutting",
+  ready: "stitching",
+  completed: "ready",
+};
+
+export async function advanceStage(req, res) {
+  const { toStatus, note } = req.body;
+  const expectedFrom = PREV_STAGE[toStatus];
+  if (!expectedFrom) {
+    return res.status(400).json({ message: "toStatus must be one of cutting, stitching, ready, completed" });
+  }
+
+  try {
+    const order = await transitionOrder({
+      orderId: req.params.id,
+      toStatus,
+      changedBy: "admin",
+      note: note ?? null,
+      fromStatuses: [expectedFrom],
+    });
+    await notify({
+      sender: "system",
+      recipientId: order.customer_id,
+      message: `Your order #${order.id} is now ${toStatus}.`,
+      orderId: order.id,
+    });
+    res.json(order);
+  } catch (err) {
+    if (!mapTransitionError(err, res)) throw err;
+  }
+}
+
 export async function listAllOrders(req, res) {
   const { status } = req.query;
   const result = status
