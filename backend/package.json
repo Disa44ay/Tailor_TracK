@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "test": "node --test \"tests/**/*.test.js\"",
+    "test": "node --test --test-concurrency=1 \"tests/**/*.test.js\"",
     "db:migrate": "node db/migrate.js",
     "db:seed:admin": "node db/seedAdmin.js"
   },
