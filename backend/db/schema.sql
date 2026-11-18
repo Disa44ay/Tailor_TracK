@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
 ALTER TABLE users ADD COLUMN IF NOT EXISTS country_code text;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_number text
   CHECK (phone_number IS NULL OR phone_number ~ '^[0-9]{11}$');
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS measurements_snapshot jsonb;
 
 CREATE TABLE IF NOT EXISTS measurements (
   id serial PRIMARY KEY,
@@ -40,6 +41,7 @@ CREATE TABLE IF NOT EXISTS orders (
   ),
   style_notes text,
   fabric_note text,
+  measurements_snapshot jsonb,
   priority text NOT NULL DEFAULT 'normal' CHECK (priority IN ('normal', 'fast', 'urgent')),
   status text NOT NULL DEFAULT 'requested' CHECK (
     status IN (
