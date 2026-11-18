@@ -6,6 +6,7 @@ import notificationsRoutes from "./routes/notifications.routes.js";
 import measurementsRoutes from "./routes/measurements.routes.js";
 import ordersRoutes from "./routes/orders.routes.js";
 import paymentsRoutes from "./routes/payments.routes.js";
+import reportsRoutes from "./routes/reports.routes.js";
 import { notFound } from "./middlewares/notFound.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
@@ -22,6 +23,7 @@ app.use(notificationsRoutes);
 app.use(measurementsRoutes);
 app.use(ordersRoutes);
 app.use(paymentsRoutes);
+app.use(reportsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
