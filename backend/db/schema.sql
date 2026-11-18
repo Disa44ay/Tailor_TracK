@@ -8,8 +8,16 @@ CREATE TABLE IF NOT EXISTS users (
   email text NOT NULL UNIQUE,
   password_hash text NOT NULL,
   role text NOT NULL CHECK (role IN ('customer', 'admin')),
+  country_code text,
+  phone_number text CHECK (phone_number IS NULL OR phone_number ~ '^[0-9]{11}$'),
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Added after the initial migration already ran in dev/test; IF NOT EXISTS
+-- makes re-running this file safe on a database that predates this column.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS country_code text;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_number text
+  CHECK (phone_number IS NULL OR phone_number ~ '^[0-9]{11}$');
 
 CREATE TABLE IF NOT EXISTS measurements (
   id serial PRIMARY KEY,

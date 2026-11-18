@@ -23,6 +23,7 @@
 - Measurement fields: `chest`, `waist`, `hip`, `shoulder_width`, `sleeve_length`, `inseam`, `neck` (all numeric, nullable individually — a customer may not have filled in every field yet).
 - Order status enum: `requested`, `needs_changes`, `quoted`, `declined`, `confirmed`, `cutting`, `stitching`, `ready`, `completed`.
 - Every failed `apiFetch` call (any non-2xx response, any network error) surfaces as a toast at the top of the page — on both the customer and admin side — rather than a silent failure or an inline-only error. This is wired once in `apiFetch` itself (Task 11), so no individual page implements its own error display.
+- Customer signup requires `country_code` (one of a short fixed list — see `backend/constants/countryCodes.js`, added as part of this amendment) and `phone_number` (exactly 11 digits, the local number only). Not required for the seeded admin. Added retroactively onto Task 2 after that task's original commit — see the ledger for the TDD cycle that added it.
 
 ## Review Focus
 
@@ -648,7 +649,7 @@ Expected: FAIL
 
 - [ ] **Step 4: Implement `apiFetch`, `AuthContext`/`useAuth`, `ProtectedRoute`, `Login`, `Signup`, and mount `<Toaster position="top-center" />` once in `main.jsx`**
 
-`ProtectedRoute` redirects to `/login` when `useAuth().token` is empty; takes an optional `role` prop to also gate by `user.role`. `App.jsx` wires `react-router-dom` routes: `/login`, `/signup`, and protected `/` (role-dependent landing, built out in Tasks 12/13).
+`ProtectedRoute` redirects to `/login` when `useAuth().token` is empty; takes an optional `role` prop to also gate by `user.role`. `App.jsx` wires `react-router-dom` routes: `/login`, `/signup`, and protected `/` (role-dependent landing, built out in Tasks 12/13). `Signup`'s form includes a `country_code` select (from the same short list `backend/constants/countryCodes.js` defines — mirror the values, not the import, since frontend and backend are separate packages) and a `phone_number` text input restricted to 11 digits, both required.
 
 - [ ] **Step 5: Run tests to verify they pass**
 

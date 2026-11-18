@@ -177,7 +177,12 @@ Requested (garment, custom note, priority: normal/fast/urgent)
 ## Decided: data model (high level)
 
 - **users** — id, name, email, password_hash, role (`customer` |
-  `admin`), created_at.
+  `admin`), country_code, phone_number (exactly 11 digits — the local
+  number, not including the country code), created_at. Phone and
+  country code are required at customer signup — notifications stay
+  in-app as the primary channel, but the admin needs a real number on
+  file for when a customer needs calling directly (a fitting issue, a
+  delivery problem). Not required for the seeded admin account.
 - **measurements** — id, customer_id (FK), a fixed set of standard
   tailoring fields (chest, waist, hip, shoulder width, sleeve length,
   inseam, neck — refined by the builder against what the real shop

@@ -11,10 +11,17 @@ beforeEach(async () => {
   await resetTables();
 });
 
+const validSignupFields = {
+  name: "Rafi",
+  password: "secret123",
+  countryCode: "+880",
+  phoneNumber: "01712345678",
+};
+
 test("signup creates a customer and returns a token", async () => {
   const res = await request(app)
     .post("/auth/signup")
-    .send({ name: "Rafi", email: "rafi@example.com", password: "secret123" });
+    .send({ ...validSignupFields, email: "rafi@example.com" });
   assert.equal(res.status, 201);
   assert.ok(res.body.token);
 });
@@ -22,17 +29,48 @@ test("signup creates a customer and returns a token", async () => {
 test("signup with an already-used email returns 409", async () => {
   await request(app)
     .post("/auth/signup")
-    .send({ name: "A", email: "dup@example.com", password: "secret123" });
+    .send({ ...validSignupFields, email: "dup@example.com" });
   const res = await request(app)
     .post("/auth/signup")
-    .send({ name: "B", email: "dup@example.com", password: "secret123" });
+    .send({ ...validSignupFields, name: "B", email: "dup@example.com" });
   assert.equal(res.status, 409);
+});
+
+test("signup without a phone number returns 400", async () => {
+  const { phoneNumber, ...rest } = validSignupFields;
+  const res = await request(app)
+    .post("/auth/signup")
+    .send({ ...rest, email: "no-phone@example.com" });
+  assert.equal(res.status, 400);
+});
+
+test("signup with a phone number that isn't 11 digits returns 400", async () => {
+  const res = await request(app)
+    .post("/auth/signup")
+    .send({ ...validSignupFields, email: "short-phone@example.com", phoneNumber: "12345" });
+  assert.equal(res.status, 400);
+});
+
+test("signup with a country code not in the known list returns 400", async () => {
+  const res = await request(app)
+    .post("/auth/signup")
+    .send({ ...validSignupFields, email: "bad-code@example.com", countryCode: "+999" });
+  assert.equal(res.status, 400);
+});
+
+test("signup response includes the saved country code and phone number", async () => {
+  const res = await request(app)
+    .post("/auth/signup")
+    .send({ ...validSignupFields, email: "phone-echo@example.com" });
+  assert.equal(res.status, 201);
+  assert.equal(res.body.user.country_code, "+880");
+  assert.equal(res.body.user.phone_number, "01712345678");
 });
 
 test("login with correct credentials returns a token", async () => {
   await request(app)
     .post("/auth/signup")
-    .send({ name: "Rafi", email: "login-ok@example.com", password: "secret123" });
+    .send({ ...validSignupFields, email: "login-ok@example.com" });
   const res = await request(app)
     .post("/auth/login")
     .send({ email: "login-ok@example.com", password: "secret123" });
@@ -43,7 +81,7 @@ test("login with correct credentials returns a token", async () => {
 test("login with the wrong password returns 401", async () => {
   await request(app)
     .post("/auth/signup")
-    .send({ name: "Rafi", email: "login-bad@example.com", password: "secret123" });
+    .send({ ...validSignupFields, email: "login-bad@example.com" });
   const res = await request(app)
     .post("/auth/login")
     .send({ email: "login-bad@example.com", password: "wrongpassword" });
