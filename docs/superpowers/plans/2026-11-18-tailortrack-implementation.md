@@ -6,7 +6,7 @@
 
 **Architecture:** Express backend with raw SQL via `pg` (routes → controllers → `db/pool.js`, no ORM), React (Vite, plain JS) + Tailwind frontend calling the backend as a REST API, JWT auth over `Authorization` headers. Backend tasks are built and tested bottom-up (schema → auth → notifications service → each order-lifecycle slice → reports) since each layer's tests need the one below it; frontend tasks follow once their endpoints exist.
 
-**Tech Stack:** Node.js, Express, `pg`, `jsonwebtoken`, `bcrypt`, `node:test` (built-in) + `supertest` for backend tests; React 19, Vite, Tailwind CSS v4, Vitest + `@testing-library/react` for frontend tests; PostgreSQL (Docker locally).
+**Tech Stack:** Node.js, Express, `pg`, `jsonwebtoken`, `bcryptjs`, `node:test` (built-in) + `supertest` for backend tests; React 19, Vite, Tailwind CSS v4, Vitest + `@testing-library/react` for frontend tests; PostgreSQL (Docker locally).
 
 **Spec:** `docs/superpowers/specs/2026-11-18-tailortrack-design.md` (and its revision source, `docs/revised-idea.md`). Implementers should read both — this plan argues from them but does not repeat everything in them.
 
@@ -98,7 +98,7 @@ Expected: PASS
 
 - [ ] **Step 8: Write `backend/db/seedAdmin.js`**
 
-Reads `ADMIN_EMAIL`/`ADMIN_PASSWORD`/`ADMIN_NAME` from env, hashes the password with `bcrypt`, and `INSERT ... ON CONFLICT (email) DO NOTHING` into `users` with `role = 'admin'`. No test required (it's a one-shot ops script); run it manually once per environment (`node db/seedAdmin.js`) and note that in `README.md`.
+Reads `ADMIN_EMAIL`/`ADMIN_PASSWORD`/`ADMIN_NAME` from env, hashes the password with `bcryptjs`, and `INSERT ... ON CONFLICT (email) DO NOTHING` into `users` with `role = 'admin'`. No test required (it's a one-shot ops script); run it manually once per environment (`node db/seedAdmin.js`) and note that in `README.md`.
 
 - [ ] **Step 9: Add npm scripts to `backend/package.json`**
 
@@ -151,7 +151,7 @@ Expected: FAIL (route not defined)
 
 - [ ] **Step 3: Implement `signup(req, res)`, `login(req, res)`, `signToken({id, role})` in `auth.controller.js`**
 
-`signup`: validate name/email/password present, hash password with `bcrypt.hash(password, 10)`, insert with `role = 'customer'` (signup is always customer — the admin is seeded, per Task 1 Step 8), catch the unique-violation Postgres error (code `23505`) and respond 409. `login`: look up by email, `bcrypt.compare`, sign and return a JWT (`jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: "7d" })`). Both respond `{ token, user: { id, name, role } }` on success.
+`signup`: validate name/email/password present, hash password with `bcryptjs.hash(password, 10)`, insert with `role = 'customer'` (signup is always customer — the admin is seeded, per Task 1 Step 8), catch the unique-violation Postgres error (code `23505`) and respond 409. `login`: look up by email, `bcryptjs.compare`, sign and return a JWT (`jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: "7d" })`). Both respond `{ token, user: { id, name, role } }` on success.
 
 - [ ] **Step 4: Implement `requireAuth` and `requireAdmin` middlewares**
 

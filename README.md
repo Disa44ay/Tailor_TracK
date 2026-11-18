@@ -39,6 +39,23 @@ npm run dev            # starts frontend (5173) and backend (3001) together
 Copy `.env.example` to `.env` in both `frontend/` and `backend/` first —
 the defaults already match the local Docker Postgres setup above.
 
+Set up the database (run once per environment, after `npm run db:up`):
+
+```bash
+npm run db:migrate --workspace=backend      # creates the tables
+npm run db:seed:admin --workspace=backend   # creates the one admin account, from ADMIN_* in backend/.env
+```
+
+Run the backend's own test suite (uses a separate `tailortrack_test`
+database — create it once with
+`docker exec tailor_track-db-1 psql -U tailortrack -d tailortrack -c "CREATE DATABASE tailortrack_test"`,
+then run the migration against it with
+`DATABASE_URL=$TEST_DATABASE_URL npm run db:migrate --workspace=backend`):
+
+```bash
+npm test --workspace=backend
+```
+
 Health checks, useful for confirming everything is wired up:
 
 - `GET http://localhost:3001/health` — is the API running
