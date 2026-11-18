@@ -6,6 +6,8 @@ import {
   rejectOrder,
   quoteOrder,
   listAllOrders,
+  patchOrder,
+  declineOrder,
 } from "../controllers/orders.controller.js";
 import { requireAuth } from "../middlewares/requireAuth.js";
 import { requireAdmin } from "../middlewares/requireAdmin.js";
@@ -16,6 +18,8 @@ const router = Router();
 router.post("/orders", requireAuth, asyncHandler(createOrder));
 router.get("/orders", requireAuth, asyncHandler(listMyOrders));
 router.get("/orders/:id", requireAuth, asyncHandler(getOrderById));
+router.patch("/orders/:id", requireAuth, asyncHandler(patchOrder));
+router.post("/orders/:id/decline", requireAuth, asyncHandler(declineOrder));
 
 router.get("/admin/orders", requireAuth, requireAdmin, asyncHandler(listAllOrders));
 router.patch("/admin/orders/:id/reject", requireAuth, requireAdmin, asyncHandler(rejectOrder));
