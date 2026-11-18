@@ -112,11 +112,20 @@ export async function transitionOrder({
   note = null,
   fromStatuses,
   extraColumns = {},
+  ownerId = null,
 }) {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    const current = await client.query(`SELECT status FROM orders WHERE id = $1 FOR UPDATE`, [orderId]);
+    // ownerId scopes the lookup itself, so a non-owner gets the same
+    // OrderNotFoundError (-> 404) as a nonexistent order, not a 403 that
+    // would confirm the order exists for someone else.
+    const current = ownerId
+      ? await client.query(`SELECT status FROM orders WHERE id = $1 AND customer_id = $2 FOR UPDATE`, [
+          orderId,
+          ownerId,
+        ])
+      : await client.query(`SELECT status FROM orders WHERE id = $1 FOR UPDATE`, [orderId]);
     if (current.rows.length === 0) {
       throw new OrderNotFoundError();
     }
@@ -212,6 +221,73 @@ export async function quoteOrder(req, res) {
       message: `Your order #${order.id} is quoted: ৳${quotedPrice} total, ৳${advanceRequired} due now, by ${dueDate}.`,
       orderId: order.id,
     });
+    res.json(order);
+  } catch (err) {
+    if (!mapTransitionError(err, res)) throw err;
+  }
+}
+
+export async function patchOrder(req, res) {
+  const { garmentType, styleNotes, fabricNote, priority } = req.body;
+
+  if (garmentType !== undefined && !GARMENT_TYPES.includes(garmentType)) {
+    return res.status(400).json({ message: "Unrecognized garment type" });
+  }
+  if (priority !== undefined && !PRIORITIES.includes(priority)) {
+    return res.status(400).json({ message: "Unrecognized priority" });
+  }
+
+  // double precision cast: see Task 4's ledger entry.
+  const measurementsResult = await pool.query(
+    `SELECT chest::double precision AS chest, waist::double precision AS waist,
+            hip::double precision AS hip, shoulder_width::double precision AS shoulder_width,
+            sleeve_length::double precision AS sleeve_length, inseam::double precision AS inseam,
+            neck::double precision AS neck
+     FROM measurements WHERE customer_id = $1`,
+    [req.user.id]
+  );
+  const snapshot = measurementsResult.rows[0] ?? null;
+
+  const extraColumns = { measurements_snapshot: snapshot };
+  if (garmentType !== undefined) extraColumns.garment_type = garmentType;
+  if (styleNotes !== undefined) extraColumns.style_notes = styleNotes;
+  if (fabricNote !== undefined) extraColumns.fabric_note = fabricNote;
+  if (priority !== undefined) extraColumns.priority = priority;
+
+  try {
+    const order = await transitionOrder({
+      orderId: req.params.id,
+      toStatus: "requested",
+      changedBy: "customer",
+      fromStatuses: ["needs_changes"],
+      extraColumns,
+      ownerId: req.user.id,
+    });
+    res.json(order);
+  } catch (err) {
+    if (!mapTransitionError(err, res)) throw err;
+  }
+}
+
+export async function declineOrder(req, res) {
+  try {
+    const order = await transitionOrder({
+      orderId: req.params.id,
+      toStatus: "declined",
+      changedBy: "customer",
+      fromStatuses: ["quoted"],
+      ownerId: req.user.id,
+    });
+    const adminResult = await pool.query(`SELECT id FROM users WHERE role = 'admin' LIMIT 1`);
+    const admin = adminResult.rows[0];
+    if (admin) {
+      await notify({
+        sender: "system",
+        recipientId: admin.id,
+        message: `Order #${order.id} was declined by the customer.`,
+        orderId: order.id,
+      });
+    }
     res.json(order);
   } catch (err) {
     if (!mapTransitionError(err, res)) throw err;
