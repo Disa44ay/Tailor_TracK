@@ -8,6 +8,9 @@ import NewOrder from "../pages/NewOrder.jsx";
 import MyOrders from "../pages/MyOrders.jsx";
 import OrderDetail from "../pages/OrderDetail.jsx";
 import Notifications from "../pages/Notifications.jsx";
+import AdminOrderBoard from "../pages/AdminOrderBoard.jsx";
+import AdminOrderDetail from "../pages/AdminOrderDetail.jsx";
+import AdminReports from "../pages/AdminReports.jsx";
 
 // Role-dependent landing page; the admin side arrives in Task 13.
 function Home() {
@@ -68,6 +71,30 @@ function App() {
             element={
               <ProtectedRoute role="customer">
                 <Notifications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/orders"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminOrderBoard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/orders/:id"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminOrderDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/reports"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminReports />
               </ProtectedRoute>
             }
           />
