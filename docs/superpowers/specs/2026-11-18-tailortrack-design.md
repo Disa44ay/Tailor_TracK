@@ -125,6 +125,59 @@ After research into real Bangladeshi tailoring/clothing sites (see
 and two previously-open "left to the builder" items were resolved with
 concrete defaults. Everything else below reflects that revision.
 
+## Revision note 2: expanded measurements and fit types
+
+After researching real bespoke/made-to-measure guides (Propercloth,
+Luxire, Gentleman's Gazette, Permanent Style, Brooks Brothers, plus
+Bangladeshi retail/press coverage of panjabi styles — Daily Star, TBS,
+Rokomari, Blucheez), two things changed:
+
+1. **7 new measurement fields.** The original 7 only partially cover
+   what a professional tailor actually asks for per garment:
+   - Shirt needs bicep and wrist (cuff sizing) beyond chest/neck/shoulder/sleeve.
+   - Pant needs thigh, knee, rise, and hem beyond waist/hip/inseam.
+   - Suit needs bicep plus an overall jacket length.
+   - Panjabi/kurta needs an overall garment length — the single most
+     distinctive panjabi measurement, far more variable than a shirt's.
+
+   `garment_length` is shared between suit jackets and panjabi/kurta
+   (same concept — how far the outer garment falls — just different
+   typical ranges) rather than two near-duplicate columns.
+
+2. **Lapel width and shoulder padding are style choices, not body
+   measurements.** Every source treats them as something the customer
+   picks, the tailor executes — never something taken with a tape.
+   This becomes two order-level fields instead of new measurement
+   columns: `fit_type` (a cut/ease instruction, e.g. `slim`,
+   `relaxed`) and, suits only, `lapel_style` (`notch` | `peak` |
+   `shawl`). The earlier English-vs-Italian framing is folded into
+   `fit_type`'s suit options rather than a separate field.
+
+**Decided: `fit_type` by garment** (`backend/constants/fitTypes.js`,
+validated against the right list for the order's `garment_type`;
+`other` allows any value):
+
+- **shirt** / **blouse**: `slim`, `regular_classic`, `tailored`, `relaxed`, `formal_office`
+- **pant**: `slim`, `straight`, `bootcut`, `relaxed`, `office_formal` (pleated) — bootcut is kept because the user asked for it by name, though trouser-fit guides treat it as mainly a jeans term, not a standard dress-trouser cut; flagged here rather than silently dropped.
+- **suit_2pc** / **suit_3pc**: `italian_soft`, `english_structured`, `modern_slim`, `relaxed_comfort`, `double_breasted`
+- **panjabi** / **kurta**: `slim_fit`, `regular_fit`, `loose_classic`, `short_pathani`, `patiala_festive`
+
+**Decided: measurement relevance by garment** (`backend/constants/measurementRelevance.js` — a frontend display concern, not a DB constraint; the full snapshot is always stored, this just drives which fields a garment's order form shows):
+
+- **shirt** / **blouse**: neck, chest, shoulder_width, sleeve_length, bicep, wrist, waist
+- **pant**: waist, hip, inseam, thigh, knee, rise, hem
+- **suit_2pc** / **suit_3pc**: neck, chest, shoulder_width, sleeve_length, bicep, waist, garment_length, hip, inseam, thigh, knee, rise, hem (a suit order covers both jacket and trouser)
+- **panjabi** / **kurta**: neck, chest, shoulder_width, sleeve_length, garment_length
+- **other**: all 14 fields
+
+**Non-destructive by design:** "only show relevant fields, rest default
+to 0" is a form-display rule, not a data rule — an order form never
+shows the irrelevant fields, and an unfilled numeric field displays as
+0, but nothing overwrites a customer's actual stored measurement. A
+customer who measured their chest for a shirt order keeps that value
+on file when they later order pants, even though the pants form never
+shows it.
+
 ## Decided: order lifecycle (state machine)
 
 ```
@@ -183,14 +236,23 @@ Requested (garment, custom note, priority: normal/fast/urgent)
   in-app as the primary channel, but the admin needs a real number on
   file for when a customer needs calling directly (a fitting issue, a
   delivery problem). Not required for the seeded admin account.
-- **measurements** — id, customer_id (FK), a fixed set of standard
-  tailoring fields (chest, waist, hip, shoulder width, sleeve length,
-  inseam, neck — refined by the builder against what the real shop
-  measures), updated_at.
+- **measurements** — id, customer_id (FK), 14 numeric fields: the
+  original 7 (chest, waist, hip, shoulder_width, sleeve_length,
+  inseam, neck) plus 7 added after researching real bespoke-tailoring
+  measurement guides (bicep, wrist, thigh, knee, rise, hem,
+  garment_length — see "Revision note 2" below), updated_at. Which
+  fields are relevant to a given garment is a frontend-facing concern
+  (`backend/constants/measurementRelevance.js`), not a DB constraint —
+  the table stores whatever the customer has filled in, full stop;
+  irrelevant-to-this-order fields are just not shown on that order's
+  form, never zeroed or overwritten.
 - **orders** — id, customer_id (FK), garment_type, style_notes,
   fabric_note (nullable text — e.g. "bringing my own fabric," "prefers
   navy wool blend"; read by the admin before quoting, never a fabric
-  catalog or priced item — see the revision note above), priority
+  catalog or priced item — see the revision note above), fit_type
+  (nullable text — a cut/ease instruction like `slim` or `relaxed`,
+  from a garment-type-specific list, see "Revision note 2"), lapel_style
+  (nullable text, `notch` | `peak` | `shawl` — suits only), priority
   (`normal` | `fast` | `urgent`), status (enum per the lifecycle
   above), a measurements snapshot taken at request time (so an order
   keeps the numbers it was actually built against, even if the

@@ -108,3 +108,39 @@ test("POST /orders notifies the admin", async () => {
   assert.equal(rows.length, 1);
   assert.match(rows[0].message, /Rafi/);
 });
+
+test("POST /orders accepts a valid fit_type for the garment and a lapel_style", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const auth = `Bearer ${signToken(customer)}`;
+
+  const res = await request(app)
+    .post("/orders")
+    .set("Authorization", auth)
+    .send({ garmentType: "suit_2pc", fitType: "english_structured", lapelStyle: "peak" });
+
+  assert.equal(res.status, 201);
+  assert.equal(res.body.fit_type, "english_structured");
+  assert.equal(res.body.lapel_style, "peak");
+});
+
+test("POST /orders with a fit_type not valid for that garment returns 400", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const res = await request(app)
+    .post("/orders")
+    .set("Authorization", `Bearer ${signToken(customer)}`)
+    // "bootcut" is a pant fit_type, not a shirt one
+    .send({ garmentType: "shirt", fitType: "bootcut" });
+  assert.equal(res.status, 400);
+});
+
+test("POST /orders with an unrecognized lapel_style returns 400", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const res = await request(app)
+    .post("/orders")
+    .set("Authorization", `Bearer ${signToken(customer)}`)
+    .send({ garmentType: "suit_2pc", lapelStyle: "wide" });
+  assert.equal(res.status, 400);
+});

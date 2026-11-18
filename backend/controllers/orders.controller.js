@@ -1,19 +1,56 @@
 import { pool } from "../db/pool.js";
 import { notify } from "../services/notifications.service.js";
+import { FIT_TYPES_BY_GARMENT, LAPEL_STYLES } from "../constants/fitTypes.js";
 
 const GARMENT_TYPES = ["shirt", "pant", "panjabi", "suit_2pc", "suit_3pc", "kurta", "blouse", "other"];
 const PRIORITIES = ["normal", "fast", "urgent"];
 
 const ORDER_COLUMNS = `
-  id, customer_id, garment_type, style_notes, fabric_note, priority, status,
+  id, customer_id, garment_type, style_notes, fabric_note, fit_type, lapel_style,
+  priority, status,
   measurements_snapshot, due_date,
   quoted_price::double precision AS quoted_price,
   advance_required::double precision AS advance_required,
   created_at, updated_at
 `;
 
+// fit_type is a cut/ease instruction (e.g. "slim"), not a measurement — see
+// design doc "Revision note 2". A garment with no fixed list (garmentType:
+// "other") accepts any value.
+function fitTypeError(garmentType, fitType) {
+  if (fitType === undefined || fitType === null) return null;
+  const allowed = FIT_TYPES_BY_GARMENT[garmentType];
+  if (allowed && !allowed.includes(fitType)) {
+    return `Unrecognized fit_type for garment_type ${garmentType}`;
+  }
+  return null;
+}
+
+function lapelStyleError(lapelStyle) {
+  if (lapelStyle === undefined || lapelStyle === null) return null;
+  return LAPEL_STYLES.includes(lapelStyle) ? null : "Unrecognized lapel_style";
+}
+
+// double precision cast: pg returns `numeric` columns as strings otherwise
+// (see Task 4's ledger entry); reused by createOrder and patchOrder so the
+// 14-field cast list lives in one place.
+const MEASUREMENTS_SELECT = [
+  "chest", "waist", "hip", "shoulder_width", "sleeve_length", "inseam", "neck",
+  "bicep", "wrist", "thigh", "knee", "rise", "hem", "garment_length",
+]
+  .map((col) => `${col}::double precision AS ${col}`)
+  .join(", ");
+
+async function getMeasurementsSnapshot(customerId) {
+  const result = await pool.query(
+    `SELECT ${MEASUREMENTS_SELECT} FROM measurements WHERE customer_id = $1`,
+    [customerId]
+  );
+  return result.rows[0] ?? null;
+}
+
 export async function createOrder(req, res) {
-  const { garmentType, styleNotes, fabricNote, priority = "normal" } = req.body;
+  const { garmentType, styleNotes, fabricNote, priority = "normal", fitType, lapelStyle } = req.body;
 
   if (!GARMENT_TYPES.includes(garmentType)) {
     return res.status(400).json({ message: "Unrecognized garment type" });
@@ -24,27 +61,30 @@ export async function createOrder(req, res) {
   if (garmentType === "other" && !styleNotes?.trim()) {
     return res.status(400).json({ message: "A note is required when garment type is 'other'" });
   }
+  const fitError = fitTypeError(garmentType, fitType);
+  if (fitError) return res.status(400).json({ message: fitError });
+  const lapelError = lapelStyleError(lapelStyle);
+  if (lapelError) return res.status(400).json({ message: lapelError });
 
-  // double precision cast: pg returns `numeric` columns as strings otherwise
-  // (see Task 4's ledger entry — same issue, reused fix here).
-  const measurementsResult = await pool.query(
-    `SELECT chest::double precision AS chest, waist::double precision AS waist,
-            hip::double precision AS hip, shoulder_width::double precision AS shoulder_width,
-            sleeve_length::double precision AS sleeve_length, inseam::double precision AS inseam,
-            neck::double precision AS neck
-     FROM measurements WHERE customer_id = $1`,
-    [req.user.id]
-  );
-  const snapshot = measurementsResult.rows[0] ?? null;
+  const snapshot = await getMeasurementsSnapshot(req.user.id);
 
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
     const orderResult = await client.query(
-      `INSERT INTO orders (customer_id, garment_type, style_notes, fabric_note, priority, measurements_snapshot)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO orders (customer_id, garment_type, style_notes, fabric_note, fit_type, lapel_style, priority, measurements_snapshot)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING ${ORDER_COLUMNS}`,
-      [req.user.id, garmentType, styleNotes ?? null, fabricNote ?? null, priority, snapshot]
+      [
+        req.user.id,
+        garmentType,
+        styleNotes ?? null,
+        fabricNote ?? null,
+        fitType ?? null,
+        lapelStyle ?? null,
+        priority,
+        snapshot,
+      ]
     );
     const order = orderResult.rows[0];
 
@@ -228,7 +268,7 @@ export async function quoteOrder(req, res) {
 }
 
 export async function patchOrder(req, res) {
-  const { garmentType, styleNotes, fabricNote, priority } = req.body;
+  const { garmentType, styleNotes, fabricNote, priority, fitType, lapelStyle } = req.body;
 
   if (garmentType !== undefined && !GARMENT_TYPES.includes(garmentType)) {
     return res.status(400).json({ message: "Unrecognized garment type" });
@@ -236,23 +276,28 @@ export async function patchOrder(req, res) {
   if (priority !== undefined && !PRIORITIES.includes(priority)) {
     return res.status(400).json({ message: "Unrecognized priority" });
   }
+  // Validate fit_type against the (possibly updated) garment type — if
+  // garmentType isn't being changed this PATCH, fall back to the order's
+  // current one so a fit_type change alone is still checked correctly.
+  let effectiveGarmentType = garmentType;
+  if (effectiveGarmentType === undefined && fitType !== undefined) {
+    const current = await pool.query(`SELECT garment_type FROM orders WHERE id = $1`, [req.params.id]);
+    effectiveGarmentType = current.rows[0]?.garment_type;
+  }
+  const fitError = fitTypeError(effectiveGarmentType, fitType);
+  if (fitError) return res.status(400).json({ message: fitError });
+  const lapelError = lapelStyleError(lapelStyle);
+  if (lapelError) return res.status(400).json({ message: lapelError });
 
-  // double precision cast: see Task 4's ledger entry.
-  const measurementsResult = await pool.query(
-    `SELECT chest::double precision AS chest, waist::double precision AS waist,
-            hip::double precision AS hip, shoulder_width::double precision AS shoulder_width,
-            sleeve_length::double precision AS sleeve_length, inseam::double precision AS inseam,
-            neck::double precision AS neck
-     FROM measurements WHERE customer_id = $1`,
-    [req.user.id]
-  );
-  const snapshot = measurementsResult.rows[0] ?? null;
+  const snapshot = await getMeasurementsSnapshot(req.user.id);
 
   const extraColumns = { measurements_snapshot: snapshot };
   if (garmentType !== undefined) extraColumns.garment_type = garmentType;
   if (styleNotes !== undefined) extraColumns.style_notes = styleNotes;
   if (fabricNote !== undefined) extraColumns.fabric_note = fabricNote;
   if (priority !== undefined) extraColumns.priority = priority;
+  if (fitType !== undefined) extraColumns.fit_type = fitType;
+  if (lapelStyle !== undefined) extraColumns.lapel_style = lapelStyle;
 
   try {
     const order = await transitionOrder({
