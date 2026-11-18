@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.routes.js";
 import notificationsRoutes from "./routes/notifications.routes.js";
 import measurementsRoutes from "./routes/measurements.routes.js";
 import ordersRoutes from "./routes/orders.routes.js";
+import reportsRoutes from "./routes/reports.routes.js";
 import { notFound } from "./middlewares/notFound.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
@@ -18,6 +19,7 @@ app.use(authRoutes);
 app.use(notificationsRoutes);
 app.use(measurementsRoutes);
 app.use(ordersRoutes);
+app.use(reportsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
