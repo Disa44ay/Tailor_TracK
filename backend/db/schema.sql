@@ -13,14 +13,6 @@ CREATE TABLE IF NOT EXISTS users (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
--- Added after the initial migration already ran in dev/test; IF NOT EXISTS
--- makes re-running this file safe on a database that predates this column.
-ALTER TABLE users ADD COLUMN IF NOT EXISTS country_code text;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_number text
-  CHECK (phone_number IS NULL OR phone_number ~ '^[0-9]{11}$');
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS measurements_snapshot jsonb;
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS pending_tran_id text;
-
 CREATE TABLE IF NOT EXISTS measurements (
   id serial PRIMARY KEY,
   customer_id integer NOT NULL UNIQUE REFERENCES users(id),
@@ -86,3 +78,16 @@ CREATE TABLE IF NOT EXISTS notifications (
   is_read boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Columns added after their table's initial CREATE TABLE already ran in
+-- dev/test. IF NOT EXISTS makes re-running this file safe either way, but
+-- these must come LAST — each references a table that must already exist,
+-- which isn't guaranteed yet on a brand-new database if these ran earlier
+-- in the file (the bug CI caught: ALTER TABLE orders before CREATE TABLE
+-- orders broke a fresh database, even though it was harmless on one that
+-- already had the table).
+ALTER TABLE users ADD COLUMN IF NOT EXISTS country_code text;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_number text
+  CHECK (phone_number IS NULL OR phone_number ~ '^[0-9]{11}$');
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS measurements_snapshot jsonb;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS pending_tran_id text;
