@@ -89,7 +89,7 @@ Things that would make this a failure even if it technically runs:
 - Small varsity-project scope. Prefer the simplest design that's
   actually correct over anything more "architecturally impressive."
 - Auth is JWT (sent as an `Authorization` header), not server-session
-  cookies — my own call, since the Next.js frontend (Vercel) and
+  cookies — my own call, since the React frontend (Vercel) and
   Express backend (Render) are on different domains, where cookie-based
   sessions get awkward cross-origin.
 - SSLCommerz sandbox needs its own free test-store registration
@@ -117,6 +117,13 @@ that lists many orders at once, and it's the simpler thing to reason
 about and debug for a project this size. Event sourcing's extra
 auditability isn't worth the extra machinery here — a plain history
 table already gives both sides a visible trail.
+
+## Revision note
+
+After research into real Bangladeshi tailoring/clothing sites (see
+[`docs/revised-idea.md`](../../revised-idea.md)), one field was added
+and two previously-open "left to the builder" items were resolved with
+concrete defaults. Everything else below reflects that revision.
 
 ## Decided: order lifecycle (state machine)
 
@@ -170,16 +177,24 @@ Requested (garment, custom note, priority: normal/fast/urgent)
 ## Decided: data model (high level)
 
 - **users** — id, name, email, password_hash, role (`customer` |
-  `admin`), created_at.
+  `admin`), country_code, phone_number (exactly 11 digits — the local
+  number, not including the country code), created_at. Phone and
+  country code are required at customer signup — notifications stay
+  in-app as the primary channel, but the admin needs a real number on
+  file for when a customer needs calling directly (a fitting issue, a
+  delivery problem). Not required for the seeded admin account.
 - **measurements** — id, customer_id (FK), a fixed set of standard
   tailoring fields (chest, waist, hip, shoulder width, sleeve length,
   inseam, neck — refined by the builder against what the real shop
   measures), updated_at.
 - **orders** — id, customer_id (FK), garment_type, style_notes,
-  priority (`normal` | `fast` | `urgent`), status (enum per the
-  lifecycle above), a measurements snapshot taken at request time (so
-  an order keeps the numbers it was actually built against, even if
-  the customer's live profile changes later), due_date, quoted_price,
+  fabric_note (nullable text — e.g. "bringing my own fabric," "prefers
+  navy wool blend"; read by the admin before quoting, never a fabric
+  catalog or priced item — see the revision note above), priority
+  (`normal` | `fast` | `urgent`), status (enum per the lifecycle
+  above), a measurements snapshot taken at request time (so an order
+  keeps the numbers it was actually built against, even if the
+  customer's live profile changes later), due_date, quoted_price,
   advance_required, created_at, updated_at.
   `due_date`, `quoted_price`, and `advance_required` are all null until
   the admin quotes the order; the customer never sets them.
@@ -202,7 +217,7 @@ Requested (garment, custom note, priority: normal/fast/urgent)
   The admin account is seeded, not publicly signed up — there's only
   one, for one shop.
 - Measurements: `GET /me/measurements`, `PUT /me/measurements`.
-- Orders (customer): `POST /orders` (garment, note, priority),
+- Orders (customer): `POST /orders` (garment, note, fabric_note, priority),
   `GET /orders`, `GET /orders/:id`,
   `PATCH /orders/:id` (only while status is `NeedsChanges`),
   `POST /orders/:id/decline` (only while status is `Quoted`),
@@ -227,14 +242,17 @@ Requested (garment, custom note, priority: normal/fast/urgent)
   payment totals collected, and outstanding = `quoted_price` minus
   payments recorded, per order and in total).
 
+## Decided: garment types and measurement fields
+
+Resolved by the research in `docs/revised-idea.md`, no longer open:
+
+- `garment_type`: a fixed list — Shirt, Pant, Panjabi, Suit (2-piece),
+  Suit (3-piece), Kurta, Blouse — plus an `Other` option with free text.
+- Measurement fields: chest, waist, hip, shoulder width, sleeve length,
+  inseam, neck.
+
 ## What's left to the builder
 
-- The exact measurement field list — the fields above are a
-  reasonable starting set, refined against what the actual shop
-  measures.
-- The exact `garment_type` list (a predefined dropdown with an
-  "Other" free-text fallback is the likely shape, but the final list
-  is the builder's call).
 - UI beyond the two mockup concepts already in the proposal
   (dashboards, order board) — exact layout, components, styling.
 - Field-level validation rules (what's required per garment type,
