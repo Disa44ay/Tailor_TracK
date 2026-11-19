@@ -9,7 +9,7 @@ Backend is done and reconciled on `main` (commit `9de5473`): auth, measurements,
 
 ## Mandatory process, per component or page
 
-Do not build the whole frontend before showing anything. One component or one page at a time, in this order. **Scope note:** Ponytail (step 5) governs *code generation only* — the smallest-complete-change, no-unrequested-abstraction discipline. It does not govern design exploration, debugging, or verification; those stay thorough, per the superpowers process each step names, even when that means more words or more passes than Ponytail would allow for code.
+Do not build the whole frontend before showing anything. One component or one page at a time, in this order. **Scope note:** Ponytail (step 6) governs *code generation only* — the smallest-complete-change, no-unrequested-abstraction discipline. It does not govern design exploration, debugging, or verification; those stay thorough, per the superpowers process each step names, even when that means more words or more passes than Ponytail would allow for code.
 
 0. **`/superpowers:writing-plans` + `/superpowers:executing-plans`** — conditional, read this before deciding to skip it:
    - **Optional** for one simple, self-contained component: a plan can still be worth writing even here — it's the right place to pin down font alignment, spacing, states and everything else that's easy to leave implicit — but skip it if the component is simple enough that brainstorming alone covers it.
