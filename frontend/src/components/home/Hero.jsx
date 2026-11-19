@@ -19,8 +19,9 @@ function PrimaryCta() {
       to="/signup"
       className="relative inline-block border-2 border-dashed border-ink bg-accent px-6 py-3 font-home-body text-paper shadow-[3px_3px_0_0_var(--color-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       style={{
+        // shortcut: highlight stop stays literal white (no "highlight-white" token exists yet); the shadow stop is derived from --color-ink via color-mix so it still tracks theme changes.
         backgroundImage:
-          "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.18), transparent 55%), radial-gradient(circle at 80% 75%, rgba(0,0,0,0.18), transparent 55%)",
+          "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.18), transparent 55%), radial-gradient(circle at 80% 75%, color-mix(in srgb, var(--color-ink) 18%, transparent), transparent 55%)",
       }}
     >
       <CornerBrackets />
@@ -35,8 +36,9 @@ function SecondaryCta() {
       href="#how-it-works"
       className="relative inline-block border-2 border-ink bg-paper px-6 py-3 font-home-body text-ink shadow-[3px_3px_0_0_var(--color-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       style={{
+        // shortcut: highlight stop stays literal white (no "highlight-white" token exists yet); the shadow stop is derived from --color-ink via color-mix so it still tracks theme changes.
         backgroundImage:
-          "radial-gradient(circle at 25% 25%, rgba(255,255,255,0.4), transparent 55%), radial-gradient(circle at 75% 80%, rgba(0,0,0,0.08), transparent 55%)",
+          "radial-gradient(circle at 25% 25%, rgba(255,255,255,0.4), transparent 55%), radial-gradient(circle at 75% 80%, color-mix(in srgb, var(--color-ink) 8%, transparent), transparent 55%)",
       }}
     >
       <CornerBrackets />
