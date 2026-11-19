@@ -82,33 +82,33 @@ export default function HomeNav() {
 
       <div
         id="home-mobile-menu"
-        className={`origin-left transition-[transform,opacity] duration-200 ease-in-out motion-reduce:transition-none md:hidden ${
-          open ? "scale-x-100 opacity-100" : "h-0 scale-x-0 overflow-hidden opacity-0"
+        aria-hidden={!open}
+        // shortcut: max-h-40 is comfortably above this short link list; raise it if LINKS grows enough to clip.
+        className={`origin-left overflow-hidden transition-[transform,opacity,max-height] duration-200 ease-in-out motion-reduce:transition-none md:hidden ${
+          open ? "max-h-40 scale-x-100 opacity-100" : "pointer-events-none max-h-0 scale-x-0 opacity-0"
         }`}
       >
-        {open && (
-          <div className="flex flex-col gap-3 pt-3">
-            {LINKS.map((link) =>
-              link.to ? (
-                <Link
-                  key={link.label}
-                  to={link.to}
-                  className="font-home-body text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm"
-                >
-                  {link.label}
-                </Link>
-              ) : (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="font-home-body text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm"
-                >
-                  {link.label}
-                </a>
-              )
-            )}
-          </div>
-        )}
+        <div className="flex flex-col gap-3 pt-3">
+          {LINKS.map((link) =>
+            link.to ? (
+              <Link
+                key={link.label}
+                to={link.to}
+                className="font-home-body text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm"
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <a
+                key={link.label}
+                href={link.href}
+                className="font-home-body text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm"
+              >
+                {link.label}
+              </a>
+            )
+          )}
+        </div>
       </div>
     </nav>
   );
