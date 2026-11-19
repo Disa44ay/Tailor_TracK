@@ -84,7 +84,7 @@ export default function HomeNav() {
         id="home-mobile-menu"
         aria-hidden={!open}
         // shortcut: max-h-40 is comfortably above this short link list; raise it if LINKS grows enough to clip.
-        className={`origin-left overflow-hidden transition-[transform,opacity,max-height] duration-200 ease-in-out motion-reduce:transition-none md:hidden ${
+        className={`origin-left overflow-hidden transition-[scale,opacity,max-height] duration-200 ease-in-out motion-reduce:transition-none md:hidden ${
           open ? "max-h-40 scale-x-100 opacity-100" : "pointer-events-none max-h-0 scale-x-0 opacity-0"
         }`}
       >
@@ -94,6 +94,7 @@ export default function HomeNav() {
               <Link
                 key={link.label}
                 to={link.to}
+                tabIndex={open ? undefined : -1}
                 className="font-home-body text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm"
               >
                 {link.label}
@@ -102,6 +103,7 @@ export default function HomeNav() {
               <a
                 key={link.label}
                 href={link.href}
+                tabIndex={open ? undefined : -1}
                 className="font-home-body text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm"
               >
                 {link.label}
