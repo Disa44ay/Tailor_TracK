@@ -1,25 +1,20 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const LINKS = [
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Log in", to: "/login" },
-];
-
 function Tick() {
   return <span aria-hidden="true" className="block h-2 w-[1.5px] bg-ink" />;
 }
 
-function NavLink({ label, href, to }) {
+function NavLink({ label, href, onClick }) {
   const className =
     "font-home-body text-ink underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm";
   return (
     <span className="flex flex-col items-center gap-1">
       <Tick />
-      {to ? (
-        <Link to={to} className={className}>
+      {onClick ? (
+        <button type="button" onClick={onClick} className={className}>
           {label}
-        </Link>
+        </button>
       ) : (
         <a href={href} className={className}>
           {label}
@@ -52,8 +47,12 @@ function TapeMeasureUnrolledIcon() {
   );
 }
 
-export default function HomeNav() {
+export default function HomeNav({ onLogin }) {
   const [open, setOpen] = useState(false);
+  const links = [
+    { label: "How it works", href: "#how-it-works" },
+    { label: "Log in", onClick: onLogin },
+  ];
 
   return (
     <nav className="border-b border-ink bg-paper px-4 py-3">
@@ -63,7 +62,7 @@ export default function HomeNav() {
         </Link>
 
         <div className="hidden items-end gap-6 md:flex">
-          {LINKS.map((link) => (
+          {links.map((link) => (
             <NavLink key={link.label} {...link} />
           ))}
         </div>
@@ -89,17 +88,20 @@ export default function HomeNav() {
         }`}
       >
         <div className="flex flex-col gap-3 pt-3">
-          {LINKS.map((link) =>
-            link.to ? (
-              <Link
+          {links.map((link) =>
+            link.onClick ? (
+              <button
                 key={link.label}
-                to={link.to}
+                type="button"
                 tabIndex={open ? undefined : -1}
-                onClick={() => setOpen(false)}
-                className="font-home-body text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm"
+                onClick={() => {
+                  setOpen(false);
+                  link.onClick();
+                }}
+                className="text-left font-home-body text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm"
               >
                 {link.label}
-              </Link>
+              </button>
             ) : (
               <a
                 key={link.label}
