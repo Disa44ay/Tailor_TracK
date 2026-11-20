@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./AuthContext.jsx";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./AuthContext.jsx";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
+import Home from "../pages/Home.jsx";
 import Login from "../pages/Login.jsx";
 import Signup from "../pages/Signup.jsx";
 import Measurements from "../pages/Measurements.jsx";
@@ -13,13 +14,6 @@ import AdminOrderDetail from "../pages/AdminOrderDetail.jsx";
 import AdminReports from "../pages/AdminReports.jsx";
 import NavBar from "../components/NavBar.jsx";
 
-// Role-dependent landing page; the admin side arrives in Task 13.
-function Home() {
-  const { user } = useAuth();
-  if (user?.role === "admin") return <Navigate to="/admin/orders" replace />;
-  return <Navigate to="/orders" replace />;
-}
-
 function App() {
   return (
     <AuthProvider>
@@ -28,14 +22,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<Home />} />
           <Route
             path="/measurements"
             element={
