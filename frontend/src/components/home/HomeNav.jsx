@@ -30,24 +30,24 @@ function NavLink({ label, href, to }) {
 }
 
 function TapeMeasureCaseIcon() {
-  // shortcut: hand-drawn icon approximated with a rounded rect + dial; raw hex is allowed only inside this inline SVG per the brief.
+  // shortcut: hand-drawn icon approximated with a rounded rect + dial.
   return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-      <rect x="3" y="3" width="22" height="22" rx="6" stroke="#2B2A28" strokeWidth="1.5" />
-      <circle cx="14" cy="14" r="5" stroke="#2B2A28" strokeWidth="1.5" />
-      <circle cx="14" cy="14" r="1.2" fill="#2B2A28" />
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true" className="text-ink">
+      <rect x="3" y="3" width="22" height="22" rx="6" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="14" cy="14" r="5" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="14" cy="14" r="1.2" fill="currentColor" />
     </svg>
   );
 }
 
 function TapeMeasureUnrolledIcon() {
   return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-      <rect x="3" y="11" width="22" height="6" rx="3" stroke="#2B2A28" strokeWidth="1.5" />
-      <line x1="7" y1="11" x2="7" y2="17" stroke="#2B2A28" strokeWidth="1" />
-      <line x1="11" y1="11" x2="11" y2="17" stroke="#2B2A28" strokeWidth="1" />
-      <line x1="15" y1="11" x2="15" y2="17" stroke="#2B2A28" strokeWidth="1" />
-      <line x1="19" y1="11" x2="19" y2="17" stroke="#2B2A28" strokeWidth="1" />
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true" className="text-ink">
+      <rect x="3" y="11" width="22" height="6" rx="3" stroke="currentColor" strokeWidth="1.5" />
+      <line x1="7" y1="11" x2="7" y2="17" stroke="currentColor" strokeWidth="1" />
+      <line x1="11" y1="11" x2="11" y2="17" stroke="currentColor" strokeWidth="1" />
+      <line x1="15" y1="11" x2="15" y2="17" stroke="currentColor" strokeWidth="1" />
+      <line x1="19" y1="11" x2="19" y2="17" stroke="currentColor" strokeWidth="1" />
     </svg>
   );
 }
@@ -95,6 +95,7 @@ export default function HomeNav() {
                 key={link.label}
                 to={link.to}
                 tabIndex={open ? undefined : -1}
+                onClick={() => setOpen(false)}
                 className="font-home-body text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm"
               >
                 {link.label}
@@ -104,6 +105,7 @@ export default function HomeNav() {
                 key={link.label}
                 href={link.href}
                 tabIndex={open ? undefined : -1}
+                onClick={() => setOpen(false)}
                 className="font-home-body text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm"
               >
                 {link.label}

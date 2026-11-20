@@ -48,36 +48,38 @@ function SecondaryCta() {
 }
 
 function GarmentIllustration() {
-  // shortcut: hand-drawn silhouette approximated with simple paths; raw hex is allowed only inside this inline SVG per Task 1's SVG exception.
+  // shortcut: hand-drawn silhouette approximated with simple paths.
   return (
-    <svg width="220" height="220" viewBox="0 0 220 220" fill="none" aria-hidden="true">
+    <svg width="220" height="220" viewBox="0 0 220 220" fill="none" aria-hidden="true" className="text-ink">
       <path
         d="M80 40 L95 25 L125 25 L140 40 L160 55 L150 85 L135 78 L135 190 L85 190 L85 78 L70 85 L60 55 Z"
-        stroke="#2B2A28"
+        stroke="currentColor"
         strokeWidth="3"
         strokeLinejoin="round"
       />
-      <circle cx="110" cy="95" r="3" stroke="#2B2A28" strokeWidth="2" />
-      <circle cx="110" cy="120" r="3" stroke="#2B2A28" strokeWidth="2" />
-      <circle cx="110" cy="145" r="3" stroke="#2B2A28" strokeWidth="2" />
-      <path
-        d="M20 180 Q60 140 95 165 Q130 190 170 150"
-        stroke="#203A8C"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <line x1="35" y1="172" x2="38" y2="165" stroke="#203A8C" strokeWidth="1.5" />
-      <line x1="55" y1="155" x2="59" y2="149" stroke="#203A8C" strokeWidth="1.5" />
-      <line x1="100" y1="168" x2="99" y2="160" stroke="#203A8C" strokeWidth="1.5" />
-      <line x1="140" y1="172" x2="142" y2="165" stroke="#203A8C" strokeWidth="1.5" />
+      <circle cx="110" cy="95" r="3" stroke="currentColor" strokeWidth="2" />
+      <circle cx="110" cy="120" r="3" stroke="currentColor" strokeWidth="2" />
+      <circle cx="110" cy="145" r="3" stroke="currentColor" strokeWidth="2" />
+      <g className="text-accent">
+        <path
+          d="M20 180 Q60 140 95 165 Q130 190 170 150"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <line x1="35" y1="172" x2="38" y2="165" stroke="currentColor" strokeWidth="1.5" />
+        <line x1="55" y1="155" x2="59" y2="149" stroke="currentColor" strokeWidth="1.5" />
+        <line x1="100" y1="168" x2="99" y2="160" stroke="currentColor" strokeWidth="1.5" />
+        <line x1="140" y1="172" x2="142" y2="165" stroke="currentColor" strokeWidth="1.5" />
+      </g>
       <path
         d="M170 50 q10 10 0 20 t0 20"
-        stroke="#2B2A28"
+        stroke="currentColor"
         strokeWidth="1.5"
         fill="none"
       />
-      <circle cx="170" cy="48" r="2" fill="#2B2A28" />
+      <circle cx="170" cy="48" r="2" fill="currentColor" />
     </svg>
   );
 }
