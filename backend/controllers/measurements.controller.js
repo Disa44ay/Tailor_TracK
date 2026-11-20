@@ -5,10 +5,12 @@ import { pool } from "../db/pool.js";
 const FIELDS = [
   "chest", "waist", "hip", "shoulderWidth", "sleeveLength", "inseam", "neck",
   "bicep", "wrist", "thigh", "knee", "rise", "hem", "garmentLength",
+  "heightCm", "weightKg", "age",
 ];
 const COLUMNS = [
   "chest", "waist", "hip", "shoulder_width", "sleeve_length", "inseam", "neck",
   "bicep", "wrist", "thigh", "knee", "rise", "hem", "garment_length",
+  "height_cm", "weight_kg", "age",
 ];
 
 // numeric columns come back as strings from pg (to avoid float precision
@@ -29,8 +31,14 @@ export async function getMyMeasurements(req, res) {
 export async function putMyMeasurements(req, res) {
   for (const field of FIELDS) {
     const value = req.body[field];
-    if (value !== undefined && value !== null && typeof value !== "number") {
+    if (value === undefined || value === null) continue;
+    if (typeof value !== "number") {
       return res.status(400).json({ message: `${field} must be a number` });
+    }
+    // age is the one integer column among these; the rest are numeric and
+    // accept fractions.
+    if (field === "age" && !Number.isInteger(value)) {
+      return res.status(400).json({ message: "age must be an integer" });
     }
   }
 

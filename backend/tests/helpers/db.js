@@ -14,7 +14,7 @@ export const testPool = new Pool({ connectionString: process.env.TEST_DATABASE_U
 
 export async function resetTables() {
   await testPool.query(
-    "TRUNCATE notifications, payments, order_status_history, orders, measurements, users RESTART IDENTITY CASCADE"
+    "TRUNCATE notifications, payments, order_status_history, orders, fabrics, measurements, users RESTART IDENTITY CASCADE"
   );
 }
 

@@ -59,6 +59,15 @@ test("PUT with a non-numeric value for a field returns 400", async () => {
   assert.equal(res.status, 400);
 });
 
+test("PUT with a fractional age returns 400, not 500", async () => {
+  const customer = await insertTestUser({ role: "customer" });
+  const res = await request(app)
+    .put("/me/measurements")
+    .set("Authorization", `Bearer ${signToken(customer)}`)
+    .send({ age: 28.5 });
+  assert.equal(res.status, 400);
+});
+
 test("PUT accepts and GET reflects the 7 additional measurement fields", async () => {
   const customer = await insertTestUser({ role: "customer" });
   const auth = `Bearer ${signToken(customer)}`;
@@ -72,6 +81,24 @@ test("PUT accepts and GET reflects the 7 additional measurement fields", async (
   const getRes = await request(app).get("/me/measurements").set("Authorization", auth);
   assert.equal(getRes.body.wrist, 7);
   assert.equal(getRes.body.hem, 16);
+});
+
+test("PUT accepts and GET reflects heightCm, weightKg, and age", async () => {
+  const customer = await insertTestUser({ role: "customer" });
+  const auth = `Bearer ${signToken(customer)}`;
+
+  const putRes = await request(app)
+    .put("/me/measurements")
+    .set("Authorization", auth)
+    .send({ heightCm: 175, weightKg: 70, age: 28 });
+  assert.equal(putRes.status, 200);
+  assert.equal(putRes.body.height_cm, 175);
+  assert.equal(putRes.body.weight_kg, 70);
+  assert.equal(putRes.body.age, 28);
+
+  const getRes = await request(app).get("/me/measurements").set("Authorization", auth);
+  assert.equal(getRes.body.height_cm, 175);
+  assert.equal(getRes.body.age, 28);
 });
 
 test("PUT with only some fields never touches previously stored values for the others", async () => {

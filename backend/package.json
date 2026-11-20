@@ -9,7 +9,8 @@
     "start": "node server.js",
     "test": "node --test --test-concurrency=1 \"tests/**/*.test.js\"",
     "db:migrate": "node db/migrate.js",
-    "db:seed:admin": "node db/seedAdmin.js"
+    "db:seed:admin": "node db/seedAdmin.js",
+    "db:seed:fabrics": "node db/seedFabrics.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

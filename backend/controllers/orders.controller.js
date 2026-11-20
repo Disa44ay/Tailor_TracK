@@ -9,6 +9,7 @@ const ORDER_COLUMNS = `
   id, customer_id, garment_type, style_notes, fabric_note, fit_type, lapel_style,
   priority, status,
   measurements_snapshot,
+  fabric_id, body_profile_snapshot,
   due_date::text AS due_date,
   quoted_price::double precision AS quoted_price,
   advance_required::double precision AS advance_required,
@@ -50,8 +51,20 @@ async function getMeasurementsSnapshot(customerId) {
   return result.rows[0] ?? null;
 }
 
+async function getBodyProfileSnapshot(customerId) {
+  const result = await pool.query(
+    `SELECT height_cm::double precision AS height_cm, weight_kg::double precision AS weight_kg, age
+     FROM measurements WHERE customer_id = $1`,
+    [customerId]
+  );
+  const row = result.rows[0];
+  if (!row || (row.height_cm === null && row.weight_kg === null && row.age === null)) return null;
+  return row;
+}
+
 export async function createOrder(req, res) {
-  const { garmentType, styleNotes, fabricNote, priority = "normal", fitType, lapelStyle } = req.body;
+  const { garmentType, styleNotes, fabricNote, priority = "normal", fitType, lapelStyle, fabricId } =
+    req.body;
 
   if (!GARMENT_TYPES.includes(garmentType)) {
     return res.status(400).json({ message: "Unrecognized garment type" });
@@ -66,15 +79,34 @@ export async function createOrder(req, res) {
   if (fitError) return res.status(400).json({ message: fitError });
   const lapelError = lapelStyleError(lapelStyle);
   if (lapelError) return res.status(400).json({ message: lapelError });
+  if (
+    fabricId !== undefined &&
+    fabricId !== null &&
+    (!Number.isInteger(fabricId) || fabricId < -2147483648 || fabricId > 2147483647)
+  ) {
+    return res.status(400).json({ message: "fabricId must be an integer" });
+  }
+
+  let resolvedFabricId = null;
+  if (fabricId !== undefined && fabricId !== null) {
+    const fabricResult = await pool.query("SELECT id FROM fabrics WHERE id = $1 AND is_active = true", [
+      fabricId,
+    ]);
+    if (!fabricResult.rows.length) {
+      return res.status(400).json({ message: "Unrecognized or inactive fabric" });
+    }
+    resolvedFabricId = fabricId;
+  }
 
   const snapshot = await getMeasurementsSnapshot(req.user.id);
+  const bodyProfileSnapshot = await getBodyProfileSnapshot(req.user.id);
 
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
     const orderResult = await client.query(
-      `INSERT INTO orders (customer_id, garment_type, style_notes, fabric_note, fit_type, lapel_style, priority, measurements_snapshot)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `INSERT INTO orders (customer_id, garment_type, style_notes, fabric_note, fit_type, lapel_style, priority, measurements_snapshot, fabric_id, body_profile_snapshot)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING ${ORDER_COLUMNS}`,
       [
         req.user.id,
@@ -85,6 +117,8 @@ export async function createOrder(req, res) {
         lapelStyle ?? null,
         priority,
         snapshot,
+        resolvedFabricId,
+        bodyProfileSnapshot,
       ]
     );
     const order = orderResult.rows[0];
