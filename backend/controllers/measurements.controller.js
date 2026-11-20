@@ -5,10 +5,12 @@ import { pool } from "../db/pool.js";
 const FIELDS = [
   "chest", "waist", "hip", "shoulderWidth", "sleeveLength", "inseam", "neck",
   "bicep", "wrist", "thigh", "knee", "rise", "hem", "garmentLength",
+  "heightCm", "weightKg", "age",
 ];
 const COLUMNS = [
   "chest", "waist", "hip", "shoulder_width", "sleeve_length", "inseam", "neck",
   "bicep", "wrist", "thigh", "knee", "rise", "hem", "garment_length",
+  "height_cm", "weight_kg", "age",
 ];
 
 // numeric columns come back as strings from pg (to avoid float precision

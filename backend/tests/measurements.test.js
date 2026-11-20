@@ -74,6 +74,24 @@ test("PUT accepts and GET reflects the 7 additional measurement fields", async (
   assert.equal(getRes.body.hem, 16);
 });
 
+test("PUT accepts and GET reflects heightCm, weightKg, and age", async () => {
+  const customer = await insertTestUser({ role: "customer" });
+  const auth = `Bearer ${signToken(customer)}`;
+
+  const putRes = await request(app)
+    .put("/me/measurements")
+    .set("Authorization", auth)
+    .send({ heightCm: 175, weightKg: 70, age: 28 });
+  assert.equal(putRes.status, 200);
+  assert.equal(putRes.body.height_cm, 175);
+  assert.equal(putRes.body.weight_kg, 70);
+  assert.equal(putRes.body.age, 28);
+
+  const getRes = await request(app).get("/me/measurements").set("Authorization", auth);
+  assert.equal(getRes.body.height_cm, 175);
+  assert.equal(getRes.body.age, 28);
+});
+
 test("PUT with only some fields never touches previously stored values for the others", async () => {
   const customer = await insertTestUser({ role: "customer" });
   const auth = `Bearer ${signToken(customer)}`;
