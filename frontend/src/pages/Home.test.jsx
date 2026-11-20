@@ -25,7 +25,8 @@ describe("Home", () => {
 
   test("renders the public homepage for a logged-out visitor", () => {
     renderHome();
-    expect(screen.getByText(/homepage placeholder/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /log in/i })).toBeInTheDocument();
+    expect(screen.getByText(/you imagine it\. we tailor it/i)).toBeInTheDocument();
   });
 
   test("redirects a logged-in customer to /orders", () => {
