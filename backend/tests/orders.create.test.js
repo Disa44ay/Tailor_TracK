@@ -144,3 +144,60 @@ test("POST /orders with an unrecognized lapel_style returns 400", async () => {
     .send({ garmentType: "suit_2pc", lapelStyle: "wide" });
   assert.equal(res.status, 400);
 });
+
+test("POST /orders accepts a fabricId and snapshots the body profile", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const auth = `Bearer ${signToken(customer)}`;
+
+  await request(app)
+    .put("/me/measurements")
+    .set("Authorization", auth)
+    .send({ heightCm: 175, weightKg: 70, age: 28 });
+
+  const fabric = await testPool.query(
+    `INSERT INTO fabrics (name, color_hex, texture) VALUES ('Navy Cotton', '#1b2a4a', 'cotton') RETURNING id`
+  );
+  const fabricId = fabric.rows[0].id;
+
+  const res = await request(app)
+    .post("/orders")
+    .set("Authorization", auth)
+    .send({ garmentType: "shirt", fabricId });
+
+  assert.equal(res.status, 201);
+  assert.equal(res.body.fabric_id, fabricId);
+  assert.equal(res.body.body_profile_snapshot.height_cm, 175);
+  assert.equal(res.body.body_profile_snapshot.age, 28);
+});
+
+test("POST /orders with no measurements on file snapshots a null body profile", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const res = await request(app)
+    .post("/orders")
+    .set("Authorization", `Bearer ${signToken(customer)}`)
+    .send({ garmentType: "shirt" });
+  assert.equal(res.status, 201);
+  assert.equal(res.body.body_profile_snapshot, null);
+});
+
+test("POST /orders with an unrecognized or inactive fabricId returns 400", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const res = await request(app)
+    .post("/orders")
+    .set("Authorization", `Bearer ${signToken(customer)}`)
+    .send({ garmentType: "shirt", fabricId: 999999 });
+  assert.equal(res.status, 400);
+});
+
+test("POST /orders with a non-numeric fabricId returns 400", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const res = await request(app)
+    .post("/orders")
+    .set("Authorization", `Bearer ${signToken(customer)}`)
+    .send({ garmentType: "shirt", fabricId: "navy" });
+  assert.equal(res.status, 400);
+});
