@@ -88,6 +88,18 @@ CREATE TABLE IF NOT EXISTS notifications (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS fabrics (
+  id serial PRIMARY KEY,
+  name text NOT NULL UNIQUE,
+  color_hex text NOT NULL CHECK (color_hex ~ '^#[0-9a-fA-F]{6}$'),
+  print_pattern text NOT NULL DEFAULT 'solid' CHECK (print_pattern IN ('solid', 'striped', 'checked')),
+  texture text NOT NULL CHECK (texture IN ('cotton', 'linen', 'silk', 'wool', 'denim')),
+  swatch_image_url text,
+  price_modifier numeric NOT NULL DEFAULT 0,
+  is_active boolean NOT NULL DEFAULT true,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
 -- Columns added after their table's initial CREATE TABLE already ran in
 -- dev/test. IF NOT EXISTS makes re-running this file safe either way, but
 -- these must come LAST — each references a table that must already exist,
@@ -110,3 +122,8 @@ ALTER TABLE measurements ADD COLUMN IF NOT EXISTS garment_length numeric;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS fit_type text;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS lapel_style text
   CHECK (lapel_style IS NULL OR lapel_style IN ('notch', 'peak', 'shawl'));
+ALTER TABLE measurements ADD COLUMN IF NOT EXISTS height_cm numeric;
+ALTER TABLE measurements ADD COLUMN IF NOT EXISTS weight_kg numeric;
+ALTER TABLE measurements ADD COLUMN IF NOT EXISTS age integer;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS fabric_id integer REFERENCES fabrics(id);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS body_profile_snapshot jsonb;
