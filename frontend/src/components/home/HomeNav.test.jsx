@@ -1,10 +1,10 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import HomeNav from "./HomeNav.jsx";
 
-function renderNav() {
-  return render(<MemoryRouter><HomeNav /></MemoryRouter>);
+function renderNav(props = {}) {
+  return render(<MemoryRouter><HomeNav onLogin={() => {}} {...props} /></MemoryRouter>);
 }
 
 describe("HomeNav", () => {
@@ -12,7 +12,13 @@ describe("HomeNav", () => {
     renderNav();
     expect(screen.getByText("TailorTrack")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /how it works/i })).toHaveAttribute("href", "#how-it-works");
-    expect(screen.getByRole("link", { name: /log in/i })).toHaveAttribute("href", "/login");
+  });
+
+  test("desktop Log in control calls onLogin instead of navigating", () => {
+    const onLogin = vi.fn();
+    renderNav({ onLogin });
+    fireEvent.click(screen.getAllByText(/log in/i)[0]);
+    expect(onLogin).toHaveBeenCalled();
   });
 
   test("mobile menu toggle starts collapsed and exposes aria-expanded/aria-controls", () => {

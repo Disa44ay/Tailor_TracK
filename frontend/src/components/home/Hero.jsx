@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 function CornerBrackets() {
   // shortcut: fixed 10px bracket size tuned for these button sizes; revisit if button padding changes a lot.
   const arm = "absolute h-2.5 w-2.5 border-ink";
@@ -13,10 +11,11 @@ function CornerBrackets() {
   );
 }
 
-function PrimaryCta() {
+function PrimaryCta({ onClick }) {
   return (
-    <Link
-      to="/signup"
+    <button
+      type="button"
+      onClick={onClick}
       className="relative inline-block border-2 border-dashed border-ink bg-accent px-6 py-3 font-home-body text-paper shadow-[3px_3px_0_0_var(--color-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       style={{
         // shortcut: highlight stop stays literal white (no "highlight-white" token exists yet); the shadow stop is derived from --color-ink via color-mix so it still tracks theme changes.
@@ -26,7 +25,7 @@ function PrimaryCta() {
     >
       <CornerBrackets />
       Let&apos;s go
-    </Link>
+    </button>
   );
 }
 
@@ -96,7 +95,7 @@ function StickyNote({ rotate, label, status }) {
   );
 }
 
-export default function Hero() {
+export default function Hero({ onLetsGo }) {
   return (
     <section className="bg-paper px-6 py-16">
       <div className="mx-auto grid max-w-5xl items-center gap-12 md:grid-cols-2">
@@ -125,7 +124,7 @@ export default function Hero() {
             Measurements, orders, and fittings &mdash; kept the way your tailor already keeps them. On paper, just faster.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <PrimaryCta />
+            <PrimaryCta onClick={onLetsGo} />
             <SecondaryCta />
           </div>
         </div>
