@@ -31,8 +31,14 @@ export async function getMyMeasurements(req, res) {
 export async function putMyMeasurements(req, res) {
   for (const field of FIELDS) {
     const value = req.body[field];
-    if (value !== undefined && value !== null && typeof value !== "number") {
+    if (value === undefined || value === null) continue;
+    if (typeof value !== "number") {
       return res.status(400).json({ message: `${field} must be a number` });
+    }
+    // age is the one integer column among these; the rest are numeric and
+    // accept fractions.
+    if (field === "age" && !Number.isInteger(value)) {
+      return res.status(400).json({ message: "age must be an integer" });
     }
   }
 

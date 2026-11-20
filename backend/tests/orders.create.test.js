@@ -201,3 +201,23 @@ test("POST /orders with a non-numeric fabricId returns 400", async () => {
     .send({ garmentType: "shirt", fabricId: "navy" });
   assert.equal(res.status, 400);
 });
+
+test("POST /orders with a fractional fabricId returns 400, not 500", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const res = await request(app)
+    .post("/orders")
+    .set("Authorization", `Bearer ${signToken(customer)}`)
+    .send({ garmentType: "shirt", fabricId: 1.5 });
+  assert.equal(res.status, 400);
+});
+
+test("POST /orders with an out-of-range fabricId returns 400, not 500", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const res = await request(app)
+    .post("/orders")
+    .set("Authorization", `Bearer ${signToken(customer)}`)
+    .send({ garmentType: "shirt", fabricId: 99999999999 });
+  assert.equal(res.status, 400);
+});

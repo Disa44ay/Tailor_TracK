@@ -79,8 +79,12 @@ export async function createOrder(req, res) {
   if (fitError) return res.status(400).json({ message: fitError });
   const lapelError = lapelStyleError(lapelStyle);
   if (lapelError) return res.status(400).json({ message: lapelError });
-  if (fabricId !== undefined && fabricId !== null && typeof fabricId !== "number") {
-    return res.status(400).json({ message: "fabricId must be a number" });
+  if (
+    fabricId !== undefined &&
+    fabricId !== null &&
+    (!Number.isInteger(fabricId) || fabricId < -2147483648 || fabricId > 2147483647)
+  ) {
+    return res.status(400).json({ message: "fabricId must be an integer" });
   }
 
   let resolvedFabricId = null;

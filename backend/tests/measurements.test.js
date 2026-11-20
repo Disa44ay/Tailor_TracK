@@ -59,6 +59,15 @@ test("PUT with a non-numeric value for a field returns 400", async () => {
   assert.equal(res.status, 400);
 });
 
+test("PUT with a fractional age returns 400, not 500", async () => {
+  const customer = await insertTestUser({ role: "customer" });
+  const res = await request(app)
+    .put("/me/measurements")
+    .set("Authorization", `Bearer ${signToken(customer)}`)
+    .send({ age: 28.5 });
+  assert.equal(res.status, 400);
+});
+
 test("PUT accepts and GET reflects the 7 additional measurement fields", async () => {
   const customer = await insertTestUser({ role: "customer" });
   const auth = `Bearer ${signToken(customer)}`;
