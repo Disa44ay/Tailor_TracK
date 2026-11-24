@@ -4,7 +4,7 @@ import {
   listMyOrders,
   getOrderById,
   rejectOrder,
-  quoteOrder,
+  acceptOrder,
   listAllOrders,
   patchOrder,
   declineOrder,
@@ -24,7 +24,7 @@ router.post("/orders/:id/decline", requireAuth, asyncHandler(declineOrder));
 
 router.get("/admin/orders", requireAuth, requireAdmin, asyncHandler(listAllOrders));
 router.patch("/admin/orders/:id/reject", requireAuth, requireAdmin, asyncHandler(rejectOrder));
-router.patch("/admin/orders/:id/quote", requireAuth, requireAdmin, asyncHandler(quoteOrder));
+router.patch("/admin/orders/:id/accept", requireAuth, requireAdmin, asyncHandler(acceptOrder));
 router.patch("/admin/orders/:id/status", requireAuth, requireAdmin, asyncHandler(advanceStage));
 
 export default router;
