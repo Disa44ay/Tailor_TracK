@@ -18,8 +18,8 @@ describe("GarmentSketch", () => {
   });
 
   test("an unimplemented dressType renders a labeled placeholder instead of crashing", () => {
-    render(<GarmentSketch {...baseProps} dressType="panjabi" />);
-    expect(screen.getByText("Panjabi sketch coming soon")).toBeInTheDocument();
+    render(<GarmentSketch {...baseProps} dressType="suit" />);
+    expect(screen.getByText("Suit sketch coming soon")).toBeInTheDocument();
   });
 
   test("an unknown dressType renders the placeholder instead of crashing", () => {
