@@ -1,10 +1,11 @@
 import ShirtSketch from "./ShirtSketch.jsx";
+import PantSketch from "./PantSketch.jsx";
 
 // null entries are garments whose sketch component lands in a later task.
 // Replacing a null with the real component is the only change needed per garment.
 const SKETCH_BY_DRESS_TYPE = {
   shirt: ShirtSketch,
-  pant: null,
+  pant: PantSketch,
   panjabi: null,
   suit: null,
   paijama: null,
