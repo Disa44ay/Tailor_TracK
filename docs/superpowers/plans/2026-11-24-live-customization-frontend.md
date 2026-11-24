@@ -200,17 +200,14 @@ test("every dress type's fields are a subset of the 14 known measurement keys", 
   matching the existing `garmentType.replace(/_/g, " ")` convention already
   used in `NewOrder.jsx`/`AdminOrderDetail.jsx`.
 - [ ] **Step 4: Run tests, confirm green**
-- [ ] **Step 5: Write the failing test for the reset behavior** (Review
-  Focus item 2): a test rendering `FitTypePicker` wrapped by a small test
-  harness that changes `dressType` after a selection, asserting the
-  *consumer* is responsible for clearing `selected` — document in this
-  component's own test that `FitTypePicker` is presentational only (it
-  doesn't own `selected` state), and add the actual reset-on-dress-type-
-  change assertion to Task 7's screen-level test instead, where the state
-  actually lives. Note this explicitly in a comment so the behavior isn't
-  silently dropped.
-- [ ] **Step 6: Hallmark** — sloplint pass.
-- [ ] **Step 7: Commit**
+- [ ] **Step 5: Hallmark** — sloplint pass.
+- [ ] **Step 6: Commit**
+
+Note: `FitTypePicker` is presentational only — it does not own `selected`
+state and has no reset behavior of its own. The reset-on-dress-type-change
+behavior (Review Focus item 2) belongs to whichever screen owns the state
+(Task 11), and that task's own test list already covers it — nothing here
+duplicates or defers it.
 
 ---
 
@@ -485,10 +482,19 @@ kind of simplification.
 - Consumes: `DressTypePicker` (Task 2), `FitTypePicker` (Task 3),
   `GarmentSketch` (Task 4), `MeasurementSliderPanel` (Task 9),
   `exportSketchPng` (Task 10), `FabricPicker`/`fabricsMock` (existing).
+- **Estimates source, resolved here** (Task 9's `estimated` prop was left
+  open about where its data comes from): read it from the existing `GET
+  /me/measurements` response's own fields, optional-chained with a `null`
+  fallback — the same defensive pattern `Measurements.jsx`'s `.catch(() =>
+  {})` already uses. The backend session's estimate lookup (plan.md §3) may
+  or may not have landed yet; this task does not block on it. If the
+  response has no estimate data, pass `estimated={null}` and
+  `MeasurementSliderPanel` already handles that per its own Task 9 test.
 
 - [ ] **Step 1: Write the failing tests** — selecting a dress type narrows
-  the fit options shown (Task 3's consumer-owns-reset behavior, actually
-  exercised here per Task 3 Step 5's note); switching dress type after a
+  the fit options shown (`FitTypePicker` is presentational only per Task 3;
+  this screen owns the `selected` state and must pass the narrowed options
+  down); switching dress type after a
   fit was already picked clears the fit selection (Review Focus item 2,
   owned by this task); the measurement fields shown change with dress type;
   submitting includes only the fields `MEASUREMENT_FIELDS_BY_GARMENT` names
