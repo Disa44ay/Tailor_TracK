@@ -44,7 +44,7 @@ describe("MeasurementSliderPanel", () => {
       />
     );
     expect(screen.getByLabelText(/^chest$/i)).toHaveValue(40);
-    expect(screen.queryByText(/estimated/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/estimated/i)).not.toBeInTheDocument();
   });
 
   test("moving a field calls onChange and clears only that field's estimated label", () => {
@@ -70,6 +70,6 @@ describe("MeasurementSliderPanel", () => {
       <MeasurementSliderPanel dressType="shirt" values={{}} estimated={null} onChange={() => {}} />
     );
     expect(screen.getByLabelText(/^chest$/i)).toHaveValue(null);
-    expect(screen.queryByText(/estimated/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/estimated/i)).not.toBeInTheDocument();
   });
 });
