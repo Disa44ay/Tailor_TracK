@@ -79,7 +79,7 @@ describe("PantSketch", () => {
 
   test("switching fitType between bootcut and straightcut changes which placeholder asset appears", () => {
     // bootcut and straightcut don't have dedicated art yet (see PantSketch.jsx's
-    // FIT_STATES_BY_TYPE comment) but still map to different placeholder states.
+    // FIT_STATES_BY_TYPE comment) but still map to different placeholder pairs.
     const bootcut = render(<PantSketch fitValue={0} fitType="bootcut" />);
     const bootcutLayer = bootcut.container.querySelector('[data-testid="pant-fit-layer-0"]');
     expect(bootcutLayer.querySelector("img").src).toContain(pantSlim);
@@ -88,5 +88,32 @@ describe("PantSketch", () => {
     const straightcut = render(<PantSketch fitValue={0} fitType="straightcut" />);
     const straightcutLayer = straightcut.container.querySelector('[data-testid="pant-fit-layer-0"]');
     expect(straightcutLayer.querySelector("img").src).not.toContain(pantSlim);
+  });
+
+  test("bootcut and straightcut placeholders still crossfade across fitValue, unlike slim/relaxed/baggy", () => {
+    // Regression test: a previous fix round accidentally collapsed these placeholder
+    // pairs down to a single fixed image (same mistake as the slim/relaxed/baggy bug,
+    // just introduced while fixing that one). Each must still have two distinct states
+    // reachable at opposite ends of fitValue.
+    for (const fitType of ["bootcut", "straightcut"]) {
+      const atStart = render(<PantSketch fitValue={0} fitType={fitType} />);
+      const startLayer = atStart.container.querySelector('[data-testid="pant-fit-layer-0"]');
+      const startSrc = startLayer.querySelector("img").src;
+      const startOpacity = startLayer.style.opacity;
+      atStart.unmount();
+
+      const atEnd = render(<PantSketch fitValue={1} fitType={fitType} />);
+      // At fitValue=1 the first state (index 0, the one visible at fitValue=0) must be
+      // fully faded out — either unmounted entirely or rendered at opacity 0 — while a
+      // second, different-asset layer takes over.
+      const endLayer0 = atEnd.container.querySelector('[data-testid="pant-fit-layer-0"]');
+      if (endLayer0) {
+        expect(Number(endLayer0.style.opacity)).toBeLessThan(Number(startOpacity) || 1);
+      }
+      const endLayer1 = atEnd.container.querySelector('[data-testid="pant-fit-layer-1"]');
+      expect(endLayer1).toBeInTheDocument();
+      expect(endLayer1.querySelector("img").src).not.toBe(startSrc);
+      atEnd.unmount();
+    }
   });
 });

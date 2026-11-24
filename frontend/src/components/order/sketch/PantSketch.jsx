@@ -8,15 +8,16 @@ import { crossfadeOpacities, supportsCssMask } from "./ShirtSketch.jsx";
 // ShirtSketch's art direction (see
 // docs/superpowers/references/2026-11-21-sketch-fabric-drape-reference.png).
 //
-// slim/bootcut/baggy/straightcut are each a *distinct silhouette*, not points
-// on one width curve — picking one of them is picking a fixed drawing, so
-// each gets its own single-state (non-crossfading) entry. Only "regular" sits
-// genuinely between two drawn silhouettes (slim and relaxed), so it's the one
-// fitType that actually crossfades on fitValue. bootcut/straightcut don't have
-// their own dedicated art yet (image-generation quota ran out this pass — see
-// task-5-report.md), so they borrow the nearest existing single state as a
-// placeholder. Adding their real art later only means adding/replacing
-// entries here, nothing else changes.
+// slim/baggy/relaxed are each a *distinct silhouette*, not points on one
+// width curve — picking one of them is picking a fixed drawing, so each gets
+// its own single-state (non-crossfading) entry. "regular" sits genuinely
+// between two drawn silhouettes (slim and relaxed), so it's one of the
+// fitTypes that crossfades on fitValue. bootcut/straightcut don't have their
+// own dedicated art yet (image-generation quota ran out this pass — see
+// task-5-report.md), so each borrows the nearest existing *pair* as a
+// crossfading placeholder (its own 2-point array, not a reference to the
+// single-state constants above). Adding their real art later only means
+// adding/replacing entries here, nothing else changes.
 const SLIM_STATES = [{ at: 0, src: pantSlim }];
 const RELAXED_STATES = [{ at: 0, src: pantRelaxed }];
 const BAGGY_STATES = [{ at: 0, src: pantBaggy }];
@@ -25,13 +26,22 @@ const REGULAR_STATES = [
   { at: 1, src: pantRelaxed },
 ];
 
-// Placeholder: fitted thigh/knee, closer to "slim" than to anything wider —
-// the hem-only flare isn't illustrated yet.
-const BOOTCUT_PLACEHOLDER_STATES = SLIM_STATES;
+// Placeholder: fitted thigh/knee like "slim", widening toward "relaxed" — the
+// hem-only flare isn't illustrated yet. Kept as its own 2-point crossfade
+// (not a reference to SLIM_STATES/RELAXED_STATES, which are single-state) so
+// bootcut still responds to fitValue until its real art exists.
+const BOOTCUT_PLACEHOLDER_STATES = [
+  { at: 0, src: pantSlim },
+  { at: 1, src: pantRelaxed },
+];
 
-// Placeholder: a uniform, non-tapered leg reads closer to "relaxed" than to
-// "slim" or "baggy" — the uniform non-taper itself isn't illustrated yet.
-const STRAIGHTCUT_PLACEHOLDER_STATES = RELAXED_STATES;
+// Placeholder: closer to "relaxed" and "baggy" (both looser through the leg)
+// than to "slim" — the uniform, non-tapered silhouette isn't illustrated yet.
+// Same reasoning as above: its own 2-point crossfade, not a shared reference.
+const STRAIGHTCUT_PLACEHOLDER_STATES = [
+  { at: 0, src: pantRelaxed },
+  { at: 1, src: pantBaggy },
+];
 
 const FIT_STATES_BY_TYPE = {
   slim: SLIM_STATES,
