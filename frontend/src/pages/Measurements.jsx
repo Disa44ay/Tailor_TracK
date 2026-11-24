@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../api/client.js";
+import { getBodyProfileMock, setBodyProfileMock } from "./bodyProfileMock.js";
 
 // camelCase request keys <-> snake_case columns the GET response returns —
 // the backend uses camelCase in PUT bodies but the raw column name in SELECT,
@@ -19,7 +20,12 @@ const FIELDS = [
   ["rise", "rise", "Rise"],
   ["hem", "hem", "Hem"],
   ["garmentLength", "garment_length", "Garment length"],
+  ["heightCm", "height_cm", "Height (cm)"],
+  ["weightKg", "weight_kg", "Weight (kg)"],
+  ["age", "age", "Age"],
 ];
+
+const BODY_PROFILE_KEYS = ["heightCm", "weightKg", "age"];
 
 function emptyForm() {
   return Object.fromEntries(FIELDS.map(([key]) => [key, ""]));
@@ -33,9 +39,14 @@ function Measurements() {
   useEffect(() => {
     apiFetch("/me/measurements")
       .then((data) => {
+        const mock = getBodyProfileMock();
         setForm(
           Object.fromEntries(
-            FIELDS.map(([key, column]) => [key, data[column] ?? ""])
+            FIELDS.map(([key, column]) => {
+              if (data[column] != null) return [key, data[column]];
+              if (BODY_PROFILE_KEYS.includes(key) && mock[key] != null) return [key, mock[key]];
+              return [key, ""];
+            })
           )
         );
       })
@@ -55,6 +66,7 @@ function Measurements() {
     );
     try {
       await apiFetch("/me/measurements", { method: "PUT", body: JSON.stringify(body) });
+      setBodyProfileMock(Object.fromEntries(BODY_PROFILE_KEYS.map((key) => [key, body[key]])));
     } catch {
       // apiFetch already surfaced a toast
     } finally {

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../api/client.js";
+import FabricPicker from "../components/order/FabricPicker.jsx";
+import fabricsMock from "../components/order/fabricsMock.js";
+import ShirtSketch from "../components/order/sketch/ShirtSketch.jsx";
 
 const GARMENT_TYPES = ["shirt", "pant", "panjabi", "suit_2pc", "suit_3pc", "kurta", "blouse", "other"];
 const PRIORITIES = ["normal", "fast", "urgent"];
@@ -12,6 +15,12 @@ function NewOrder() {
   const [fabricNote, setFabricNote] = useState("");
   const [priority, setPriority] = useState("normal");
   const [submitting, setSubmitting] = useState(false);
+  const [fabricId, setFabricId] = useState(null);
+  // Standalone preview control for now — not yet driven by the customer's
+  // real measurement sliders (that wiring is a separate build-plan step).
+  const [fitValue, setFitValue] = useState(0.5);
+
+  const selectedFabric = fabricsMock.find((f) => f.id === fabricId) ?? null;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -19,7 +28,13 @@ function NewOrder() {
     try {
       await apiFetch("/orders", {
         method: "POST",
-        body: JSON.stringify({ garmentType, styleNotes, fabricNote, priority }),
+        body: JSON.stringify({
+          garmentType,
+          styleNotes,
+          fabricNote,
+          priority,
+          ...(fabricId != null ? { fabricId } : {}),
+        }),
       });
       navigate("/orders");
     } catch {
@@ -32,6 +47,30 @@ function NewOrder() {
   return (
     <main className="mx-auto max-w-lg p-8">
       <h1 className="text-xl font-semibold text-slate-900">New order</h1>
+
+      <section className="mt-6 space-y-4">
+        <ShirtSketch
+          fitValue={fitValue}
+          colorHex={selectedFabric?.color_hex ?? "#D6D6D2"}
+          texture={selectedFabric?.texture ?? "cotton"}
+          printPattern={selectedFabric?.print_pattern ?? "solid"}
+        />
+
+        <label className="block text-sm font-medium text-slate-700">
+          Fit preview: slim – relaxed
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={fitValue}
+            onChange={(e) => setFitValue(Number(e.target.value))}
+            className="mt-1 w-full"
+          />
+        </label>
+
+        <FabricPicker fabrics={fabricsMock} selectedId={fabricId} onSelect={setFabricId} />
+      </section>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>

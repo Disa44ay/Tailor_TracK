@@ -34,7 +34,7 @@ describe("apiFetch", () => {
     expect(toast.error).toHaveBeenCalledWith("Something went wrong");
   });
 
-  test("clears the stored session and redirects to /login on a 401 response", async () => {
+  test("clears the stored session and redirects to the homepage when an existing session expires (401 with a token)", async () => {
     localStorage.setItem("token", "stale-token");
     localStorage.setItem("user", JSON.stringify({ id: 1, role: "customer" }));
     vi.stubGlobal(
@@ -55,7 +55,28 @@ describe("apiFetch", () => {
 
     expect(localStorage.getItem("token")).toBeNull();
     expect(localStorage.getItem("user")).toBeNull();
-    expect(assignSpy).toHaveBeenCalledWith("/login");
+    expect(assignSpy).toHaveBeenCalledWith("/");
+  });
+
+  test("does not redirect on a 401 when there was no session to begin with (e.g. a failed login attempt)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 401,
+        json: async () => ({ message: "invalid credentials" }),
+      })
+    );
+    const assignSpy = vi.fn();
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { ...window.location, assign: assignSpy },
+    });
+
+    await expect(apiFetch("/auth/login", { method: "POST" })).rejects.toThrow();
+
+    expect(assignSpy).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalledWith("invalid credentials");
   });
 
   test("attaches the stored JWT as an Authorization header when present", async () => {

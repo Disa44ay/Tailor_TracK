@@ -1,19 +1,27 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import LoginForm from "../auth/LoginForm.jsx";
 import SignupForm from "../auth/SignupForm.jsx";
 
 export default function AuthModal({ open, onClose }) {
   const dialogRef = useRef(null);
+  const [mode, setMode] = useState("login");
 
   useEffect(() => {
     if (!open) return;
+    setMode("login");
     dialogRef.current?.focus();
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     function handleKeyDown(e) {
       if (e.key === "Escape") onClose();
     }
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [open, onClose]);
 
   if (!open) return null;
@@ -31,7 +39,7 @@ export default function AuthModal({ open, onClose }) {
         aria-label="Log in or sign up"
         tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
-        className="relative flex w-full max-w-sm flex-col items-center gap-6 rounded-xl border-2 border-ink bg-paper p-6 focus:outline-none"
+        className="relative flex w-full max-w-sm flex-col items-center rounded-xl border-2 border-ink bg-paper p-6 focus:outline-none"
       >
         <button
           type="button"
@@ -42,11 +50,11 @@ export default function AuthModal({ open, onClose }) {
           Close
         </button>
 
-        <LoginForm idPrefix="modal-login-" showSwitchLink={false} onSuccess={onClose} />
-
-        <p className="font-home-body text-sm text-ink">or create a new account</p>
-
-        <SignupForm idPrefix="modal-signup-" showSwitchLink={false} onSuccess={onClose} />
+        {mode === "login" ? (
+          <LoginForm onSwitchToSignup={() => setMode("signup")} onSuccess={onClose} />
+        ) : (
+          <SignupForm onSwitchToLogin={() => setMode("login")} onSuccess={onClose} />
+        )}
       </div>
     </div>
   );

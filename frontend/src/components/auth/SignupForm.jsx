@@ -13,7 +13,7 @@ const COUNTRY_CODES = [
   { code: "+966", country: "Saudi Arabia" },
 ];
 
-function SignupForm({ idPrefix = "", showSwitchLink = true, onSuccess }) {
+function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onSuccess }) {
   const { signup } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -134,9 +134,19 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSuccess }) {
       {showSwitchLink && (
         <p className="mt-4 text-center text-sm text-slate-500">
           Already have an account?{" "}
-          <Link to="/login" className="font-medium text-slate-900 underline">
-            Log in
-          </Link>
+          {onSwitchToLogin ? (
+            <button
+              type="button"
+              onClick={onSwitchToLogin}
+              className="font-medium text-slate-900 underline"
+            >
+              Log in
+            </button>
+          ) : (
+            <Link to="/login" className="font-medium text-slate-900 underline">
+              Log in
+            </Link>
+          )}
         </p>
       )}
     </form>

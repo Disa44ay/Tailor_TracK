@@ -34,11 +34,26 @@ describe("AuthModal", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  test("shows both the login form and the signup form when open", () => {
+  test("shows only the login form by default", () => {
     renderModal();
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /log in/i })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /sign up/i })).not.toBeInTheDocument();
+  });
+
+  test("switches to the signup form when its switch button is clicked", () => {
+    renderModal();
+    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
     expect(screen.getByRole("heading", { name: /sign up/i })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /log in/i })).not.toBeInTheDocument();
+  });
+
+  test("switches back to the login form from the signup form", () => {
+    renderModal();
+    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
+    fireEvent.click(screen.getByRole("button", { name: /log in/i }));
+    expect(screen.getByRole("heading", { name: /log in/i })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /sign up/i })).not.toBeInTheDocument();
   });
 
   test("calls onClose when the close button is clicked", () => {

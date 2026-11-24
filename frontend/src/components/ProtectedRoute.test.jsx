@@ -36,4 +36,28 @@ describe("ProtectedRoute", () => {
     renderWithRole("customer");
     expect(screen.getByText("home")).toBeInTheDocument();
   });
+
+  test("sends a logged-out user to / rather than the separate /login page", () => {
+    render(
+      <MemoryRouter initialEntries={["/orders"]}>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<div>home</div>} />
+            <Route path="/login" element={<div>login page</div>} />
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute role="customer">
+                  <div>orders</div>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("home")).toBeInTheDocument();
+    expect(screen.queryByText("login page")).not.toBeInTheDocument();
+  });
 });
