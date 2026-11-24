@@ -17,9 +17,10 @@ describe("GarmentSketch", () => {
     expect(screen.getByRole("img", { name: "Shirt sketch, linen striped fabric" })).toBeInTheDocument();
   });
 
-  test("an unimplemented dressType renders a labeled placeholder instead of crashing", () => {
-    render(<GarmentSketch {...baseProps} dressType="paijama" />);
-    expect(screen.getByText("Paijama sketch coming soon")).toBeInTheDocument();
+  test("dressType paijama renders PaijamaSketch with its props forwarded", () => {
+    render(<GarmentSketch {...baseProps} dressType="paijama" fitType="casual" printPattern="checked" />);
+    // PaijamaSketch's aria-label echoes fitType and printPattern, so this proves they were forwarded.
+    expect(screen.getByRole("img", { name: /casual.*checked/i })).toBeInTheDocument();
   });
 
   test("an unknown dressType renders the placeholder instead of crashing", () => {

@@ -2,15 +2,17 @@ import ShirtSketch from "./ShirtSketch.jsx";
 import PantSketch from "./PantSketch.jsx";
 import PanjabiSketch from "./PanjabiSketch.jsx";
 import SuitSketch from "./SuitSketch.jsx";
+import PaijamaSketch from "./PaijamaSketch.jsx";
 
-// null entries are garments whose sketch component lands in a later task.
-// Replacing a null with the real component is the only change needed per garment.
+// Every planned garment now has a sketch component; an unrecognized
+// dressType (or one added here without a component yet) falls through to
+// the "coming soon" placeholder below.
 const SKETCH_BY_DRESS_TYPE = {
   shirt: ShirtSketch,
   pant: PantSketch,
   panjabi: PanjabiSketch,
   suit: SuitSketch,
-  paijama: null,
+  paijama: PaijamaSketch,
 };
 
 export default function GarmentSketch(props) {
