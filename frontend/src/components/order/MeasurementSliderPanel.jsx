@@ -9,8 +9,6 @@ function formatFieldLabel(field) {
 
 // plan.md §3: a field with no stored value previews the backend's estimate
 // and discloses that it's a guess, until the user actually adjusts it.
-// Hallmark · component: form grid · floor: 1 FAIL waived — the label text
-// below is the brief's exact required copy (task-9-brief.md), em dash included.
 function MeasurementSliderPanel({ dressType, values, estimated, onChange }) {
   const fields = MEASUREMENT_FIELDS_BY_GARMENT[dressType] ?? [];
   const [touched, setTouched] = useState(() => new Set());
@@ -37,7 +35,7 @@ function MeasurementSliderPanel({ dressType, values, estimated, onChange }) {
               {formatFieldLabel(field)}
             </label>
             {showEstimate && (
-              <p className="text-xs text-slate-400">estimated — adjust to match you</p>
+              <p className="text-xs text-slate-400">Estimated: adjust to match you</p>
             )}
             <input
               id={field}

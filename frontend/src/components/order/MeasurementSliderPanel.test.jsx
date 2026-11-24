@@ -31,7 +31,7 @@ describe("MeasurementSliderPanel", () => {
       />
     );
     expect(screen.getByLabelText(/^chest$/i)).toHaveValue(42);
-    expect(screen.getAllByText("estimated — adjust to match you")).toHaveLength(1);
+    expect(screen.getAllByText("Estimated: adjust to match you")).toHaveLength(1);
   });
 
   test("a stored value takes precedence over the estimate and shows no label", () => {
@@ -57,12 +57,12 @@ describe("MeasurementSliderPanel", () => {
         onChange={onChange}
       />
     );
-    expect(screen.getAllByText("estimated — adjust to match you")).toHaveLength(2);
+    expect(screen.getAllByText("Estimated: adjust to match you")).toHaveLength(2);
 
     fireEvent.change(screen.getByLabelText(/^chest$/i), { target: { value: "44" } });
 
     expect(onChange).toHaveBeenCalledWith("chest", 44);
-    expect(screen.getAllByText("estimated — adjust to match you")).toHaveLength(1);
+    expect(screen.getAllByText("Estimated: adjust to match you")).toHaveLength(1);
   });
 
   test("estimated: null renders plain empty inputs with no estimated label and no crash", () => {
