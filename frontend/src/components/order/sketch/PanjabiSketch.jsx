@@ -37,10 +37,10 @@ const PRINT_PATTERNS = {
 
 const CAN_MASK = supportsCssMask();
 
-// eslint-disable-next-line no-unused-vars -- fitValue is accepted for interface
-// consistency with ShirtSketch/PantSketch (GarmentSketch forwards all props
-// unconditionally) but unused: see ASSET_BY_FIT_TYPE comment above.
-export default function PanjabiSketch({ fitValue = 0, fitType = "regular", colorHex = "#D6D6D2", printPattern = "solid" }) {
+// fitValue is deliberately not destructured here: GarmentSketch forwards it
+// (for interface consistency with ShirtSketch/PantSketch) but this component
+// has no axis for it to move along — see ASSET_BY_FIT_TYPE comment above.
+export default function PanjabiSketch({ fitType = "regular", colorHex = "#D6D6D2", printPattern = "solid" }) {
   const src = ASSET_BY_FIT_TYPE[fitType] ?? REGULAR_ASSET;
   const printOverlay = useMemo(() => PRINT_PATTERNS[printPattern] ?? null, [printPattern]);
 
