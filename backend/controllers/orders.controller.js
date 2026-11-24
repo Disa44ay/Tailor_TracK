@@ -2,7 +2,11 @@ import { pool } from "../db/pool.js";
 import { notify } from "../services/notifications.service.js";
 import { FIT_TYPES_BY_GARMENT, LAPEL_STYLES } from "../constants/fitTypes.js";
 
-const GARMENT_TYPES = ["shirt", "pant", "panjabi", "suit_2pc", "suit_3pc", "kurta", "blouse", "other"];
+// "suit" and "paijama" added 2026-11-24 for the live-customization flow
+// (plan.md §2), alongside the existing types the plain order form still uses.
+const GARMENT_TYPES = [
+  "shirt", "pant", "panjabi", "suit_2pc", "suit_3pc", "kurta", "blouse", "suit", "paijama", "other",
+];
 const PRIORITIES = ["normal", "fast", "urgent"];
 
 const ORDER_COLUMNS = `
