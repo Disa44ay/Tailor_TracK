@@ -2,7 +2,11 @@ import { pool } from "../db/pool.js";
 import { notify } from "../services/notifications.service.js";
 import { FIT_TYPES_BY_GARMENT, LAPEL_STYLES } from "../constants/fitTypes.js";
 
-const GARMENT_TYPES = ["shirt", "pant", "panjabi", "suit_2pc", "suit_3pc", "kurta", "blouse", "other"];
+// "suit" and "paijama" added 2026-11-24 for the live-customization flow
+// (plan.md §2), alongside the existing types the plain order form still uses.
+const GARMENT_TYPES = [
+  "shirt", "pant", "panjabi", "suit_2pc", "suit_3pc", "kurta", "blouse", "suit", "paijama", "other",
+];
 const PRIORITIES = ["normal", "fast", "urgent"];
 
 const ORDER_COLUMNS = `
@@ -267,33 +271,23 @@ export async function rejectOrder(req, res) {
   }
 }
 
-export async function quoteOrder(req, res) {
-  const { dueDate, quotedPrice, advanceRequired } = req.body;
-  if (dueDate === undefined || quotedPrice === undefined || advanceRequired === undefined) {
-    return res.status(400).json({ message: "dueDate, quotedPrice, and advanceRequired are required" });
-  }
-  if (isNaN(new Date(dueDate).getTime())) {
-    return res.status(400).json({ message: "dueDate is not a valid date" });
-  }
-  if (typeof quotedPrice !== "number" || typeof advanceRequired !== "number") {
-    return res.status(400).json({ message: "quotedPrice and advanceRequired must be numbers" });
-  }
-  if (advanceRequired > quotedPrice) {
-    return res.status(400).json({ message: "advanceRequired cannot exceed quotedPrice" });
-  }
-
+// Replaced quoteOrder 2026-11-24 (plan.md §5) — no more price/due-date/
+// advance quote step; the admin now just accepts a requested order
+// straight to confirmed, no body required. due_date/quoted_price/
+// advance_required stay in the schema (unused by this path) rather than
+// being dropped.
+export async function acceptOrder(req, res) {
   try {
     const order = await transitionOrder({
       orderId: req.params.id,
-      toStatus: "quoted",
+      toStatus: "confirmed",
       changedBy: "admin",
       fromStatuses: ["requested"],
-      extraColumns: { due_date: dueDate, quoted_price: quotedPrice, advance_required: advanceRequired },
     });
     await notify({
       sender: "system",
       recipientId: order.customer_id,
-      message: `Your order #${order.id} is quoted: ৳${quotedPrice} total, ৳${advanceRequired} due now, by ${dueDate}.`,
+      message: `Your order #${order.id} has been accepted and confirmed!`,
       orderId: order.id,
     });
     res.json(order);

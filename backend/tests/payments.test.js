@@ -19,7 +19,7 @@ async function createQuotedOrder(adminAuth, customerAuth) {
   return created.body;
 }
 
-test("POST /orders/:id/confirm on a quoted order calls initSslcommerzSession and returns its gateway URL", async (t) => {
+test("POST /orders/:id/confirm on a quoted order calls initSslcommerzSession and returns its gateway URL", { skip: "payments routes archived 2026-11-24, see app.js and plan.md section 5" }, async (t) => {
   t.mock.method(sslcommerzService, "initSslcommerzSession", async () => ({
     gatewayUrl: "https://sandbox.sslcommerz.com/pay/abc",
     tranId: "tt-fake-1",
@@ -36,7 +36,7 @@ test("POST /orders/:id/confirm on a quoted order calls initSslcommerzSession and
   assert.equal(res.body.gatewayUrl, "https://sandbox.sslcommerz.com/pay/abc");
 });
 
-test("confirm on a non-quoted order returns 409", async () => {
+test("confirm on a non-quoted order returns 409", { skip: "payments routes archived 2026-11-24, see app.js and plan.md section 5" }, async () => {
   const admin = await insertTestUser({ role: "admin" });
   const customer = await insertTestUser({ role: "customer" });
   const customerAuth = `Bearer ${signToken(customer)}`;
@@ -46,7 +46,7 @@ test("confirm on a non-quoted order returns 409", async () => {
   assert.equal(res.status, 409);
 });
 
-test("POST /payments/sslcommerz/callback with a validated success marks the advance paid and the order confirmed", async (t) => {
+test("POST /payments/sslcommerz/callback with a validated success marks the advance paid and the order confirmed", { skip: "payments routes archived 2026-11-24, see app.js and plan.md section 5" }, async (t) => {
   t.mock.method(sslcommerzService, "initSslcommerzSession", async () => ({
     gatewayUrl: "https://sandbox.sslcommerz.com/pay/abc",
     tranId: "tt-fake-2",
@@ -72,7 +72,7 @@ test("POST /payments/sslcommerz/callback with a validated success marks the adva
   assert.equal(paymentRow.rows[0].gateway_transaction_id, "tt-fake-2");
 });
 
-test("callback with validateSslcommerzTransaction returning invalid does NOT mark the order confirmed", async (t) => {
+test("callback with validateSslcommerzTransaction returning invalid does NOT mark the order confirmed", { skip: "payments routes archived 2026-11-24, see app.js and plan.md section 5" }, async (t) => {
   t.mock.method(sslcommerzService, "initSslcommerzSession", async () => ({
     gatewayUrl: "https://sandbox.sslcommerz.com/pay/abc",
     tranId: "tt-fake-3",
@@ -92,7 +92,7 @@ test("callback with validateSslcommerzTransaction returning invalid does NOT mar
   assert.equal(orderRow.rows[0].status, "quoted");
 });
 
-test("callback reporting failed/cancelled leaves the order in 'quoted'", async (t) => {
+test("callback reporting failed/cancelled leaves the order in 'quoted'", { skip: "payments routes archived 2026-11-24, see app.js and plan.md section 5" }, async (t) => {
   t.mock.method(sslcommerzService, "initSslcommerzSession", async () => ({
     gatewayUrl: "https://sandbox.sslcommerz.com/pay/abc",
     tranId: "tt-fake-4",
@@ -111,13 +111,13 @@ test("callback reporting failed/cancelled leaves the order in 'quoted'", async (
   assert.equal(orderRow.rows[0].status, "quoted");
 });
 
-test("GET /payments/sslcommerz/return redirects the browser to the order's page in the frontend app", async () => {
+test("GET /payments/sslcommerz/return redirects the browser to the order's page in the frontend app", { skip: "payments routes archived 2026-11-24, see app.js and plan.md section 5" }, async () => {
   const res = await request(app).get("/payments/sslcommerz/return").query({ orderId: "42" });
   assert.equal(res.status, 302);
   assert.equal(res.headers.location, `${process.env.FRONTEND_URL || "http://localhost:5173"}/orders/42`);
 });
 
-test("POST /admin/orders/:id/payments records a manual balance payment, admin-only, no gateway_transaction_id", async () => {
+test("POST /admin/orders/:id/payments records a manual balance payment, admin-only, no gateway_transaction_id", { skip: "payments routes archived 2026-11-24, see app.js and plan.md section 5" }, async () => {
   const admin = await insertTestUser({ role: "admin" });
   const customer = await insertTestUser({ role: "customer" });
   const adminAuth = `Bearer ${signToken(admin)}`;

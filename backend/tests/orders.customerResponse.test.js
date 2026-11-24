@@ -18,12 +18,17 @@ async function createNeedsChangesOrder(adminAuth, customerAuth) {
   return created.body;
 }
 
+// quoteOrder was removed 2026-11-24 (plan.md §5) — "quoted" is still a
+// valid status (declineOrder still operates on it), just no longer
+// reachable via any live endpoint, so tests that need a quoted fixture
+// set it directly.
 async function createQuotedOrder(adminAuth, customerAuth) {
   const created = await request(app).post("/orders").set("Authorization", customerAuth).send({ garmentType: "shirt" });
-  await request(app)
-    .patch(`/admin/orders/${created.body.id}/quote`)
-    .set("Authorization", adminAuth)
-    .send({ dueDate: "2026-12-01", quotedPrice: 3000, advanceRequired: 1000 });
+  await testPool.query(
+    `UPDATE orders SET status = 'quoted', due_date = '2026-12-01', quoted_price = 3000, advance_required = 1000
+     WHERE id = $1`,
+    [created.body.id]
+  );
   return created.body;
 }
 

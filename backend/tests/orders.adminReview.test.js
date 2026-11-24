@@ -37,16 +37,13 @@ test("PATCH /admin/orders/:id/reject moves requested -> needs_changes with the g
   assert.equal(res.body.status, "needs_changes");
 });
 
-test("rejecting a non-requested order (e.g. already quoted) returns 409", async () => {
+test("rejecting a non-requested order (e.g. already accepted) returns 409", async () => {
   const admin = await insertTestUser({ role: "admin" });
   const adminAuth = `Bearer ${signToken(admin)}`;
   const customer = await insertTestUser({ role: "customer" });
   const order = await createRequestedOrder(`Bearer ${signToken(customer)}`);
 
-  await request(app)
-    .patch(`/admin/orders/${order.id}/quote`)
-    .set("Authorization", adminAuth)
-    .send({ dueDate: "2026-12-01", quotedPrice: 3000, advanceRequired: 1000 });
+  await request(app).patch(`/admin/orders/${order.id}/accept`).set("Authorization", adminAuth);
 
   const res = await request(app)
     .patch(`/admin/orders/${order.id}/reject`)
@@ -55,46 +52,34 @@ test("rejecting a non-requested order (e.g. already quoted) returns 409", async 
   assert.equal(res.status, 409);
 });
 
-test("PATCH /admin/orders/:id/quote sets due_date/quoted_price/advance_required and moves requested -> quoted", async () => {
+test("PATCH /admin/orders/:id/accept moves requested -> confirmed directly, no body required", async () => {
   const admin = await insertTestUser({ role: "admin" });
   const customer = await insertTestUser({ role: "customer" });
   const order = await createRequestedOrder(`Bearer ${signToken(customer)}`);
 
   const res = await request(app)
-    .patch(`/admin/orders/${order.id}/quote`)
-    .set("Authorization", `Bearer ${signToken(admin)}`)
-    .send({ dueDate: "2026-12-01", quotedPrice: 3000, advanceRequired: 1000 });
+    .patch(`/admin/orders/${order.id}/accept`)
+    .set("Authorization", `Bearer ${signToken(admin)}`);
 
   assert.equal(res.status, 200);
-  assert.equal(res.body.status, "quoted");
-  assert.equal(res.body.quoted_price, 3000);
-  assert.equal(res.body.advance_required, 1000);
-  // pg's default DATE parser returns a JS Date at local midnight, which
-  // JSON-serializes shifted to a different calendar day in any timezone
-  // ahead of UTC (e.g. Asia/Dhaka, UTC+6) — must come back as the exact
-  // date string, not a shifted ISO timestamp.
-  assert.equal(res.body.due_date, "2026-12-01");
+  assert.equal(res.body.status, "confirmed");
 });
 
-test("quote on a non-requested order returns 409", async () => {
+test("accept on a non-requested order returns 409", async () => {
   const admin = await insertTestUser({ role: "admin" });
   const adminAuth = `Bearer ${signToken(admin)}`;
   const customer = await insertTestUser({ role: "customer" });
   const order = await createRequestedOrder(`Bearer ${signToken(customer)}`);
 
-  await request(app)
-    .patch(`/admin/orders/${order.id}/quote`)
-    .set("Authorization", adminAuth)
-    .send({ dueDate: "2026-12-01", quotedPrice: 3000, advanceRequired: 1000 });
+  await request(app).patch(`/admin/orders/${order.id}/accept`).set("Authorization", adminAuth);
 
   const res = await request(app)
-    .patch(`/admin/orders/${order.id}/quote`)
-    .set("Authorization", adminAuth)
-    .send({ dueDate: "2026-12-05", quotedPrice: 3500, advanceRequired: 1000 });
+    .patch(`/admin/orders/${order.id}/accept`)
+    .set("Authorization", adminAuth);
   assert.equal(res.status, 409);
 });
 
-test("both reject and quote notify the customer", async () => {
+test("both reject and accept notify the customer", async () => {
   const admin = await insertTestUser({ role: "admin" });
   const adminAuth = `Bearer ${signToken(admin)}`;
   const customer = await insertTestUser({ role: "customer" });
@@ -113,6 +98,21 @@ test("both reject and quote notify the customer", async () => {
   assert.match(rows[0].message, /fabric unavailable/);
 });
 
+test("accepting notifies the customer", async () => {
+  const admin = await insertTestUser({ role: "admin" });
+  const adminAuth = `Bearer ${signToken(admin)}`;
+  const customer = await insertTestUser({ role: "customer" });
+  const order = await createRequestedOrder(`Bearer ${signToken(customer)}`);
+
+  await request(app).patch(`/admin/orders/${order.id}/accept`).set("Authorization", adminAuth);
+
+  const { rows } = await testPool.query(
+    "SELECT * FROM notifications WHERE recipient_id = $1 AND order_id = $2",
+    [customer.id, order.id]
+  );
+  assert.equal(rows.length, 1);
+});
+
 test("GET /admin/orders filters by ?status=requested, admin-only", async () => {
   const admin = await insertTestUser({ role: "admin" });
   const adminAuth = `Bearer ${signToken(admin)}`;
@@ -121,10 +121,7 @@ test("GET /admin/orders filters by ?status=requested, admin-only", async () => {
   const order1 = await createRequestedOrder(customerAuth);
   await createRequestedOrder(customerAuth);
 
-  await request(app)
-    .patch(`/admin/orders/${order1.id}/quote`)
-    .set("Authorization", adminAuth)
-    .send({ dueDate: "2026-12-01", quotedPrice: 3000, advanceRequired: 1000 });
+  await request(app).patch(`/admin/orders/${order1.id}/accept`).set("Authorization", adminAuth);
 
   const forbidden = await request(app).get("/admin/orders").set("Authorization", customerAuth);
   assert.equal(forbidden.status, 403);

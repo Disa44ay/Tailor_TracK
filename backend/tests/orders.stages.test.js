@@ -4,31 +4,17 @@ import request from "supertest";
 import { resetTables, insertTestUser, testPool } from "./helpers/db.js";
 import { signToken } from "../controllers/auth.controller.js";
 import { app } from "../app.js";
-import { sslcommerzService } from "../services/sslcommerz.service.js";
 
 beforeEach(async () => {
   await resetTables();
 });
 
+// quoteOrder/confirmOrder (the quote -> pay-advance -> confirmed pipeline)
+// were replaced 2026-11-24 by a direct accept step (plan.md §5) — a
+// confirmed order now only needs requested -> accept.
 async function createConfirmedOrder(t, adminAuth, customerAuth) {
-  t.mock.method(sslcommerzService, "initSslcommerzSession", async () => ({
-    gatewayUrl: "https://sandbox.sslcommerz.com/pay/abc",
-    tranId: "tt-stage-test",
-  }));
-  t.mock.method(sslcommerzService, "validateSslcommerzTransaction", async () => ({
-    valid: true,
-    amount: 1500,
-  }));
-
   const created = await request(app).post("/orders").set("Authorization", customerAuth).send({ garmentType: "shirt" });
-  await request(app)
-    .patch(`/admin/orders/${created.body.id}/quote`)
-    .set("Authorization", adminAuth)
-    .send({ dueDate: "2026-12-01", quotedPrice: 3000, advanceRequired: 1500 });
-  await request(app).post(`/orders/${created.body.id}/confirm`).set("Authorization", customerAuth);
-  await request(app)
-    .post("/payments/sslcommerz/callback")
-    .send({ tran_id: "tt-stage-test", val_id: "val-1", status: "VALID" });
+  await request(app).patch(`/admin/orders/${created.body.id}/accept`).set("Authorization", adminAuth);
   return created.body.id;
 }
 
