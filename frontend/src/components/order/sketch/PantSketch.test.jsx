@@ -2,6 +2,8 @@ import { describe, test, expect } from "vitest";
 import { render } from "@testing-library/react";
 import PantSketch from "./PantSketch.jsx";
 import pantSlim from "./assets/pant-slim.webp";
+import pantRelaxed from "./assets/pant-relaxed.webp";
+import pantBaggy from "./assets/pant-baggy.webp";
 
 describe("PantSketch", () => {
   test("renders a layer for each visible fit state, tinted with the given colour", () => {
@@ -13,8 +15,10 @@ describe("PantSketch", () => {
   });
 
   test("hides a fit layer entirely once its opacity reaches zero", () => {
-    const { container } = render(<PantSketch fitValue={0} fitType="slim" />);
-    expect(container.querySelector('[data-testid="pant-fit-layer-2"]')).not.toBeInTheDocument();
+    // "regular" is the one fitType that actually crossfades (slim <-> relaxed),
+    // so it's the one with more than one state to hide.
+    const { container } = render(<PantSketch fitValue={0} fitType="regular" />);
+    expect(container.querySelector('[data-testid="pant-fit-layer-1"]')).not.toBeInTheDocument();
   });
 
   test("does not render a print overlay for a solid fabric", () => {
@@ -52,11 +56,30 @@ describe("PantSketch", () => {
     expect(layer.querySelector('[data-testid="pant-tint-layer"]')).toBeInTheDocument();
   });
 
-  test("switching fitType between options that map to different fit-state pairs changes which asset appears", () => {
-    // "slim" and "baggy" sit at opposite ends of the SAME width-scale pair in this
-    // implementation (see PantSketch.jsx's FIT_STATES_BY_TYPE comment), so they are not
-    // a valid example of "different pairs". "bootcut" and "straightcut" are, since each
-    // is mapped to its own (currently placeholder) pair — use those instead.
+  test("slim, relaxed and baggy are distinct silhouettes, not points on one shared curve", () => {
+    // Regression test: these three used to share a single width-scale array, which meant
+    // switching fitType between them at a fixed fitValue rendered the identical image —
+    // only the aria-label text differed. Each must now resolve to its own asset.
+    const assetFor = (fitType) => {
+      const { container, unmount } = render(<PantSketch fitValue={0} fitType={fitType} />);
+      const src = container.querySelector('[data-testid="pant-fit-layer-0"] img').src;
+      unmount();
+      return src;
+    };
+
+    const slim = assetFor("slim");
+    const relaxed = assetFor("relaxed");
+    const baggy = assetFor("baggy");
+
+    expect(slim).toContain(pantSlim);
+    expect(relaxed).toContain(pantRelaxed);
+    expect(baggy).toContain(pantBaggy);
+    expect(new Set([slim, relaxed, baggy]).size).toBe(3);
+  });
+
+  test("switching fitType between bootcut and straightcut changes which placeholder asset appears", () => {
+    // bootcut and straightcut don't have dedicated art yet (see PantSketch.jsx's
+    // FIT_STATES_BY_TYPE comment) but still map to different placeholder states.
     const bootcut = render(<PantSketch fitValue={0} fitType="bootcut" />);
     const bootcutLayer = bootcut.container.querySelector('[data-testid="pant-fit-layer-0"]');
     expect(bootcutLayer.querySelector("img").src).toContain(pantSlim);

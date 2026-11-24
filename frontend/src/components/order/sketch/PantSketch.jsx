@@ -8,40 +8,36 @@ import { crossfadeOpacities, supportsCssMask } from "./ShirtSketch.jsx";
 // ShirtSketch's art direction (see
 // docs/superpowers/references/2026-11-21-sketch-fabric-drape-reference.png).
 //
-// Only one width-scale "pair" of art was generated (slim/relaxed/baggy as
-// three points on a single leg-width continuum), because fit options differ
-// in two unrelated ways: pure leg width (slim <-> baggy, which a crossfade
-// genuinely captures) and leg *shape* (bootcut's hem-only flare, straightcut's
-// uniform non-tapered leg) which a width crossfade can't represent at all.
-// bootcut/straightcut each need their own dedicated art pair; that art wasn't
-// generated this pass (image-generation quota ran out — see task-5-report.md),
-// so they currently borrow the nearest existing pair as a placeholder. Adding
-// their real art later only means adding entries here, nothing else changes.
-const WIDTH_SCALE_STATES = [
-  { at: 0, src: pantSlim },
-  { at: 0.5, src: pantRelaxed },
-  { at: 1, src: pantBaggy },
-];
-
-// Placeholder: fitted thigh/knee like "slim", widening toward "relaxed" — the
-// hem-only flare isn't illustrated yet.
-const BOOTCUT_PLACEHOLDER_STATES = [
+// slim/bootcut/baggy/straightcut are each a *distinct silhouette*, not points
+// on one width curve — picking one of them is picking a fixed drawing, so
+// each gets its own single-state (non-crossfading) entry. Only "regular" sits
+// genuinely between two drawn silhouettes (slim and relaxed), so it's the one
+// fitType that actually crossfades on fitValue. bootcut/straightcut don't have
+// their own dedicated art yet (image-generation quota ran out this pass — see
+// task-5-report.md), so they borrow the nearest existing single state as a
+// placeholder. Adding their real art later only means adding/replacing
+// entries here, nothing else changes.
+const SLIM_STATES = [{ at: 0, src: pantSlim }];
+const RELAXED_STATES = [{ at: 0, src: pantRelaxed }];
+const BAGGY_STATES = [{ at: 0, src: pantBaggy }];
+const REGULAR_STATES = [
   { at: 0, src: pantSlim },
   { at: 1, src: pantRelaxed },
 ];
 
-// Placeholder: closer to "relaxed" and "baggy" (both looser through the leg)
-// than to "slim" — the uniform, non-tapered silhouette isn't illustrated yet.
-const STRAIGHTCUT_PLACEHOLDER_STATES = [
-  { at: 0, src: pantRelaxed },
-  { at: 1, src: pantBaggy },
-];
+// Placeholder: fitted thigh/knee, closer to "slim" than to anything wider —
+// the hem-only flare isn't illustrated yet.
+const BOOTCUT_PLACEHOLDER_STATES = SLIM_STATES;
+
+// Placeholder: a uniform, non-tapered leg reads closer to "relaxed" than to
+// "slim" or "baggy" — the uniform non-taper itself isn't illustrated yet.
+const STRAIGHTCUT_PLACEHOLDER_STATES = RELAXED_STATES;
 
 const FIT_STATES_BY_TYPE = {
-  slim: WIDTH_SCALE_STATES,
-  regular: WIDTH_SCALE_STATES,
-  relaxed: WIDTH_SCALE_STATES,
-  baggy: WIDTH_SCALE_STATES,
+  slim: SLIM_STATES,
+  regular: REGULAR_STATES,
+  relaxed: RELAXED_STATES,
+  baggy: BAGGY_STATES,
   bootcut: BOOTCUT_PLACEHOLDER_STATES,
   straightcut: STRAIGHTCUT_PLACEHOLDER_STATES,
 };
@@ -54,7 +50,7 @@ const PRINT_PATTERNS = {
 const CAN_MASK = supportsCssMask();
 
 export default function PantSketch({ fitValue = 0, fitType = "regular", colorHex = "#D6D6D2", printPattern = "solid" }) {
-  const fitStates = FIT_STATES_BY_TYPE[fitType] ?? WIDTH_SCALE_STATES;
+  const fitStates = FIT_STATES_BY_TYPE[fitType] ?? REGULAR_STATES;
   const opacities = crossfadeOpacities(fitValue, fitStates);
   const printOverlay = useMemo(() => PRINT_PATTERNS[printPattern] ?? null, [printPattern]);
 
