@@ -11,12 +11,17 @@ function HomePage() {
   const [authOpen, setAuthOpen] = useState(false);
 
   return (
-    <div className="bg-paper">
+    <>
+      <a className="skip-link" href="#top">
+        Skip to content
+      </a>
       <HomeNav onLogin={() => setAuthOpen(true)} />
-      <Hero onLetsGo={() => setAuthOpen(true)} />
-      <HowItWorks />
+      <main id="top">
+        <Hero onLetsGo={() => setAuthOpen(true)} />
+        <HowItWorks />
+      </main>
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
-    </div>
+    </>
   );
 }
 

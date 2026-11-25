@@ -22,6 +22,6 @@ describe("Home", () => {
   test("renders the public homepage", () => {
     renderHome();
     expect(screen.getAllByText(/log in/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/you imagine it\. we tailor it/i)).toBeInTheDocument();
+    expect(screen.getByText(/custom tailoring for men who want it right/i)).toBeInTheDocument();
   });
 });

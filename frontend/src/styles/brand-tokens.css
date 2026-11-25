@@ -1,0 +1,19 @@
+/*
+ * অবয়ব (Oboyob) brand tokens for design-taste-frontend's system.css.
+ * Palette dealt via start.mjs brand (--bg "#F6F1E8" --ink "#241D18"
+ * --accent "#A1472F" --radius soft), kept as printed except the fonts,
+ * which Bengali branding fixes directly (not dealt):
+ * headlines Tiro Bangla, body/UI Hind Siliguri.
+ */
+:root {
+  --p-bg: #f6f1e8; --p-surface: #eae5dc; --p-ink: #241d18; --p-muted: #665f59;
+  --p-accent: #a1472f; --p-accent-ink: #f6f1e8; --p-action: #a1472f; --p-action-ink: #f6f1e8;
+  --p-inv-bg: #241d18; --p-inv-surface: #302924; --p-inv-ink: #f6f1e8; --p-inv-muted: #9f9991;
+  --p-inv-accent: #f6f1e8; --p-inv-accent-ink: #241d18; --p-inv-action: #f6f1e8; --p-inv-action-ink: #241d18;
+  --font-display: "Tiro Bangla", serif;
+  --font-text: "Hind Siliguri", system-ui, sans-serif;
+  --display-weight: 400;
+  --display-tracking: 0em;
+  --display-tracking-xl: 0em;
+  --ly-scale: 1;
+}

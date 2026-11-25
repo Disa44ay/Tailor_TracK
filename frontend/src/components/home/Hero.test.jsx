@@ -11,14 +11,14 @@ function renderHero(props = {}) {
 describe("Hero", () => {
   test("renders the headline and subcopy", () => {
     renderHero();
-    expect(screen.getByText(/you imagine it\. we tailor it/i)).toBeInTheDocument();
-    expect(screen.getByText(/measurements, orders, and fittings/i)).toBeInTheDocument();
+    expect(screen.getByText(/custom tailoring for men who want it right/i)).toBeInTheDocument();
+    expect(screen.getByText(/custom clothing studio/i)).toBeInTheDocument();
   });
 
   test("primary CTA calls onLetsGo instead of navigating", () => {
     const onLetsGo = vi.fn();
     renderHero({ onLetsGo });
-    const button = screen.getByRole("button", { name: /let's go/i });
+    const button = screen.getByRole("button", { name: /book a consultation/i });
     fireEvent.click(button);
     expect(onLetsGo).toHaveBeenCalled();
   });

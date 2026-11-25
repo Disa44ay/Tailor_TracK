@@ -1,19 +1,42 @@
 @import "tailwindcss";
 
+/*
+ * অবয়ব (Oboyob) design tokens.
+ * Palette and radius dealt via design-taste-frontend's start.mjs brand
+ * (--bg "#F6F1E8" --ink "#241D18" --accent "#A1472F" --radius soft),
+ * kept as printed. Structural deal for this "service" page kind:
+ * nav-centre, footer-visit, close-photo, surface-pairs, arrow buttons.
+ * Type is NOT dealt — Bengali branding fixes the three faces below.
+ */
 @theme {
-  --color-ink: #2B2A28;
-  --color-paper: #FAF6ED;
-  --color-accent: #203A8C;
+  --color-ink: #241D18;
+  --color-paper: #F6F1E8;
+  --color-surface: #EAE5DC;
+  --color-muted: #665F59;
+  --color-accent: #A1472F;
+  --color-accent-ink: #F6F1E8;
+
+  /* Carried over from the previous theme for any status UI still in use;
+     revisit once the admin/enquiries surfaces are rebuilt for this brand. */
   --color-urgent: #C1502E;
   --color-success: #3F6B3E;
   --color-highlighter: #F6D743;
 
-  --font-hand: 'Shantell Sans', cursive;
-  --font-title: 'Architects Daughter', cursive;
-  --font-home-body: 'Assistant', system-ui, sans-serif;
+  /* Logo: custom-drawn Bengali lettering inspired by Tiro Bangla (not a
+     webfont — see docs/design/logo.md once drawn).
+     Headlines: Tiro Bangla. Body/interface: Hind Siliguri.
+     Experimental/oversized display: Anek Bangla. */
+  --font-display: 'Tiro Bangla', serif;
+  --font-body: 'Hind Siliguri', system-ui, sans-serif;
+  --font-display-xl: 'Anek Bangla', system-ui, sans-serif;
 }
 
 html {
   color-scheme: light;
-  background-color: #f8fafc;
+  background-color: var(--color-paper);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
 }
