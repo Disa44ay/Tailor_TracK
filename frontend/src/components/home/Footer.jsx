@@ -5,18 +5,26 @@ const COPY = {
   bn: {
     heading: "পরামর্শের জন্য বুক করুন",
     lede: "একটি কাস্টম ক্লোথিং স্টুডিও।",
+    explore: "ঘুরে দেখুন",
+    onFit: "ফিট নিয়ে",
+    approaches: "আমাদের পদ্ধতি",
+    howItWorks: "কীভাবে কাজ করে",
     contact: "যোগাযোগ",
     writeToUs: "আমাদের লিখুন",
+    creditsSummary: "আলোকচিত্র: Ruthson Zimmerman ও Yasamine June, Unsplash থেকে",
   },
   en: {
     heading: "Book a consultation",
     lede: "A custom clothing studio.",
+    explore: "Explore",
+    onFit: "On fit",
+    approaches: "Approaches",
+    howItWorks: "How it works",
     contact: "Contact",
     writeToUs: "Write to us",
     creditsSummary: "Photographs: Ruthson Zimmerman and Yasamine June, via Unsplash",
   },
 };
-COPY.bn.creditsSummary = "আলোকচিত্র: Ruthson Zimmerman ও Yasamine June, Unsplash থেকে";
 
 export default function Footer({ onBookConsultation }) {
   const { lang } = useLanguage();
@@ -46,7 +54,21 @@ export default function Footer({ onBookConsultation }) {
               </a>
               <p className="footer__lede">{t.lede}</p>
             </div>
-            <div className="span-6 start-7 footer__col">
+            <div className="span-3 start-7 footer__col">
+              <h4>{t.explore}</h4>
+              <ul>
+                <li>
+                  <a href="#fit">{t.onFit}</a>
+                </li>
+                <li>
+                  <a href="#approaches">{t.approaches}</a>
+                </li>
+                <li>
+                  <a href="#how-it-works">{t.howItWorks}</a>
+                </li>
+              </ul>
+            </div>
+            <div className="span-3 start-10 footer__col">
               <h4>{t.contact}</h4>
               <ul>
                 <li>
