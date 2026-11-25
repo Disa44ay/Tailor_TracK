@@ -3,6 +3,7 @@ import HomeNav from "../components/home/HomeNav.jsx";
 import Hero from "../components/home/Hero.jsx";
 import FitStatement from "../components/home/FitStatement.jsx";
 import Approaches from "../components/home/Approaches.jsx";
+import Garments from "../components/home/Garments.jsx";
 import HowItWorks from "../components/home/HowItWorks.jsx";
 import Footer from "../components/home/Footer.jsx";
 import AuthModal from "../components/home/AuthModal.jsx";
@@ -22,6 +23,7 @@ function HomePage() {
         <Hero onLetsGo={() => setAuthOpen(true)} />
         {/* a lang-based key forces a clean remount so the moment/diagram widgets re-mount on fresh DOM */}
         <FitStatement key={`fit-${lang}`} />
+        <Garments />
         <Approaches />
         <HowItWorks key={`how-${lang}`} />
       </main>

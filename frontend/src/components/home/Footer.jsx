@@ -31,7 +31,7 @@ export default function Footer({ onBookConsultation }) {
   const t = COPY[lang];
 
   return (
-    <footer className="footer closing" aria-labelledby="close-h">
+    <footer className="footer closing footer--dark ground-inverse" aria-labelledby="close-h">
       <div className="wrap">
         <div className="closing__cta close--type">
           <div className="section-head">

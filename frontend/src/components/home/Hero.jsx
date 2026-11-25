@@ -26,7 +26,7 @@ export default function Hero({ onLetsGo }) {
       <div className="wrap">
         <div className="hero-text grid hero-split">
           <div className="hero-copy span-7">
-            <h1 id="hero-h">{t.headline}</h1>
+            <h1 id="hero-h" className="hero-title">{t.headline}</h1>
             <p className="t-lead">{t.lead}</p>
             <div className="btn-row">
               <button type="button" className="btn btn--primary" onClick={onLetsGo}>

@@ -40,3 +40,13 @@ body {
   font-family: var(--font-body);
   color: var(--color-ink);
 }
+
+.frame__img {
+  filter: grayscale(1) contrast(1.05);
+}
+
+.hero-title {
+  font-size: clamp(56px, 8.5vw, 132px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
