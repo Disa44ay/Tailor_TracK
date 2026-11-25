@@ -13,9 +13,7 @@ process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
 export const testPool = new Pool({ connectionString: process.env.TEST_DATABASE_URL });
 
 export async function resetTables() {
-  await testPool.query(
-    "TRUNCATE notifications, payments, order_status_history, orders, fabrics, measurements, users RESTART IDENTITY CASCADE"
-  );
+  await testPool.query("TRUNCATE users RESTART IDENTITY CASCADE");
 }
 
 let userCounter = 0;

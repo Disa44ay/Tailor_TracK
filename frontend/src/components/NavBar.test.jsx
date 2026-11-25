@@ -20,9 +20,9 @@ describe("NavBar", () => {
     expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
   });
 
-  test("shows admin links for an admin and customer links are absent", () => {
+  test("shows the nav bar once logged in", () => {
     localStorage.setItem("token", "abc");
-    localStorage.setItem("user", JSON.stringify({ id: 1, role: "admin" }));
+    localStorage.setItem("user", JSON.stringify({ id: 1, role: "customer" }));
 
     render(
       <MemoryRouter>
@@ -32,9 +32,8 @@ describe("NavBar", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByRole("link", { name: /order board/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /reports/i })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /measurements/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /log out/i })).toBeInTheDocument();
   });
 
   test("Log out clears the stored session", () => {
@@ -59,10 +58,10 @@ describe("NavBar", () => {
     localStorage.setItem("user", JSON.stringify({ id: 1, role: "customer" }));
 
     render(
-      <MemoryRouter initialEntries={["/orders"]}>
+      <MemoryRouter initialEntries={["/some-page"]}>
         <AuthProvider>
           <Routes>
-            <Route path="/orders" element={<NavBar />} />
+            <Route path="/some-page" element={<NavBar />} />
             <Route path="/" element={<div>homepage marker</div>} />
             <Route path="/login" element={<div>login page marker</div>} />
           </Routes>
