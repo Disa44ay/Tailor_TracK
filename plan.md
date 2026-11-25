@@ -19,14 +19,21 @@ tailoring houses actually take orders — with distinct Bengali branding.
 - **Tagline direction**: "OBOYOB — CUSTOM CLOTHING STUDIO" (English
   subhead under the Bengali wordmark, English wording open to revision).
 - **Logo**: a Bengali *wordmark*, not an icon next to a name. Three
-  treatments to prototype and pick from (or combine):
-  1. **Editorial** — elegant Bengali lettering, generous spacing.
-  2. **Experimental** — custom letterforms, altered proportions,
-     unexpected alignment.
-  3. **Minimal** — simple black wordmark, one distinctive modified
-     character.
-  - Any AI-generated concept is a *starting direction only* — the
-    lettering needs manual refinement before any commercial use.
+  treatments were prototyped as real text in the actual webfonts (not an
+  AI-generated image — Bengali script is too easy for an image model to
+  garble) and reviewed side by side:
+  1. Editorial — elegant Bengali lettering, generous spacing.
+  2. **Experimental — CHOSEN.** The word split into three segments at
+     different weights and baselines in Anek Bangla (অ heavy/large, বয়
+     light and dropped, ব heavy/raised), on the ink-dark ground, brick-red
+     accent on the lighter middle segment, with the "CUSTOM CLOTHING
+     STUDIO" line centered beneath in Hind Siliguri, tracked uppercase.
+  3. Minimal — simple black wordmark, one distinctive modified character.
+  - This fixes the *idea* (segmented weight/baseline treatment); the exact
+    pixel values (font sizes, offsets, tracking) get refined again once
+    it's built as a real, reusable mark (an SVG or a small component) for
+    the nav, footer and favicon — not copy-pasted from the exploration
+    mockup's inline styles.
 - **Typography**:
   | Role | Typeface |
   |---|---|
