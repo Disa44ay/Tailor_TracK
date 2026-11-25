@@ -13,8 +13,10 @@ const COPY = {
     lede: "A custom clothing studio.",
     contact: "Contact",
     writeToUs: "Write to us",
+    creditsSummary: "Photographs: Ruthson Zimmerman and Yasamine June, via Unsplash",
   },
 };
+COPY.bn.creditsSummary = "আলোকচিত্র: Ruthson Zimmerman ও Yasamine June, Unsplash থেকে";
 
 export default function Footer({ onBookConsultation }) {
   const { lang } = useLanguage();
@@ -55,6 +57,13 @@ export default function Footer({ onBookConsultation }) {
           </div>
           <div className="footer__legal">
             <span>&copy; 2026 অবয়ব</span>
+            <details className="credits">
+              <summary>{t.creditsSummary}</summary>
+              <p>
+                Suit-cuff photograph by Ruthson Zimmerman; fabric-swatch photograph by Yasamine June.
+                Both free to use under the Unsplash License.
+              </p>
+            </details>
           </div>
         </div>
       </div>

@@ -9,6 +9,7 @@ const COPY = {
     bespokeTitle: "বেসপোক",
     bespokeBody:
       "শুধুমাত্র আপনার নিজের মাপ থেকে কাটা একটি প্যাটার্ন, ফিটিং ধরে ধরে তৈরি। এমন একটি পোশাকের জন্য যেখানে কোথাও কোনো আপস নেই।",
+    alt: "একজন দরজির টেবিলে পাখার মতো ছড়ানো উলের কাপড়ের নমুনা",
   },
   en: {
     heading: "Two ways to start",
@@ -18,6 +19,7 @@ const COPY = {
     bespokeTitle: "Bespoke",
     bespokeBody:
       "A pattern cut from nothing but your own measurements, built fitting by fitting. For a piece with no compromise in it anywhere.",
+    alt: "Wool suit-fabric swatches fanned out on a tailor's table",
   },
 };
 
@@ -27,19 +29,24 @@ export default function Approaches() {
 
   return (
     <section className="section" id="approaches" aria-labelledby="approaches-h">
-      <div className="wrap">
-        <div className="section-head">
-          <h2 id="approaches-h">{t.heading}</h2>
+      <div className="wrap grid grid--middle">
+        <div className="span-7">
+          <div className="section-head">
+            <h2 id="approaches-h">{t.heading}</h2>
+          </div>
+          <div className="stack-6">
+            <div>
+              <h3>{t.measureTitle}</h3>
+              <p>{t.measureBody}</p>
+            </div>
+            <div>
+              <h3>{t.bespokeTitle}</h3>
+              <p>{t.bespokeBody}</p>
+            </div>
+          </div>
         </div>
-        <div className="grid">
-          <article className="card span-7">
-            <h3>{t.measureTitle}</h3>
-            <p>{t.measureBody}</p>
-          </article>
-          <article className="card span-5 start-8">
-            <h3>{t.bespokeTitle}</h3>
-            <p>{t.bespokeBody}</p>
-          </article>
+        <div className="frame frame--photo frame--portrait span-5 start-8">
+          <img className="frame__img" src="/assets/photos/approaches-fabric-swatches.jpg" alt={t.alt} loading="lazy" />
         </div>
       </div>
     </section>
