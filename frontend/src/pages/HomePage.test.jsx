@@ -34,7 +34,7 @@ describe("HomePage", () => {
     renderHomePage();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /book a consultation/i }));
+    fireEvent.click(screen.getAllByRole("button", { name: /book a consultation/i })[0]);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /log in/i })).toBeInTheDocument();

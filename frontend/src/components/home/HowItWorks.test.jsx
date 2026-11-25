@@ -8,11 +8,19 @@ describe("HowItWorks", () => {
     expect(container.querySelector("#how-it-works")).toBeInTheDocument();
   });
 
-  test("lists the four real steps", () => {
+  test("the diagram spec names the four real steps, in order", () => {
+    const { container } = render(<HowItWorks />);
+    const spec = JSON.parse(container.querySelector('[data-diagram] script').textContent);
+    expect(spec.steps.map((s) => s.label)).toEqual([
+      "Enquiry sent",
+      "Fitting booked",
+      "Fit decided",
+      "Piece collected",
+    ]);
+  });
+
+  test("has a closing call to action matching the hero's wording", () => {
     render(<HowItWorks />);
-    expect(screen.getByText(/measurements/i)).toBeInTheDocument();
-    expect(screen.getByText(/place.*order|order.*place/i)).toBeInTheDocument();
-    expect(screen.getByText(/pay|advance/i)).toBeInTheDocument();
-    expect(screen.getByText(/track|pickup|status/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /book a consultation/i })).toBeInTheDocument();
   });
 });

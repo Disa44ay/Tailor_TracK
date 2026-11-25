@@ -59,7 +59,7 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
         required
         value={form.name}
         onChange={update("name")}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       />
 
       <label htmlFor={`${idPrefix}email`} className="mt-4 block text-sm font-medium text-slate-700">
@@ -71,7 +71,7 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
         required
         value={form.email}
         onChange={update("email")}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       />
 
       <label htmlFor={`${idPrefix}password`} className="mt-4 block text-sm font-medium text-slate-700">
@@ -83,7 +83,7 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
         required
         value={form.password}
         onChange={update("password")}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       />
 
       <div className="mt-4 flex gap-2">
@@ -96,7 +96,7 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
             required
             value={form.countryCode}
             onChange={update("countryCode")}
-            className="mt-1 rounded-md border border-slate-300 px-2 py-2 text-sm focus:border-slate-500 focus:outline-none"
+            className="mt-1 rounded-md border border-slate-300 px-2 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             {COUNTRY_CODES.map((c) => (
               <option key={c.code} value={c.code}>
@@ -118,7 +118,7 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
             title="11-digit local number"
             value={form.phoneNumber}
             onChange={update("phoneNumber")}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           />
         </div>
       </div>

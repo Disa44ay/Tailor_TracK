@@ -10,6 +10,9 @@ export default function HomeNav({ onLogin }) {
   return (
     <header className={`nav nav--centre${open ? " is-open" : ""}`}>
       <div className="wrap nav__bar">
+        <a className="skip-link" href="#top">
+          Skip to content
+        </a>
         <Link to="/" className="nav__logo">
           <Logo className="text-[22px]" />
         </Link>

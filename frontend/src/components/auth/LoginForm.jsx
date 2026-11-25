@@ -40,7 +40,7 @@ function LoginForm({ idPrefix = "", showSwitchLink = true, onSwitchToSignup, onS
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       />
 
       <label htmlFor={`${idPrefix}password`} className="mt-4 block text-sm font-medium text-slate-700">
@@ -52,7 +52,7 @@ function LoginForm({ idPrefix = "", showSwitchLink = true, onSwitchToSignup, onS
         required
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       />
 
       <button
