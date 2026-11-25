@@ -1,11 +1,9 @@
 import { useState, useRef } from "react";
 
-const STRIP = [
-  { src: "/assets/photos/hero-suit-cuff.jpg", alt: "A man buttoning a navy suit jacket", no: "01", title: "Tailored in navy", note: "A single-breasted jacket cut to your shoulders and sleeves." },
-  { src: "/assets/photos/approaches-fabric-swatches.jpg", alt: "Wool suit-fabric swatches on a tailor's table", no: "02", title: "Fabric, chosen in person", note: "Swatches laid out so you can judge the cloth against your skin." },
-  { src: "/assets/photos/process-measure.jpg", alt: "A hand holding a measuring tape", no: "03", title: "Measured twice", note: "A tape measure first, then a fitting that checks the fit as you move." },
-  { src: "/assets/photos/process-stitch.jpg", alt: "A sewing machine at work", no: "04", title: "Stitched on the machine", note: "Seams sewn to the pattern we agreed on at the fitting." },
-  { src: "/assets/photos/process-finish.jpg", alt: "Hands finishing a seam", no: "05", title: "Finished for you", note: "Hand-finished edges, pressed and ready to wear." },
+const SLIDES = [
+  { src: "/assets/photos/slider1.jpg", alt: "A navy suit lapel pinned with basting thread before the fitting", pos: "50% 50%", no: "01", title: "Pinned before the fitting", note: "The jacket is basted in place so the line can be judged on you." },
+  { src: "/assets/photos/slider2.jpg", alt: "A tape measure taken across a man's chest", pos: "50% 92%", no: "02", title: "Measured across the chest", note: "A tape first, then the fabric is chosen against your build." },
+  { src: "/assets/photos/slider3.jpg", alt: "Tailor's chalk marking a navy pinstripe shoulder", pos: "50% 50%", no: "03", title: "Marked on the cloth", note: "Every line is chalked on the shoulder, then sewn to that mark." },
 ];
 
 export default function Hero({ onLetsGo }) {
@@ -16,18 +14,27 @@ export default function Hero({ onLetsGo }) {
     const el = stripRef.current;
     if (!el || !el.firstElementChild) return;
     const step = el.firstElementChild.offsetWidth + 16;
-    setActive(Math.min(STRIP.length - 1, Math.round(el.scrollLeft / step)));
+    setActive(Math.min(SLIDES.length - 1, Math.round(el.scrollLeft / step)));
   }
 
-  const current = STRIP[active];
+  function goTo(i) {
+    const el = stripRef.current;
+    if (!el || !el.children[i]) return;
+    el.scrollTo({ left: el.children[i].offsetLeft - el.children[0].offsetLeft, behavior: "smooth" });
+  }
+
+  const current = SLIDES[active];
 
   return (
     <section className="hero hero--tara" data-enter aria-labelledby="hero-h">
-      <div className="hero-bg">
-        <img src={STRIP[0].src} alt={STRIP[0].alt} fetchPriority="high" />
+      <div className="hero-bg" aria-hidden="true">
+        <img src="/assets/photos/hero_sec_BG2.jpg" alt="" />
       </div>
       <div className="wrap hero-tara">
-        <h1 id="hero-h" className="hero-title">Custom tailoring, made to your measure</h1>
+        <h1 id="hero-h" className="hero-title">
+          <span>Custom tailoring,</span>{" "}
+          <span className="hero-title__line2">made to your measure</span>
+        </h1>
         <div className="hero-tara__panel">
           <p className="hero-tara__caption">
             <span className="hero-tara__no">{current.no}</span>
@@ -38,23 +45,30 @@ export default function Hero({ onLetsGo }) {
             <button type="button" className="btn btn--primary" onClick={onLetsGo}>
               Book a consultation
             </button>
-            <a className="btn btn--secondary" href="#how-it-works">See how it works</a>
           </div>
         </div>
-        <ul className="hero-strip" ref={stripRef} onScroll={onScroll} tabIndex={0} aria-label="Recent work">
-          {STRIP.map((item) => (
-            <li key={item.src} className="hero-strip__item">
+        <ul className="hero-slider" ref={stripRef} onScroll={onScroll} aria-label="Recent work">
+          {SLIDES.map((item) => (
+            <li key={item.src} className="hero-slider__item">
               <figure>
-                <img src={item.src} alt={item.alt} loading="lazy" />
+                <img src={item.src} alt={item.alt} style={{ objectPosition: item.pos }} loading="lazy" />
               </figure>
             </li>
           ))}
         </ul>
-        <div className="hero-progress" aria-hidden="true">
-          {STRIP.map((item, i) => (
-            <span key={item.src} className={i === active ? "is-active" : ""} />
+        <ul className="hero-progress" aria-label="Choose a photo">
+          {SLIDES.map((item, i) => (
+            <li key={item.src}>
+              <button
+                type="button"
+                className={i === active ? "is-active" : ""}
+                aria-label={`Show ${i + 1} of ${SLIDES.length}`}
+                aria-current={i === active ? "true" : undefined}
+                onClick={() => goTo(i)}
+              />
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

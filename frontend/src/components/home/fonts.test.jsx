@@ -10,6 +10,6 @@ describe("display font", () => {
   });
 
   test("the Latin display token is declared", () => {
-    expect(css).toContain('--font-display-latin: "Instrument Serif", serif;');
+    expect(css).toContain("--font-display-latin: \"Instrument Serif\", serif;");
   });
 });

@@ -11,14 +11,13 @@ describe("Hero", () => {
   test("renders the headline and the first caption", () => {
     renderHero();
     expect(screen.getByRole("heading", { name: /custom tailoring, made to your measure/i })).toBeInTheDocument();
-    expect(screen.getByText("Tailored in navy")).toBeInTheDocument();
+    expect(screen.getByText("Pinned before the fitting")).toBeInTheDocument();
   });
 
-  test("renders a background image and a strip of five items with progress bars", () => {
+  test("renders three slides and three progress buttons", () => {
     const { container } = renderHero();
-    expect(container.querySelector(".hero-bg img")).not.toBeNull();
-    expect(container.querySelectorAll(".hero-strip__item")).toHaveLength(5);
-    expect(container.querySelectorAll(".hero-progress span")).toHaveLength(5);
+    expect(container.querySelectorAll(".hero-slider__item")).toHaveLength(3);
+    expect(screen.getAllByRole("button", { name: /show \d of 3/i })).toHaveLength(3);
   });
 
   test("no image has a caption under it", () => {
@@ -26,9 +25,9 @@ describe("Hero", () => {
     expect(container.querySelector("figcaption")).toBeNull();
   });
 
-  test("every image has alt text", () => {
+  test("slide images have alt text", () => {
     const { container } = renderHero();
-    container.querySelectorAll("img").forEach((img) => {
+    container.querySelectorAll(".hero-slider img").forEach((img) => {
       expect(img.getAttribute("alt")).toBeTruthy();
     });
   });

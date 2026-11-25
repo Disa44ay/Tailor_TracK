@@ -27,3 +27,8 @@ dist-ssr
 *.sw?
 /public/_picker.html
 /public/_picker/
+/public/assets/photos/hero_sec_BG*
+/public/assets/photos/slider*
+/public/assets/photos/doublebreasted*
+/public/assets/photos/bootcut*
+/public/assets/photos/boptcut*

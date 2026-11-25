@@ -1,7 +1,7 @@
 const ITEMS = [
-  { name: "Italian suit", note: "Soft shoulders and a natural waist, cut in Naples style.", src: "/assets/photos/showcase-italian-suit.jpg", alt: "A navy Italian-cut suit on a hanger" },
-  { name: "Double-breasted suit", note: "Two rows of buttons and a wider lapel, for occasions.", src: null, alt: null },
-  { name: "Bootcut trousers", note: "A gentle flare below the knee, over a clean shoe.", src: null, alt: null },
+  { name: "Italian suit", note: "A three-piece in blue windowpane check, with a waistcoat under the jacket.", src: "/assets/photos/showcase-italian-suit.jpg", alt: "A blue windowpane-check three-piece suit" },
+  { name: "Double-breasted suit", note: "Two rows of buttons and a wider lapel, for occasions.", src: "/assets/photos/doublebreasted2.jpg", alt: "A brown double-breasted suit worn with its jacket buttoned" },
+  { name: "Bootcut trousers", note: "A gentle flare below the knee, over a clean shoe.", src: "/assets/photos/boptcut1.jpg", alt: "Black bootcut trousers with a gentle flare" },
   { name: "Straight-fit trousers", note: "A clean line from hip to hem, for daily wear.", src: null, alt: null },
   { name: "Formal shirt", note: "A stiff collar and a fitted body, for work and events.", src: null, alt: null },
   { name: "Cuban shirt", note: "A relaxed open collar and a boxy cut, for warm days.", src: null, alt: null },
