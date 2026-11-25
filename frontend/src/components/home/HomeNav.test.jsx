@@ -1,17 +1,10 @@
 import { describe, test, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { LanguageContext } from "../../app/LanguageContext.jsx";
 import HomeNav from "./HomeNav.jsx";
 
 function renderNav(props = {}) {
-  return render(
-    <MemoryRouter>
-      <LanguageContext.Provider value={{ lang: "en", toggleLang: () => {} }}>
-        <HomeNav onLogin={() => {}} {...props} />
-      </LanguageContext.Provider>
-    </MemoryRouter>
-  );
+  return render(<MemoryRouter><HomeNav onLogin={() => {}} {...props} /></MemoryRouter>);
 }
 
 describe("HomeNav", () => {
@@ -28,31 +21,12 @@ describe("HomeNav", () => {
     expect(onLogin).toHaveBeenCalled();
   });
 
-  test("mobile menu toggle starts collapsed and exposes aria-expanded", () => {
+  test("mobile menu toggle starts collapsed and expands on click", () => {
     renderNav();
     const toggle = screen.getByRole("button", { name: /menu/i });
     expect(toggle).toHaveAttribute("aria-expanded", "false");
-  });
-
-  test("clicking the toggle expands the mobile menu (nav carries is-open)", () => {
-    renderNav();
-    const toggle = screen.getByRole("button", { name: /menu/i });
     fireEvent.click(toggle);
     expect(toggle).toHaveAttribute("aria-expanded", "true");
     expect(toggle.closest(".nav")).toHaveClass("is-open");
-  });
-
-  test("language toggle calls toggleLang and offers the other language's label", () => {
-    const toggleLang = vi.fn();
-    render(
-      <MemoryRouter>
-        <LanguageContext.Provider value={{ lang: "en", toggleLang }}>
-          <HomeNav onLogin={() => {}} />
-        </LanguageContext.Provider>
-      </MemoryRouter>
-    );
-    const langButton = screen.getByRole("button", { name: /বাং/i });
-    fireEvent.click(langButton);
-    expect(toggleLang).toHaveBeenCalled();
   });
 });

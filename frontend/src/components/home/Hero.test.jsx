@@ -1,32 +1,23 @@
-// frontend/src/components/home/Hero.test.jsx
 import { describe, test, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { LanguageContext } from "../../app/LanguageContext.jsx";
 import Hero from "./Hero.jsx";
 
 function renderHero(props = {}) {
-  return render(
-    <MemoryRouter>
-      <LanguageContext.Provider value={{ lang: "en", toggleLang: () => {} }}>
-        <Hero onLetsGo={() => {}} {...props} />
-      </LanguageContext.Provider>
-    </MemoryRouter>
-  );
+  return render(<MemoryRouter><Hero onLetsGo={() => {}} {...props} /></MemoryRouter>);
 }
 
 describe("Hero", () => {
   test("renders the headline and subcopy", () => {
     renderHero();
-    expect(screen.getByText(/custom tailoring for men who want it right/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /custom tailoring for men who want it right/i })).toBeInTheDocument();
     expect(screen.getByText(/custom clothing studio/i)).toBeInTheDocument();
   });
 
   test("primary CTA calls onLetsGo instead of navigating", () => {
     const onLetsGo = vi.fn();
     renderHero({ onLetsGo });
-    const button = screen.getByRole("button", { name: /book a consultation/i });
-    fireEvent.click(button);
+    fireEvent.click(screen.getByRole("button", { name: /book a consultation/i }));
     expect(onLetsGo).toHaveBeenCalled();
   });
 

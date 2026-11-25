@@ -2,17 +2,14 @@ import { describe, test, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { AuthProvider } from "../app/AuthContext.jsx";
-import { LanguageProvider } from "../app/LanguageContext.jsx";
 import Home from "./Home.jsx";
 
 function renderHome() {
   return render(
     <MemoryRouter initialEntries={["/"]}>
-      <LanguageProvider>
-        <AuthProvider>
-          <Home />
-        </AuthProvider>
-      </LanguageProvider>
+      <AuthProvider>
+        <Home />
+      </AuthProvider>
     </MemoryRouter>
   );
 }
@@ -22,9 +19,9 @@ describe("Home", () => {
     localStorage.clear();
   });
 
-  test("renders the public homepage in Bangla by default", () => {
+  test("renders the public homepage", () => {
     renderHome();
-    expect(screen.getAllByText(/লগ ইন/).length).toBeGreaterThan(0);
-    expect(screen.getByText(/সঠিক ফিট চান এমন পুরুষদের জন্য কাস্টম টেইলারিং/)).toBeInTheDocument();
+    expect(screen.getAllByText(/log in/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: /custom tailoring for men who want it right/i })).toBeInTheDocument();
   });
 });

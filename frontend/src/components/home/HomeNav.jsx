@@ -1,24 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../brand/Logo.jsx";
-import { useLanguage } from "../../app/LanguageContext.jsx";
 
-const COPY = {
-  bn: { howItWorks: "কীভাবে কাজ করে", login: "লগ ইন", menu: "মেনু", skip: "মূল অংশে যান" },
-  en: { howItWorks: "How it works", login: "Log in", menu: "Menu", skip: "Skip to content" },
-};
+const LINKS = [{ label: "How it works", href: "#how-it-works" }];
 
 export default function HomeNav({ onLogin }) {
   const [open, setOpen] = useState(false);
-  const { lang, toggleLang } = useLanguage();
-  const t = COPY[lang];
-  const LINKS = [{ label: t.howItWorks, href: "#how-it-works" }];
 
   return (
     <header className={`nav nav--centre${open ? " is-open" : ""}`}>
       <div className="wrap nav__bar">
         <a className="skip-link" href="#top">
-          {t.skip}
+          Skip to content
         </a>
         <Link to="/" className="nav__logo">
           <Logo className="text-[22px]" />
@@ -35,11 +28,8 @@ export default function HomeNav({ onLogin }) {
         </nav>
 
         <div className="nav__actions">
-          <button type="button" className="btn btn--secondary btn--sm" onClick={toggleLang}>
-            {lang === "bn" ? "EN" : "বাং"}
-          </button>
           <button type="button" className="btn btn--primary" onClick={onLogin}>
-            {t.login}
+            Log in
           </button>
         </div>
 
