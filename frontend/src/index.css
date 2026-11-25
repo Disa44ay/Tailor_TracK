@@ -28,7 +28,6 @@
      webfont — see docs/design/logo.md once drawn).
      Headlines: Tiro Bangla. Body/interface: Hind Siliguri.
      Experimental/oversized display: Anek Bangla. */
-  --font-display: 'Tiro Bangla', serif;
   --font-body: 'Hind Siliguri', system-ui, sans-serif;
   --font-display-xl: 'Anek Bangla', system-ui, sans-serif;
 }
@@ -55,37 +54,37 @@ footer.closing { height: auto; min-height: 0; }
 .approaches .approach-list { list-style: none; margin: 0; padding: 0; }
 .approach-item { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 32px 0; border-top: 1px solid color-mix(in oklab, var(--p-inv-ink) 18%, transparent); }
 .approach-item:last-child { border-bottom: 1px solid color-mix(in oklab, var(--p-inv-ink) 18%, transparent); }
-.approach-item__no { font-family: var(--font-display); font-size: clamp(40px, 4vw, 64px); line-height: 1; color: var(--p-accent); }
-.approach-item h3 { font-family: var(--font-display); font-size: clamp(26px, 2.4vw, 34px); line-height: 1.1; margin: 0 0 8px; }
+.approach-item__no { font-family: var(--font-display-latin); font-size: clamp(40px, 4vw, 64px); line-height: 1; color: var(--p-accent); }
+.approach-item h3 { font-family: var(--font-display-latin); font-size: clamp(26px, 2.4vw, 34px); line-height: 1.1; margin: 0 0 8px; }
 .approach-item p { margin: 0; max-width: 60ch; }
 
 .garment-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
 .garment-card { border-top: 2px solid var(--p-ink); padding: 24px 0 0; transition: transform 220ms ease, opacity 220ms ease; }
 .garment-card:hover { transform: translateY(-2px); }
-.garment-card__no { display: block; font-family: var(--font-display); font-size: clamp(56px, 6vw, 96px); line-height: 0.9; color: var(--p-accent); }
-.garment-card h3 { font-family: var(--font-display); font-size: clamp(24px, 2vw, 30px); margin: 16px 0 8px; }
+.garment-card__no { display: block; font-family: var(--font-display-latin); font-size: clamp(56px, 6vw, 96px); line-height: 0.9; color: var(--p-accent); }
+.garment-card h3 { font-family: var(--font-display-latin); font-size: clamp(24px, 2vw, 30px); margin: 16px 0 8px; }
 .garment-card p { margin: 0; max-width: 45ch; }
 
-.process-title { font-family: var(--font-display); font-size: clamp(56px, 8vw, 128px); line-height: 0.95; letter-spacing: -0.03em; margin: 0 0 48px; }
+.process-title { font-family: var(--font-display-latin); font-size: clamp(56px, 8vw, 128px); line-height: 0.95; letter-spacing: -0.03em; margin: 0 0 48px; }
 .process-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; align-items: start; }
 .process-tile:nth-child(2) { margin-top: 48px; }
 .process-tile:nth-child(4) { margin-top: 96px; }
-.process-tile__no { display: block; margin-top: 12px; font-family: var(--font-display); font-size: 32px; color: var(--p-accent); }
-.process-tile h3 { font-family: var(--font-display); font-size: 28px; margin: 4px 0 0; }
+.process-tile__no { display: block; margin-top: 12px; font-family: var(--font-display-latin); font-size: 32px; color: var(--p-accent); }
+.process-tile h3 { font-family: var(--font-display-latin); font-size: 28px; margin: 4px 0 0; }
 
-.how-title { font-family: var(--font-display); font-size: clamp(48px, 6vw, 96px); line-height: 1; margin: 0 0 32px; }
+.how-title { font-family: var(--font-display-latin); font-size: clamp(48px, 6vw, 96px); line-height: 1; margin: 0 0 32px; }
 .how-list { list-style: none; margin: 0; padding: 0; }
 .how-item { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 16px; padding: 24px 0; border-top: 1px solid var(--p-ink); }
 .how-item:last-child { border-bottom: 1px solid var(--p-ink); }
-.how-item__no { font-family: var(--font-display); font-size: 40px; color: var(--p-accent); line-height: 1; }
-.how-item h3 { font-family: var(--font-display); font-size: 28px; margin: 0 0 8px; }
+.how-item__no { font-family: var(--font-display-latin); font-size: 40px; color: var(--p-accent); line-height: 1; }
+.how-item h3 { font-family: var(--font-display-latin); font-size: 28px; margin: 0 0 8px; }
 .how-item p { margin: 0; }
 
 @media (max-width: 1023px) { .garment-list, .process-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .process-tile:nth-child(n) { margin-top: 0; } }
 @media (max-width: 639px) { .garment-list, .process-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .garment-card { transition: none; } .garment-card:hover { transform: none; } }
 
-:root { --font-display-latin: "Instrument Serif", serif; }
+:root { --p-hero-bg: #0c0c0c; --p-hero-ink: #f8f8f8; --font-display-latin: "Instrument Serif", serif; }
 .hero-title, .process-title, .how-title, .approach-item h3, .how-item h3, .garment-card h3, .home-showcase h3, .section h2 {
   font-family: var(--font-display-latin);
 }
@@ -108,13 +107,13 @@ footer.closing { height: auto; min-height: 0; }
 
 .showcase-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 24px; }
 .showcase-item:nth-child(even) { margin-top: 56px; }
-.showcase-item h3 { font-size: clamp(24px, 2.2vw, 32px); margin: 16px 0 6px; }
-.showcase-item p { margin: 0; max-width: 40ch; }
+.showcase-item h3 { font-size: clamp(24px, 2.2vw, 32px); margin: 16px 0 8px; }
+.showcase-item p { margin: 0; max-width: 46ch; }
 @media (max-width: 1023px) { .showcase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .showcase-item:nth-child(even) { margin-top: 0; } }
 @media (max-width: 639px) { .showcase-grid { grid-template-columns: minmax(0, 1fr); } }
 .hero--bg .btn--secondary { color: var(--p-inv-ink); border-color: color-mix(in oklab, var(--p-inv-ink) 60%, transparent); background: transparent; }
 
-.hero--tara { position: relative; min-height: 100svh; overflow: hidden; display: flex; flex-direction: column; background: #0c0c0c; color: #f8f8f8; }
+.hero--tara { position: relative; min-height: 100svh; overflow: hidden; display: flex; flex-direction: column; background: var(--p-hero-bg); color: var(--p-hero-ink); }
 .hero--tara .hero-bg { position: absolute; inset: 0; z-index: 0; }
 .hero--tara .hero-bg img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(0.28); }
 .hero-tara { position: relative; z-index: 1; padding-top: 11svh; flex: 1; display: flex; flex-direction: column; }
@@ -123,9 +122,9 @@ footer.closing { height: auto; min-height: 0; }
 .hero-tara__caption { display: flex; gap: 12px; align-items: baseline; margin: 0; font-family: var(--font-display-latin); font-size: clamp(28px, 2.6vw, 40px); }
 .hero-tara__no { font-size: 14px; font-family: var(--font-text); }
 .hero-tara__note { margin: 8px 0 16px; max-width: 42ch; }
-.hero--tara .t-lead { color: #f8f8f8; margin: 0 0 20px; }
+.hero--tara .t-lead { color: var(--p-hero-ink); margin: 0 0 20px; }
 .hero--tara .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
-.hero--tara .btn--secondary { color: #f8f8f8; border-color: rgb(248 248 248 / 0.6); background: transparent; }
+.hero--tara .btn--secondary { color: var(--p-hero-ink); border-color: color-mix(in oklab, var(--p-hero-ink) 60%, transparent); background: transparent; }
 .hero-tara .hero-strip {
   position: relative; z-index: 1; margin-top: 4svh; margin-left: 43%; padding: 0; list-style: none;
   display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
@@ -134,11 +133,14 @@ footer.closing { height: auto; min-height: 0; }
 .hero-tara .hero-strip__item { flex: 0 0 min(46vw, 470px); height: 100%; scroll-snap-align: start; }
 .hero-tara .hero-strip__item figure { margin: 0; height: 100%; }
 .hero-tara .hero-strip__item img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 4px; }
-.hero-progress { display: flex; gap: 10px; margin-left: 43%; margin-top: 18px; margin-bottom: 6svh; }
-.hero-progress span { flex: 1; max-width: 90px; height: 2px; background: rgb(248 248 248 / 0.25); }
-.hero-progress span.is-active { background: #f8f8f8; }
+.hero-progress { display: flex; gap: 8px; margin-left: 43%; margin-top: 16px; margin-bottom: 6svh; }
+.hero-progress span { flex: 1; max-width: 90px; height: 2px; background: color-mix(in oklab, var(--p-hero-ink) 25%, transparent); }
+.hero-progress span.is-active { background: var(--p-hero-ink); }
 @media (max-width: 639px) {
   .hero-tara__panel, .hero-tara .hero-strip, .hero-progress { margin-left: 0; }
   .hero-tara .hero-strip { height: 46svh; }
   .hero-tara .hero-strip__item { flex-basis: 78vw; }
 }
+
+h1, h2, h3, .hero-title, .process-title, .how-title { text-wrap: balance; }
+::selection { background: var(--p-accent); color: var(--p-accent-ink); }
