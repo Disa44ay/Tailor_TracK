@@ -12,8 +12,8 @@ export default function Approaches() {
               <div>
                 <h3>Made to measure</h3>
                 <p>
-                  We start from your closest pattern and adjust it against you in person until it reads
-                  as made for you. The usual starting point for a first order.
+                  We start from your nearest pattern and adjust it on you, in person, until it fits.
+                  The usual start for a first order.
                 </p>
               </div>
             </li>
@@ -22,8 +22,8 @@ export default function Approaches() {
               <div>
                 <h3>Bespoke</h3>
                 <p>
-                  A pattern cut from nothing but your own measurements, built fitting by fitting. For a
-                  piece with no compromise in it anywhere.
+                  A pattern cut from your measurements alone, built fitting by fitting, with no
+                  compromises.
                 </p>
               </div>
             </li>

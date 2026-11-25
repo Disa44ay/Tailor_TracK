@@ -1,9 +1,9 @@
 import { useState, useRef } from "react";
 
 const SLIDES = [
-  { src: "/assets/photos/slider1.jpg", alt: "A navy suit lapel pinned with basting thread before the fitting", pos: "50% 50%", no: "01", title: "Pinned before the fitting", note: "The jacket is basted in place so the line can be judged on you." },
-  { src: "/assets/photos/slider2.jpg", alt: "A tape measure taken across a man's chest", pos: "50% 92%", no: "02", title: "Measured across the chest", note: "A tape first, then the fabric is chosen against your build." },
-  { src: "/assets/photos/slider3.jpg", alt: "Tailor's chalk marking a navy pinstripe shoulder", pos: "50% 50%", no: "03", title: "Marked on the cloth", note: "Every line is chalked on the shoulder, then sewn to that mark." },
+  { src: "/assets/photos/slider1.jpg", alt: "A navy suit lapel pinned with basting thread before the fitting", pos: "50% 50%", no: "01", title: "Pinned before the fitting", note: "Basted in place, so the line can be judged on you." },
+  { src: "/assets/photos/slider2.jpg", alt: "A tape measure taken across a man's chest", pos: "50% 92%", no: "02", title: "Measured across the chest", note: "A tape first, then the fabric, chosen to fit your build." },
+  { src: "/assets/photos/slider3.jpg", alt: "Tailor's chalk marking a navy pinstripe shoulder", pos: "50% 50%", no: "03", title: "Marked on the cloth", note: "Chalked on the shoulder, then sewn to the mark." },
 ];
 
 export default function Hero({ onLetsGo }) {

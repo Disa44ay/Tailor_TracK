@@ -2,7 +2,7 @@ const STEPS = [
   { no: "01", title: "Send an enquiry", body: "Tell us the garment and the occasion." },
   { no: "02", title: "Book a fitting", body: "A call or a visit to the studio." },
   { no: "03", title: "Decide the fit", body: "Fabric and fit, chosen in person." },
-  { no: "04", title: "Collect your piece", body: "Ready to wear, tailored to you." },
+  { no: "04", title: "Collect your piece", body: "Ready to wear, made to your measure." },
 ];
 
 export default function HowItWorks() {

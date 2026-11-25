@@ -17,8 +17,8 @@ export default function FitStatement() {
     >
       <div className="wrap">
         <p className="mo-wh__text">
-          We take your measurements twice: once with a tape, once by eye, watching how the fabric
-          sits on you as you move, until the <strong>fit</strong> looks like it was always there.
+          We measure you twice: with a tape, then by eye, watching how the fabric
+          sits as you move, until the <strong>fit</strong> feels natural.
         </p>
       </div>
     </section>
