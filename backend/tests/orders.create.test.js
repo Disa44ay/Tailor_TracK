@@ -145,6 +145,60 @@ test("POST /orders with an unrecognized lapel_style returns 400", async () => {
   assert.equal(res.status, 400);
 });
 
+test("POST /orders accepts the live-customization dress types (suit, paijama) and their new fit types", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const auth = `Bearer ${signToken(customer)}`;
+
+  const suitRes = await request(app)
+    .post("/orders")
+    .set("Authorization", auth)
+    .send({ garmentType: "suit", fitType: "double_breasted" });
+  assert.equal(suitRes.status, 201);
+  assert.equal(suitRes.body.fit_type, "double_breasted");
+
+  const paijamaRes = await request(app)
+    .post("/orders")
+    .set("Authorization", auth)
+    .send({ garmentType: "paijama", fitType: "casual" });
+  assert.equal(paijamaRes.status, 201);
+  assert.equal(paijamaRes.body.fit_type, "casual");
+});
+
+test("POST /orders accepts the new shirt/pant/panjabi fit types", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const auth = `Bearer ${signToken(customer)}`;
+
+  const shirtRes = await request(app)
+    .post("/orders")
+    .set("Authorization", auth)
+    .send({ garmentType: "shirt", fitType: "italian" });
+  assert.equal(shirtRes.status, 201);
+
+  const pantRes = await request(app)
+    .post("/orders")
+    .set("Authorization", auth)
+    .send({ garmentType: "pant", fitType: "straightcut" });
+  assert.equal(pantRes.status, 201);
+
+  const panjabiRes = await request(app)
+    .post("/orders")
+    .set("Authorization", auth)
+    .send({ garmentType: "panjabi", fitType: "short" });
+  assert.equal(panjabiRes.status, 201);
+});
+
+test("POST /orders rejects the old shirt fit type now that the list has been replaced", async () => {
+  await makeAdmin();
+  const customer = await insertTestUser({ role: "customer" });
+  const res = await request(app)
+    .post("/orders")
+    .set("Authorization", `Bearer ${signToken(customer)}`)
+    .send({ garmentType: "shirt", fitType: "regular_classic" });
+  assert.equal(res.status, 400);
+});
+
 test("POST /orders accepts a fabricId and snapshots the body profile", async () => {
   await makeAdmin();
   const customer = await insertTestUser({ role: "customer" });

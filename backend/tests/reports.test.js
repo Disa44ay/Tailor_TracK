@@ -9,12 +9,16 @@ beforeEach(async () => {
   await resetTables();
 });
 
+// quoteOrder was removed 2026-11-24 (plan.md §5) — "quoted" is still a
+// valid status, just no longer reachable via any live endpoint, so this
+// fixture sets it directly to keep exercising the report's per-status count.
 async function createQuotedOrder(adminAuth, customerAuth, quotedPrice) {
   const created = await request(app).post("/orders").set("Authorization", customerAuth).send({ garmentType: "shirt" });
-  await request(app)
-    .patch(`/admin/orders/${created.body.id}/quote`)
-    .set("Authorization", adminAuth)
-    .send({ dueDate: "2026-12-01", quotedPrice, advanceRequired: Math.min(500, quotedPrice) });
+  await testPool.query(
+    `UPDATE orders SET status = 'quoted', due_date = '2026-12-01', quoted_price = $2, advance_required = $3
+     WHERE id = $1`,
+    [created.body.id, quotedPrice, Math.min(500, quotedPrice)]
+  );
   return created.body.id;
 }
 

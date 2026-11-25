@@ -37,7 +37,9 @@ CREATE TABLE IF NOT EXISTS orders (
   id serial PRIMARY KEY,
   customer_id integer NOT NULL REFERENCES users(id),
   garment_type text NOT NULL CHECK (
-    garment_type IN ('shirt', 'pant', 'panjabi', 'suit_2pc', 'suit_3pc', 'kurta', 'blouse', 'other')
+    garment_type IN (
+      'shirt', 'pant', 'panjabi', 'suit_2pc', 'suit_3pc', 'kurta', 'blouse', 'suit', 'paijama', 'other'
+    )
   ),
   style_notes text,
   fabric_note text,
@@ -127,3 +129,11 @@ ALTER TABLE measurements ADD COLUMN IF NOT EXISTS weight_kg numeric;
 ALTER TABLE measurements ADD COLUMN IF NOT EXISTS age integer;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS fabric_id integer REFERENCES fabrics(id);
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS body_profile_snapshot jsonb;
+-- Re-runnable widening of the garment_type CHECK: IF NOT EXISTS doesn't
+-- apply to constraints, so drop-and-recreate is the only re-runnable way.
+ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_garment_type_check;
+ALTER TABLE orders ADD CONSTRAINT orders_garment_type_check CHECK (
+  garment_type IN (
+    'shirt', 'pant', 'panjabi', 'suit_2pc', 'suit_3pc', 'kurta', 'blouse', 'suit', 'paijama', 'other'
+  )
+);
