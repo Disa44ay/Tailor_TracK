@@ -2,7 +2,7 @@ import { useState } from "react";
 import HomeNav from "../components/home/HomeNav.jsx";
 import Hero from "../components/home/Hero.jsx";
 import FitStatement from "../components/home/FitStatement.jsx";
-import Garments from "../components/home/Garments.jsx";
+import Showcase from "../components/home/Showcase.jsx";
 import Approaches from "../components/home/Approaches.jsx";
 import Process from "../components/home/Process.jsx";
 import HowItWorks from "../components/home/HowItWorks.jsx";
@@ -18,7 +18,7 @@ function HomePage() {
       <main id="top">
         <Hero onLetsGo={() => setAuthOpen(true)} />
         <FitStatement />
-        <Garments />
+        <Showcase />
         <Approaches />
         <Process />
         <HowItWorks />
