@@ -51,10 +51,11 @@ export default function Footer({ onBookConsultation }) {
           <div className="footer__legal">
             <span>&copy; 2026 Oboyob</span>
             <details className="credits">
-              <summary>Photographs: Ruthson Zimmerman and Yasamine June, via Unsplash</summary>
+              <summary>Photographs via Unsplash</summary>
               <p>
-                Suit-cuff photograph by Ruthson Zimmerman; fabric-swatch photograph by Yasamine June.
-                Both free to use under the Unsplash License.
+                Italian suit by Benjamin R.; fabric swatches by Yasamine June; measuring tape by josh A. D.;
+                fabric cutting by SIL Group; sewing machine by J Williams; hand sewing by Elio Santos.
+                All free to use under the Unsplash License.
               </p>
             </details>
           </div>
