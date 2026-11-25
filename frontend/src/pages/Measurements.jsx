@@ -1,25 +1,34 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../api/client.js";
+import { getBodyProfileMock, setBodyProfileMock } from "./bodyProfileMock.js";
+import { MEASUREMENT_COLUMNS } from "../components/order/measurementColumns.js";
 
-// camelCase request keys <-> snake_case columns the GET response returns —
-// the backend uses camelCase in PUT bodies but the raw column name in SELECT,
-// see backend/controllers/measurements.controller.js.
-const FIELDS = [
-  ["chest", "chest", "Chest"],
-  ["waist", "waist", "Waist"],
-  ["hip", "hip", "Hip"],
-  ["shoulderWidth", "shoulder_width", "Shoulder width"],
-  ["sleeveLength", "sleeve_length", "Sleeve length"],
-  ["inseam", "inseam", "Inseam"],
-  ["neck", "neck", "Neck"],
-  ["bicep", "bicep", "Bicep"],
-  ["wrist", "wrist", "Wrist"],
-  ["thigh", "thigh", "Thigh"],
-  ["knee", "knee", "Knee"],
-  ["rise", "rise", "Rise"],
-  ["hem", "hem", "Hem"],
-  ["garmentLength", "garment_length", "Garment length"],
-];
+// Readable label per field key — the backend uses camelCase in PUT bodies
+// but the raw column name in SELECT (see MEASUREMENT_COLUMNS), and
+// backend/controllers/measurements.controller.js for that contract.
+const FIELD_LABELS = {
+  chest: "Chest",
+  waist: "Waist",
+  hip: "Hip",
+  shoulderWidth: "Shoulder width",
+  sleeveLength: "Sleeve length",
+  inseam: "Inseam",
+  neck: "Neck",
+  bicep: "Bicep",
+  wrist: "Wrist",
+  thigh: "Thigh",
+  knee: "Knee",
+  rise: "Rise",
+  hem: "Hem",
+  garmentLength: "Garment length",
+  heightCm: "Height (cm)",
+  weightKg: "Weight (kg)",
+  age: "Age",
+};
+
+const FIELDS = Object.entries(MEASUREMENT_COLUMNS).map(([key, column]) => [key, column, FIELD_LABELS[key]]);
+
+const BODY_PROFILE_KEYS = ["heightCm", "weightKg", "age"];
 
 function emptyForm() {
   return Object.fromEntries(FIELDS.map(([key]) => [key, ""]));
@@ -33,9 +42,14 @@ function Measurements() {
   useEffect(() => {
     apiFetch("/me/measurements")
       .then((data) => {
+        const mock = getBodyProfileMock();
         setForm(
           Object.fromEntries(
-            FIELDS.map(([key, column]) => [key, data[column] ?? ""])
+            FIELDS.map(([key, column]) => {
+              if (data[column] != null) return [key, data[column]];
+              if (BODY_PROFILE_KEYS.includes(key) && mock[key] != null) return [key, mock[key]];
+              return [key, ""];
+            })
           )
         );
       })
@@ -55,6 +69,7 @@ function Measurements() {
     );
     try {
       await apiFetch("/me/measurements", { method: "PUT", body: JSON.stringify(body) });
+      setBodyProfileMock(Object.fromEntries(BODY_PROFILE_KEYS.map((key) => [key, body[key]])));
     } catch {
       // apiFetch already surfaced a toast
     } finally {

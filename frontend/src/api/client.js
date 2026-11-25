@@ -19,10 +19,10 @@ export async function apiFetch(path, options = {}) {
     const body = await res.json().catch(() => ({}));
     const message = body.message || "Something went wrong";
     toast.error(message);
-    if (res.status === 401) {
+    if (res.status === 401 && token) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      window.location.assign("/login");
+      window.location.assign("/");
     }
     throw new Error(message);
   }

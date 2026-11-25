@@ -44,34 +44,29 @@ describe("AdminOrderDetail", () => {
     expect(screen.getByText(/urgent/i)).toBeInTheDocument();
   });
 
-  test("on a 'requested' order shows Reject (with a reason field) and Quote (due date/price/advance fields) actions", async () => {
+  test("on a 'requested' order shows Reject (with a reason field) and Accept actions", async () => {
     renderAt({ id: 5, garment_type: "shirt", status: "requested", customer_id: 1 });
 
     expect(await screen.findByLabelText(/reason/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/due date/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/quoted price/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/advance/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /reject/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /send quote/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /accept/i })).toBeInTheDocument();
   });
 
-  test("submitting Quote calls PATCH /admin/orders/:id/quote with the three fields", async () => {
+  test("clicking Accept calls PATCH /admin/orders/:id/accept with no body, then reloads the order", async () => {
     renderAt({ id: 5, garment_type: "shirt", status: "requested", customer_id: 1 });
-    await screen.findByLabelText(/due date/i);
+    await screen.findByRole("button", { name: /accept/i });
 
-    fireEvent.change(screen.getByLabelText(/due date/i), { target: { value: "2026-12-01" } });
-    fireEvent.change(screen.getByLabelText(/quoted price/i), { target: { value: "1000" } });
-    fireEvent.change(screen.getByLabelText(/advance/i), { target: { value: "300" } });
-    fireEvent.click(screen.getByRole("button", { name: /send quote/i }));
+    fireEvent.click(screen.getByRole("button", { name: /accept/i }));
 
     await waitFor(() => {
-      expect(apiFetch).toHaveBeenCalledWith(
-        "/admin/orders/5/quote",
-        expect.objectContaining({
-          method: "PATCH",
-          body: JSON.stringify({ dueDate: "2026-12-01", quotedPrice: 1000, advanceRequired: 300 }),
-        })
-      );
+      expect(apiFetch).toHaveBeenCalledWith("/admin/orders/5/accept", expect.objectContaining({ method: "PATCH" }));
+    });
+    const acceptCall = apiFetch.mock.calls.find(([path]) => path === "/admin/orders/5/accept");
+    expect(acceptCall[1].body).toBeUndefined();
+    // Mount's own useEffect already calls "/admin/orders" once, so prove a second
+    // (post-accept) load happened rather than just that it was ever called.
+    await waitFor(() => {
+      expect(apiFetch.mock.calls.filter(([path]) => path === "/admin/orders")).toHaveLength(2);
     });
   });
 

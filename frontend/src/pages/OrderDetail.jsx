@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { apiFetch } from "../api/client.js";
 import OrderStatusBadge from "../components/OrderStatusBadge.jsx";
 
-const GARMENT_TYPES = ["shirt", "pant", "panjabi", "suit_2pc", "suit_3pc", "kurta", "blouse", "other"];
+// Same 5 live-customization garment types as DressTypePicker.jsx / fitOptionsByGarment.js.
+const GARMENT_TYPES = ["shirt", "pant", "panjabi", "suit", "paijama"];
 const PRIORITIES = ["normal", "fast", "urgent"];
 
 function OrderDetail() {
@@ -161,7 +162,6 @@ function OrderDetail() {
             </label>
             <textarea
               id="styleNotes"
-              required={edit.garmentType === "other"}
               value={edit.styleNotes}
               onChange={(e) => setEdit((f) => ({ ...f, styleNotes: e.target.value }))}
               className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"

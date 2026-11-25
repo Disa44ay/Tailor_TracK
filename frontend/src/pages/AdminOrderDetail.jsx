@@ -18,9 +18,6 @@ function AdminOrderDetail() {
   const [busy, setBusy] = useState(false);
 
   const [reason, setReason] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [quotedPrice, setQuotedPrice] = useState("");
-  const [advanceRequired, setAdvanceRequired] = useState("");
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
 
@@ -55,18 +52,10 @@ function AdminOrderDetail() {
     }
   }
 
-  async function handleQuote(e) {
-    e.preventDefault();
+  async function handleAccept() {
     setBusy(true);
     try {
-      await apiFetch(`/admin/orders/${id}/quote`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          dueDate,
-          quotedPrice: Number(quotedPrice),
-          advanceRequired: Number(advanceRequired),
-        }),
-      });
+      await apiFetch(`/admin/orders/${id}/accept`, { method: "PATCH" });
       await load();
     } catch {
       // apiFetch already surfaced a toast
@@ -188,62 +177,14 @@ function AdminOrderDetail() {
             </button>
           </form>
 
-          <form onSubmit={handleQuote} className="rounded-lg border border-slate-200 p-4">
-            <h2 className="font-medium text-slate-900">Quote</h2>
-            <div className="mt-2 grid grid-cols-3 gap-3">
-              <div>
-                <label htmlFor="dueDate" className="block text-sm font-medium text-slate-700">
-                  Due date
-                </label>
-                <input
-                  id="dueDate"
-                  type="date"
-                  required
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-                />
-              </div>
-              <div>
-                <label htmlFor="quotedPrice" className="block text-sm font-medium text-slate-700">
-                  Quoted price
-                </label>
-                <input
-                  id="quotedPrice"
-                  type="number"
-                  required
-                  value={quotedPrice}
-                  onChange={(e) => setQuotedPrice(e.target.value)}
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-                />
-              </div>
-              <div>
-                <label htmlFor="advanceRequired" className="block text-sm font-medium text-slate-700">
-                  Advance required
-                </label>
-                <input
-                  id="advanceRequired"
-                  type="number"
-                  required
-                  value={advanceRequired}
-                  onChange={(e) => setAdvanceRequired(e.target.value)}
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-                />
-              </div>
-            </div>
-            <button
-              type="submit"
-              disabled={busy}
-              className="mt-3 rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-            >
-              Send quote
-            </button>
-          </form>
+          <button
+            onClick={handleAccept}
+            disabled={busy}
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+          >
+            Accept
+          </button>
         </div>
-      )}
-
-      {order.status === "quoted" && (
-        <p className="mt-6 text-sm text-slate-500">Waiting on the customer to confirm or decline.</p>
       )}
 
       {nextStage && (

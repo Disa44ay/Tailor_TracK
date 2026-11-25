@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { apiFetch } from "../api/client.js";
 import OrderStatusBadge from "../components/OrderStatusBadge.jsx";
 
+// "quoted" removed: the backend's quote flow is gone, so no order can reach
+// that status anymore.
 const STATUSES = [
-  "requested", "needs_changes", "quoted", "declined", "confirmed",
+  "requested", "needs_changes", "declined", "confirmed",
   "cutting", "stitching", "ready", "completed",
 ];
 

@@ -37,8 +37,7 @@ describe("HomePage", () => {
     fireEvent.click(screen.getByRole("button", { name: /let's go/i }));
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getAllByRole("heading", { name: /log in/i }).length).toBeGreaterThan(0);
-    expect(screen.getByRole("heading", { name: /sign up/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /log in/i })).toBeInTheDocument();
   });
 
   test("clicking the nav's Log in opens the same auth modal", () => {

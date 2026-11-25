@@ -66,15 +66,12 @@ describe("OrderDetail", () => {
     expect(screen.getByLabelText(/style notes/i)).toBeInTheDocument();
   });
 
-  test("requires style notes in the edit form once garment type is switched to 'other'", async () => {
+  test("garment type select offers exactly the 5 live-customization types", async () => {
     renderAt({ id: 5, garment_type: "shirt", status: "needs_changes", style_notes: "", fabric_note: "", priority: "normal" });
 
-    await screen.findByRole("button", { name: /save/i });
-    expect(screen.getByLabelText(/style notes/i)).not.toBeRequired();
-
-    fireEvent.change(screen.getByLabelText(/garment type/i), { target: { value: "other" } });
-
-    expect(screen.getByLabelText(/style notes/i)).toBeRequired();
+    const select = await screen.findByLabelText(/garment type/i);
+    const optionValues = Array.from(select.querySelectorAll("option")).map((o) => o.value);
+    expect(optionValues).toEqual(["shirt", "pant", "panjabi", "suit", "paijama"]);
   });
 
   test("clicking Confirm calls POST /orders/:id/confirm and redirects to the returned gatewayUrl", async () => {

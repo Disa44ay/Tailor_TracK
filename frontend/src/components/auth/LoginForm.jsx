@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../app/AuthContext.jsx";
 
-function LoginForm({ idPrefix = "", showSwitchLink = true, onSuccess }) {
+function LoginForm({ idPrefix = "", showSwitchLink = true, onSwitchToSignup, onSuccess }) {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -66,9 +66,19 @@ function LoginForm({ idPrefix = "", showSwitchLink = true, onSuccess }) {
       {showSwitchLink && (
         <p className="mt-4 text-center text-sm text-slate-500">
           New here?{" "}
-          <Link to="/signup" className="font-medium text-slate-900 underline">
-            Sign up
-          </Link>
+          {onSwitchToSignup ? (
+            <button
+              type="button"
+              onClick={onSwitchToSignup}
+              className="font-medium text-slate-900 underline"
+            >
+              Sign up
+            </button>
+          ) : (
+            <Link to="/signup" className="font-medium text-slate-900 underline">
+              Sign up
+            </Link>
+          )}
         </p>
       )}
     </form>
