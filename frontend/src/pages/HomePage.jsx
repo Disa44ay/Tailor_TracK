@@ -2,6 +2,7 @@ import { useState } from "react";
 import HomeNav from "../components/home/HomeNav.jsx";
 import Hero from "../components/home/Hero.jsx";
 import FitStatement from "../components/home/FitStatement.jsx";
+import Approaches from "../components/home/Approaches.jsx";
 import HowItWorks from "../components/home/HowItWorks.jsx";
 import Footer from "../components/home/Footer.jsx";
 import AuthModal from "../components/home/AuthModal.jsx";
@@ -18,6 +19,7 @@ function HomePage() {
       <main id="top">
         <Hero onLetsGo={() => setAuthOpen(true)} />
         <FitStatement />
+        <Approaches />
         <HowItWorks />
       </main>
       <Footer onBookConsultation={() => setAuthOpen(true)} />
