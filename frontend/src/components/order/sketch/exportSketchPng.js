@@ -1,7 +1,12 @@
 import { toCanvas } from "html-to-image";
 
-const PADDING = 24;
-const LINE_HEIGHT = 22;
+// The sketch itself is rendered at this density (toCanvas's pixelRatio), so the
+// text block's measurements must scale by the same factor or it ends up roughly
+// half the sketch's visual size in the final composite.
+const PIXEL_RATIO = 2;
+const PADDING = 24 * PIXEL_RATIO;
+const LINE_HEIGHT = 22 * PIXEL_RATIO;
+const FONT_SIZE = 16 * PIXEL_RATIO;
 const NO_MEASUREMENTS_NOTE = "No measurements selected yet";
 
 // camelCase field key -> readable label, e.g. "shoulderWidth" -> "Shoulder width".
@@ -19,7 +24,10 @@ function definedEntries(measurements) {
 // measurements onto one canvas, then triggers a browser download of the PNG.
 // Pure client-side: no backend call.
 export async function exportSketchPng(sketchElement, measurements = {}) {
-  const sketchCanvas = await toCanvas(sketchElement, { pixelRatio: 2, backgroundColor: "#ffffff" });
+  const sketchCanvas = await toCanvas(sketchElement, {
+    pixelRatio: PIXEL_RATIO,
+    backgroundColor: "#ffffff",
+  });
 
   const entries = definedEntries(measurements);
   const lineCount = entries.length > 0 ? entries.length : 1;
@@ -35,7 +43,7 @@ export async function exportSketchPng(sketchElement, measurements = {}) {
   ctx.drawImage(sketchCanvas, 0, 0);
 
   ctx.fillStyle = "#1f2937";
-  ctx.font = "16px sans-serif";
+  ctx.font = `${FONT_SIZE}px sans-serif`;
   let y = sketchCanvas.height + PADDING;
   if (entries.length === 0) {
     ctx.fillText(NO_MEASUREMENTS_NOTE, PADDING, y);

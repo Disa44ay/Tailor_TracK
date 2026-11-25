@@ -16,6 +16,7 @@ describe("exportSketchPng", () => {
   let clickSpy;
   let getContextSpy;
   let toDataURLSpy;
+  let clickedLink;
 
   beforeEach(() => {
     toCanvas.mockReset();
@@ -34,7 +35,10 @@ describe("exportSketchPng", () => {
     toDataURLSpy = vi
       .spyOn(HTMLCanvasElement.prototype, "toDataURL")
       .mockReturnValue("data:image/png;base64,fake");
-    clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    clickedLink = null;
+    clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function () {
+      clickedLink = { href: this.href, download: this.download };
+    });
   });
 
   afterEach(() => {
@@ -64,6 +68,23 @@ describe("exportSketchPng", () => {
     );
     expect(toDataURLSpy).toHaveBeenCalledWith("image/png");
     expect(clickSpy).toHaveBeenCalled();
+    expect(clickedLink.download).toBe("sketch.png");
+    expect(clickedLink.href).toBe("data:image/png;base64,fake");
+  });
+
+  test("scales the measurement text's font to match the sketch's pixelRatio-rendered density", async () => {
+    // toCanvas({ pixelRatio: 2, ... }) renders the sketch at 2x density, so the text
+    // block must use a 2x font size too, or it reads roughly half the sketch's visual
+    // size in the final composite (see task-10 fix-round in task-10-report.md).
+    const sketchElement = document.createElement("div");
+
+    await exportSketchPng(sketchElement, { chest: 42 });
+
+    expect(toCanvas).toHaveBeenCalledWith(
+      sketchElement,
+      expect.objectContaining({ pixelRatio: 2 })
+    );
+    expect(fakeCtx.font).toBe("32px sans-serif");
   });
 
   test("an empty measurements object does not throw and shows a placeholder note instead of a measurements list", async () => {
