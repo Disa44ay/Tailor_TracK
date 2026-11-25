@@ -1,10 +1,17 @@
 import { describe, test, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { LanguageContext } from "../../app/LanguageContext.jsx";
 import HomeNav from "./HomeNav.jsx";
 
 function renderNav(props = {}) {
-  return render(<MemoryRouter><HomeNav onLogin={() => {}} {...props} /></MemoryRouter>);
+  return render(
+    <MemoryRouter>
+      <LanguageContext.Provider value={{ lang: "en", toggleLang: () => {} }}>
+        <HomeNav onLogin={() => {}} {...props} />
+      </LanguageContext.Provider>
+    </MemoryRouter>
+  );
 }
 
 describe("HomeNav", () => {
@@ -33,5 +40,19 @@ describe("HomeNav", () => {
     fireEvent.click(toggle);
     expect(toggle).toHaveAttribute("aria-expanded", "true");
     expect(toggle.closest(".nav")).toHaveClass("is-open");
+  });
+
+  test("language toggle calls toggleLang and offers the other language's label", () => {
+    const toggleLang = vi.fn();
+    render(
+      <MemoryRouter>
+        <LanguageContext.Provider value={{ lang: "en", toggleLang }}>
+          <HomeNav onLogin={() => {}} />
+        </LanguageContext.Provider>
+      </MemoryRouter>
+    );
+    const langButton = screen.getByRole("button", { name: /বাং/i });
+    fireEvent.click(langButton);
+    expect(toggleLang).toHaveBeenCalled();
   });
 });

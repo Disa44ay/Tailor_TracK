@@ -2,10 +2,17 @@
 import { describe, test, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { LanguageContext } from "../../app/LanguageContext.jsx";
 import Hero from "./Hero.jsx";
 
 function renderHero(props = {}) {
-  return render(<MemoryRouter><Hero onLetsGo={() => {}} {...props} /></MemoryRouter>);
+  return render(
+    <MemoryRouter>
+      <LanguageContext.Provider value={{ lang: "en", toggleLang: () => {} }}>
+        <Hero onLetsGo={() => {}} {...props} />
+      </LanguageContext.Provider>
+    </MemoryRouter>
+  );
 }
 
 describe("Hero", () => {
