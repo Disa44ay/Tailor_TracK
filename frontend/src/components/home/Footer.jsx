@@ -23,7 +23,7 @@ export default function Footer({ onBookConsultation }) {
               <a className="nav__logo" href="#top">
                 <Logo className="text-[22px]" />
               </a>
-              <p className="footer__lede">A custom clothing studio.</p>
+              <p className="footer__lede">A custom clothing studio. Fittings in person, by appointment.</p>
             </div>
             <div className="span-3 start-7 footer__col">
               <h4>Explore</h4>
@@ -61,6 +61,7 @@ export default function Footer({ onBookConsultation }) {
           </div>
         </div>
       </div>
+      <p className="footer__mark" aria-hidden="true">Oboyob</p>
     </footer>
   );
 }
