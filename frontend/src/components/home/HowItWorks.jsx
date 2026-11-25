@@ -1,39 +1,33 @@
-import { useLayoutEffect, useRef } from "react";
-
-const DIAGRAM_SPEC = {
-  layout: "timeline",
-  ground: "none",
-  motion: { pulse: "none" },
-  alt: "A customer tells the studio what they want, the studio arranges a fitting, the fabric and fit are decided in person, and the finished piece is collected.",
-  steps: [
-    { label: "Enquiry sent", sub: "Service + garment", icon: "ui:message-circle" },
-    { label: "Fitting booked", sub: "Call or visit", icon: "ui:calendar-check" },
-    { label: "Fit decided", sub: "In person", icon: "ui:scissors" },
-    { label: "Piece collected", sub: "Ready to wear", icon: "ui:package-check" },
-  ],
-};
+const STEPS = [
+  { no: "01", title: "Send an enquiry", body: "Tell us the garment and the occasion." },
+  { no: "02", title: "Book a fitting", body: "A call or a visit to the studio." },
+  { no: "03", title: "Decide the fit", body: "Fabric and fit, chosen in person." },
+  { no: "04", title: "Collect your piece", body: "Ready to wear, tailored to you." },
+];
 
 export default function HowItWorks() {
-  const diagramRef = useRef(null);
-
-  useLayoutEffect(() => {
-    window.__mountDiagram?.(diagramRef.current);
-  }, []);
-
   return (
     <section className="section" id="how-it-works" aria-labelledby="how-it-works-h">
-      <div className="wrap">
-        <div className="section-head">
-          <h2 id="how-it-works-h">How it works</h2>
+      <div className="wrap grid grid--middle">
+        <div className="span-6">
+          <h2 id="how-it-works-h" className="how-title">How it works</h2>
+          <div className="btn-row">
+            <a className="btn btn--primary" href="#top">
+              Book a consultation
+            </a>
+          </div>
         </div>
-        <div ref={diagramRef} className="dg" data-diagram="" role="img" aria-label={DIAGRAM_SPEC.alt}>
-          <script type="application/json">{JSON.stringify(DIAGRAM_SPEC)}</script>
-        </div>
-        <div className="btn-row">
-          <a className="btn btn--primary" href="#top">
-            Book a consultation
-          </a>
-        </div>
+        <ol className="how-list span-6 start-7">
+          {STEPS.map((s) => (
+            <li key={s.no} className="how-item">
+              <span className="how-item__no">{s.no}</span>
+              <div>
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

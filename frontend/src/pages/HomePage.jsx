@@ -4,6 +4,7 @@ import Hero from "../components/home/Hero.jsx";
 import FitStatement from "../components/home/FitStatement.jsx";
 import Garments from "../components/home/Garments.jsx";
 import Approaches from "../components/home/Approaches.jsx";
+import Process from "../components/home/Process.jsx";
 import HowItWorks from "../components/home/HowItWorks.jsx";
 import Footer from "../components/home/Footer.jsx";
 import AuthModal from "../components/home/AuthModal.jsx";
@@ -19,6 +20,7 @@ function HomePage() {
         <FitStatement />
         <Garments />
         <Approaches />
+        <Process />
         <HowItWorks />
       </main>
       <Footer onBookConsultation={() => setAuthOpen(true)} />

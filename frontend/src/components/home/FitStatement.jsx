@@ -16,7 +16,6 @@ export default function FitStatement() {
       aria-label="On fit"
     >
       <div className="wrap">
-        <p className="t-label">On fit</p>
         <p className="mo-wh__text">
           We take your measurements twice: once with a tape, once by eye, watching how the fabric
           sits on you as you move, until the <strong>fit</strong> looks like it was always there.

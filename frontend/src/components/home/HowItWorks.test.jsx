@@ -8,14 +8,13 @@ describe("HowItWorks", () => {
     expect(container.querySelector("#how-it-works")).toBeInTheDocument();
   });
 
-  test("the diagram spec names the four real steps, in order", () => {
-    const { container } = render(<HowItWorks />);
-    const spec = JSON.parse(container.querySelector("[data-diagram] script").textContent);
-    expect(spec.steps.map((s) => s.label)).toEqual([
-      "Enquiry sent",
-      "Fitting booked",
-      "Fit decided",
-      "Piece collected",
+  test("lists the four real steps, in order", () => {
+    render(<HowItWorks />);
+    expect(screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual([
+      "Send an enquiry",
+      "Book a fitting",
+      "Decide the fit",
+      "Collect your piece",
     ]);
   });
 

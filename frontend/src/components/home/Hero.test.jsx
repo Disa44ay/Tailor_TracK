@@ -10,8 +10,8 @@ function renderHero(props = {}) {
 describe("Hero", () => {
   test("renders the headline and subcopy", () => {
     renderHero();
-    expect(screen.getByRole("heading", { name: /custom tailoring for men who want it right/i })).toBeInTheDocument();
-    expect(screen.getByText(/custom clothing studio/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /custom tailoring, made to your measure/i })).toBeInTheDocument();
+    expect(screen.getByText(/the fabric, the fit and the finish/i)).toBeInTheDocument();
   });
 
   test("primary CTA calls onLetsGo instead of navigating", () => {

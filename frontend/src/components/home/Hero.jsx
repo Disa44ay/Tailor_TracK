@@ -5,11 +5,10 @@ export default function Hero({ onLetsGo }) {
         <div className="hero-text grid hero-split">
           <div className="hero-copy span-7">
             <h1 id="hero-h" className="hero-title">
-              Custom tailoring for men who want it right
+              Custom tailoring, made to your measure
             </h1>
             <p className="t-lead">
-              Oboyob is a custom clothing studio. Tell us what you&rsquo;re after and we&rsquo;ll guide the
-              fabric, the fit and the finish in person &ndash; not a size chart.
+              We guide the fabric, the fit and the finish in person.
             </p>
             <div className="btn-row">
               <button type="button" className="btn btn--primary" onClick={onLetsGo}>
