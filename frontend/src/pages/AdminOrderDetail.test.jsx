@@ -63,8 +63,10 @@ describe("AdminOrderDetail", () => {
     });
     const acceptCall = apiFetch.mock.calls.find(([path]) => path === "/admin/orders/5/accept");
     expect(acceptCall[1].body).toBeUndefined();
+    // Mount's own useEffect already calls "/admin/orders" once, so prove a second
+    // (post-accept) load happened rather than just that it was ever called.
     await waitFor(() => {
-      expect(apiFetch).toHaveBeenCalledWith("/admin/orders");
+      expect(apiFetch.mock.calls.filter(([path]) => path === "/admin/orders")).toHaveLength(2);
     });
   });
 
