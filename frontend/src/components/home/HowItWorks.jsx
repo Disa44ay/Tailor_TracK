@@ -2,7 +2,6 @@ import { useLayoutEffect, useRef } from "react";
 
 const DIAGRAM_SPEC = {
   layout: "timeline",
-  size: "band",
   ground: "none",
   motion: { pulse: "none" },
   alt: "A customer tells the studio what they want, the studio arranges a fitting, the fabric and fit are decided in person, and the finished piece is collected.",
