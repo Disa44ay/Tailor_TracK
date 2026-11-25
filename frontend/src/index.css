@@ -195,3 +195,8 @@ main > section.hero--tara { height: auto; min-height: 100svh; }
   text-align: left; white-space: nowrap; user-select: none; pointer-events: none;
   transform: translateY(32%); margin-left: -2%;
 }
+
+.auth-form__label--inline { margin-top: 0; }
+.auth-form__row { display: flex; gap: 8px; margin-top: 24px; }
+.auth-form__phone { flex: 1; min-width: 0; }
+.auth-form__input--select { width: auto; min-width: 9.5rem; }

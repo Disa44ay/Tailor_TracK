@@ -44,14 +44,11 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8"
-    >
-      <h1 className="text-xl font-semibold text-slate-900">Sign up</h1>
-      <p className="mt-1 text-sm text-slate-500">Create your TailorTrack account.</p>
+    <form onSubmit={handleSubmit} className="auth-form">
+      <h1 className="auth-form__title">Sign up</h1>
+      <p className="auth-form__lead">Create your Oboyob account.</p>
 
-      <label htmlFor={`${idPrefix}name`} className="mt-6 block text-sm font-medium text-slate-700">
+      <label htmlFor={`${idPrefix}name`} className="auth-form__label">
         Name
       </label>
       <input
@@ -59,10 +56,10 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
         required
         value={form.name}
         onChange={update("name")}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="auth-form__input"
       />
 
-      <label htmlFor={`${idPrefix}email`} className="mt-4 block text-sm font-medium text-slate-700">
+      <label htmlFor={`${idPrefix}email`} className="auth-form__label">
         Email
       </label>
       <input
@@ -71,10 +68,10 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
         required
         value={form.email}
         onChange={update("email")}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="auth-form__input"
       />
 
-      <label htmlFor={`${idPrefix}password`} className="mt-4 block text-sm font-medium text-slate-700">
+      <label htmlFor={`${idPrefix}password`} className="auth-form__label">
         Password
       </label>
       <input
@@ -83,12 +80,12 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
         required
         value={form.password}
         onChange={update("password")}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="auth-form__input"
       />
 
-      <div className="mt-4 flex gap-2">
+      <div className="auth-form__row">
         <div>
-          <label htmlFor={`${idPrefix}countryCode`} className="block text-sm font-medium text-slate-700">
+          <label htmlFor={`${idPrefix}countryCode`} className="auth-form__label auth-form__label--inline">
             Country
           </label>
           <select
@@ -96,7 +93,7 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
             required
             value={form.countryCode}
             onChange={update("countryCode")}
-            className="mt-1 rounded-md border border-slate-300 px-2 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="auth-form__input auth-form__input--select"
           >
             {COUNTRY_CODES.map((c) => (
               <option key={c.code} value={c.code}>
@@ -107,7 +104,7 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
         </div>
 
         <div className="flex-1">
-          <label htmlFor={`${idPrefix}phoneNumber`} className="block text-sm font-medium text-slate-700">
+          <label htmlFor={`${idPrefix}phoneNumber`} className="auth-form__label auth-form__label--inline">
             Phone number
           </label>
           <input
@@ -118,32 +115,24 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
             title="11-digit local number"
             value={form.phoneNumber}
             onChange={update("phoneNumber")}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="auth-form__input"
           />
         </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="mt-6 w-full rounded-md bg-slate-900 py-2 text-sm font-medium text-white disabled:opacity-60"
-      >
+      <button type="submit" disabled={submitting} className="auth-form__submit">
         Sign up
       </button>
 
       {showSwitchLink && (
-        <p className="mt-4 text-center text-sm text-slate-500">
+        <p className="auth-form__switch">
           Already have an account?{" "}
           {onSwitchToLogin ? (
-            <button
-              type="button"
-              onClick={onSwitchToLogin}
-              className="font-medium text-slate-900 underline"
-            >
+            <button type="button" onClick={onSwitchToLogin} className="auth-form__link">
               Log in
             </button>
           ) : (
-            <Link to="/login" className="font-medium text-slate-900 underline">
+            <Link to="/login" className="auth-form__link">
               Log in
             </Link>
           )}
