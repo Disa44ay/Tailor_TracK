@@ -41,9 +41,13 @@ describe("NewOrder — fabric preview", () => {
     expect(screen.getByRole("img", { name: /shirt sketch, silk solid fabric/i })).toBeInTheDocument();
   });
 
+  // Shirt's fit types don't crossfade (Fix 4), so the slider only shows for
+  // a dressType+fitType combo that actually does — pant's "regular".
   test("moving the fit slider updates the displayed fit", () => {
     renderNewOrder();
-    const slider = screen.getByLabelText(/fit/i);
+    fireEvent.click(screen.getByRole("button", { name: "Pant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Regular" }));
+    const slider = screen.getByLabelText(/fit preview/i);
     fireEvent.change(slider, { target: { value: "1" } });
     expect(slider).toHaveValue("1");
   });
@@ -91,15 +95,18 @@ describe("NewOrder — live customization flow", () => {
     expect(screen.getByRole("button", { name: "Slim" })).toBeInTheDocument();
   });
 
-  test("switching dress type after a fit was picked clears the fit selection", () => {
+  test("switching dress type resets fit to the new type's default, not the previous selection", () => {
     renderNewOrder();
-    fireEvent.click(screen.getByRole("button", { name: "Italian" }));
-    expect(screen.getByRole("button", { name: "Italian" })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByRole("button", { name: "Casual" }));
+    expect(screen.getByRole("button", { name: "Casual" })).toHaveAttribute("aria-pressed", "true");
 
     fireEvent.click(screen.getByRole("button", { name: "Pant" }));
     fireEvent.click(screen.getByRole("button", { name: "Shirt" }));
 
-    expect(screen.getByRole("button", { name: "Italian" })).toHaveAttribute("aria-pressed", "false");
+    // Back on shirt, the fit defaults to its first option (Italian) again,
+    // not the previously-picked Casual.
+    expect(screen.getByRole("button", { name: "Italian" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Casual" })).toHaveAttribute("aria-pressed", "false");
   });
 
   test("the measurement fields shown change with dress type", () => {
@@ -161,6 +168,62 @@ describe("NewOrder — live customization flow", () => {
       const [, measurements] = exportSketchPng.mock.calls[0];
       expect(Object.keys(measurements).sort()).toEqual([...MEASUREMENT_FIELDS_BY_GARMENT.pant].sort());
       expect(measurements.waist).toBe(32);
+    });
+  });
+
+  test("submits garmentType and fitType matching the selected dress type and fit", async () => {
+    renderNewOrder();
+    fireEvent.click(screen.getByRole("button", { name: "Pant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Slim" }));
+    fireEvent.click(screen.getByRole("button", { name: /submit request/i }));
+
+    await waitFor(() => {
+      const postCall = apiFetch.mock.calls.find(([path]) => path === "/orders");
+      expect(postCall).toBeTruthy();
+      const body = JSON.parse(postCall[1].body);
+      expect(body.garmentType).toBe("pant");
+      expect(body.fitType).toBe("slim");
+    });
+  });
+
+  test("age is rounded to the nearest integer before it's stored", () => {
+    renderNewOrder();
+    fireEvent.change(screen.getByLabelText("Age"), { target: { value: "25.7" } });
+    expect(screen.getByLabelText("Age")).toHaveValue(26);
+  });
+
+  test("the GET /me/measurements estimate's snake_case fields are translated to camelCase for the slider panel", async () => {
+    apiFetch.mockImplementation((path, opts) => {
+      if (path === "/me/measurements" && !opts) return Promise.resolve({ suggested: { shoulder_width: 50 } });
+      return Promise.resolve({});
+    });
+    renderNewOrder();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Shoulder width")).toHaveValue(50);
+    });
+    expect(screen.getByText("Estimated: adjust to match you")).toBeInTheDocument();
+  });
+
+  test("saving measurements sends an estimated-but-untouched field's value instead of null", async () => {
+    apiFetch.mockImplementation((path, opts) => {
+      if (path === "/me/measurements" && !opts) return Promise.resolve({ suggested: { shoulder_width: 50 } });
+      return Promise.resolve({});
+    });
+    renderNewOrder();
+    await waitFor(() => {
+      expect(screen.getByLabelText("Shoulder width")).toHaveValue(50);
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /save measurements/i }));
+
+    await waitFor(() => {
+      const putCall = apiFetch.mock.calls.find(
+        ([path, opts]) => path === "/me/measurements" && opts?.method === "PUT"
+      );
+      expect(putCall).toBeTruthy();
+      const body = JSON.parse(putCall[1].body);
+      expect(body.shoulderWidth).toBe(50);
     });
   });
 });

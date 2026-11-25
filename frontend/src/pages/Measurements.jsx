@@ -1,29 +1,32 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../api/client.js";
 import { getBodyProfileMock, setBodyProfileMock } from "./bodyProfileMock.js";
+import { MEASUREMENT_COLUMNS } from "../components/order/measurementColumns.js";
 
-// camelCase request keys <-> snake_case columns the GET response returns —
-// the backend uses camelCase in PUT bodies but the raw column name in SELECT,
-// see backend/controllers/measurements.controller.js.
-const FIELDS = [
-  ["chest", "chest", "Chest"],
-  ["waist", "waist", "Waist"],
-  ["hip", "hip", "Hip"],
-  ["shoulderWidth", "shoulder_width", "Shoulder width"],
-  ["sleeveLength", "sleeve_length", "Sleeve length"],
-  ["inseam", "inseam", "Inseam"],
-  ["neck", "neck", "Neck"],
-  ["bicep", "bicep", "Bicep"],
-  ["wrist", "wrist", "Wrist"],
-  ["thigh", "thigh", "Thigh"],
-  ["knee", "knee", "Knee"],
-  ["rise", "rise", "Rise"],
-  ["hem", "hem", "Hem"],
-  ["garmentLength", "garment_length", "Garment length"],
-  ["heightCm", "height_cm", "Height (cm)"],
-  ["weightKg", "weight_kg", "Weight (kg)"],
-  ["age", "age", "Age"],
-];
+// Readable label per field key — the backend uses camelCase in PUT bodies
+// but the raw column name in SELECT (see MEASUREMENT_COLUMNS), and
+// backend/controllers/measurements.controller.js for that contract.
+const FIELD_LABELS = {
+  chest: "Chest",
+  waist: "Waist",
+  hip: "Hip",
+  shoulderWidth: "Shoulder width",
+  sleeveLength: "Sleeve length",
+  inseam: "Inseam",
+  neck: "Neck",
+  bicep: "Bicep",
+  wrist: "Wrist",
+  thigh: "Thigh",
+  knee: "Knee",
+  rise: "Rise",
+  hem: "Hem",
+  garmentLength: "Garment length",
+  heightCm: "Height (cm)",
+  weightKg: "Weight (kg)",
+  age: "Age",
+};
+
+const FIELDS = Object.entries(MEASUREMENT_COLUMNS).map(([key, column]) => [key, column, FIELD_LABELS[key]]);
 
 const BODY_PROFILE_KEYS = ["heightCm", "weightKg", "age"];
 

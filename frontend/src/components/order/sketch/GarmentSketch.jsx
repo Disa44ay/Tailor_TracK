@@ -1,18 +1,15 @@
 import ShirtSketch from "./ShirtSketch.jsx";
 import PantSketch from "./PantSketch.jsx";
-import PanjabiSketch from "./PanjabiSketch.jsx";
-import SuitSketch from "./SuitSketch.jsx";
-import PaijamaSketch from "./PaijamaSketch.jsx";
 
-// Every planned garment now has a sketch component; an unrecognized
-// dressType (or one added here without a component yet) falls through to
-// the "coming soon" placeholder below.
+// PanjabiSketch/SuitSketch/PaijamaSketch exist but are NOT wired in below:
+// their art is 100% placeholder reused from other garments (e.g. suit's
+// double_breasted renders a pant-leg silhouette), which would show the
+// wrong garment confidently instead of a "coming soon" placeholder. Keep
+// them out of this lookup — and out of real use — until real art replaces
+// the placeholders in those files (see the comment at the top of each).
 const SKETCH_BY_DRESS_TYPE = {
   shirt: ShirtSketch,
   pant: PantSketch,
-  panjabi: PanjabiSketch,
-  suit: SuitSketch,
-  paijama: PaijamaSketch,
 };
 
 export default function GarmentSketch(props) {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { apiFetch } from "../api/client.js";
 import FabricPicker from "../components/order/FabricPicker.jsx";
 import fabricsMock from "../components/order/fabricsMock.js";
@@ -7,54 +8,77 @@ import DressTypePicker from "../components/order/DressTypePicker.jsx";
 import FitTypePicker from "../components/order/FitTypePicker.jsx";
 import MeasurementSliderPanel from "../components/order/MeasurementSliderPanel.jsx";
 import { MEASUREMENT_FIELDS_BY_GARMENT } from "../components/order/measurementFieldsByGarment.js";
+import { MEASUREMENT_COLUMNS } from "../components/order/measurementColumns.js";
+import { FIT_OPTIONS_BY_GARMENT } from "../components/order/fitOptionsByGarment.js";
 import GarmentSketch from "../components/order/sketch/GarmentSketch.jsx";
 import { exportSketchPng } from "../components/order/sketch/exportSketchPng.js";
 import { getBodyProfileMock, setBodyProfileMock } from "./bodyProfileMock.js";
 
 const PRIORITIES = ["normal", "fast", "urgent"];
 const BODY_PROFILE_FIELDS = ["heightCm", "weightKg", "age"];
+const INITIAL_DRESS_TYPE = "shirt";
 
-// camelCase measurement field -> snake_case DB column, same mapping
-// Measurements.jsx's FIELDS array uses, needed to read GET /me/measurements.
-const MEASUREMENT_COLUMNS = {
-  chest: "chest",
-  waist: "waist",
-  hip: "hip",
-  shoulderWidth: "shoulder_width",
-  sleeveLength: "sleeve_length",
-  inseam: "inseam",
-  neck: "neck",
-  bicep: "bicep",
-  wrist: "wrist",
-  thigh: "thigh",
-  knee: "knee",
-  rise: "rise",
-  hem: "hem",
-  garmentLength: "garment_length",
-  heightCm: "height_cm",
-  weightKg: "weight_kg",
-  age: "age",
+// Only these dressType+fitType combinations actually crossfade between two
+// drawn silhouettes as fitValue moves (see PantSketch.jsx / SuitSketch.jsx);
+// every other fit type (including all of shirt's — ShirtSketch predates
+// this plan and was never assigned art for this) is a single, non-crossfading
+// silhouette, so the preview slider would have no visible effect there.
+const CROSSFADE_FIT_TYPES_BY_GARMENT = {
+  pant: ["regular"],
+  suit: ["italian", "formal"],
 };
+
+function hasFitCrossfade(dressType, fitType) {
+  return (CROSSFADE_FIT_TYPES_BY_GARMENT[dressType] ?? []).includes(fitType);
+}
 
 function emptyValues() {
   return Object.fromEntries(Object.keys(MEASUREMENT_COLUMNS).map((key) => [key, ""]));
+}
+
+// GET /me/measurements's snake_case DB columns -> camelCase field keys, same
+// direction as the values-loading effect below, for the `suggested` block.
+function translateColumns(obj) {
+  if (!obj) return null;
+  return Object.fromEntries(
+    Object.entries(MEASUREMENT_COLUMNS)
+      .filter(([, column]) => obj[column] != null)
+      .map(([key, column]) => [key, obj[column]])
+  );
+}
+
+// A field shown on screen as an estimate (not yet touched by the user) still
+// needs to be saved/exported/submitted as that estimate's value — otherwise
+// it's silently sent as null despite being visibly a number. Only applies
+// where `values[field]` is actually empty; a stored/touched value always wins.
+function withEstimatesMerged(fields, values, estimated) {
+  return Object.fromEntries(
+    fields.map((field) => {
+      const stored = values[field];
+      const hasStoredValue = stored !== "" && stored != null;
+      return [field, hasStoredValue ? stored : estimated?.[field] ?? stored];
+    })
+  );
 }
 
 // The body-profile fields (height/weight/age) always go in every PUT
 // alongside whichever garment fields the current dressType shows — they
 // feed the backend's measurement estimates (plan.md §3) regardless of
 // what's being ordered right now, same as Measurements.jsx's own PUT.
-function measurementsBody(dressType, values) {
+function measurementsBody(dressType, values, estimated) {
   const fields = [...(MEASUREMENT_FIELDS_BY_GARMENT[dressType] ?? []), ...BODY_PROFILE_FIELDS];
+  const merged = withEstimatesMerged(fields, values, estimated);
   return Object.fromEntries(
-    fields.map((field) => [field, values[field] === "" || values[field] == null ? null : Number(values[field])])
+    fields.map((field) => [field, merged[field] === "" || merged[field] == null ? null : Number(merged[field])])
   );
 }
 
 function NewOrder() {
   const navigate = useNavigate();
-  const [dressType, setDressType] = useState("shirt");
-  const [fitType, setFitType] = useState(null);
+  const [dressType, setDressType] = useState(INITIAL_DRESS_TYPE);
+  // Fix 4: default to the dress type's first fit option instead of null, so
+  // FitTypePicker's pressed button always matches what's actually rendered.
+  const [fitType, setFitType] = useState(() => FIT_OPTIONS_BY_GARMENT[INITIAL_DRESS_TYPE]?.[0] ?? null);
   const [styleNotes, setStyleNotes] = useState("");
   const [fabricNote, setFabricNote] = useState("");
   const [priority, setPriority] = useState("normal");
@@ -81,7 +105,7 @@ function NewOrder() {
             })
           )
         );
-        setEstimated(data?.estimated ?? null);
+        setEstimated(translateColumns(data?.suggested));
       })
       .catch(() => {});
   }, []);
@@ -91,8 +115,10 @@ function NewOrder() {
   function handleDressTypeSelect(value) {
     setDressType(value);
     // A fit from the previous garment's option set would be stale/invalid
-    // for the new one (Review Focus item 2) — clear it on every switch.
-    setFitType(null);
+    // for the new one (Review Focus item 2) — clear it on every switch, but
+    // default to the new garment's first fit option (Fix 4) rather than
+    // null, so the pressed FitTypePicker button matches what's rendered.
+    setFitType(FIT_OPTIONS_BY_GARMENT[value]?.[0] ?? null);
   }
 
   function handleMeasurementChange(field, value) {
@@ -104,7 +130,7 @@ function NewOrder() {
   // request body, so an unsaved edit would otherwise be silently dropped
   // from the order it was meant for.
   async function saveMeasurements() {
-    const body = measurementsBody(dressType, values);
+    const body = measurementsBody(dressType, values, estimated);
     await apiFetch("/me/measurements", { method: "PUT", body: JSON.stringify(body) });
     setBodyProfileMock(Object.fromEntries(BODY_PROFILE_FIELDS.map((key) => [key, body[key]])));
   }
@@ -147,11 +173,12 @@ function NewOrder() {
   async function handleSavePng() {
     if (!sketchRef.current) return;
     const fields = MEASUREMENT_FIELDS_BY_GARMENT[dressType] ?? [];
-    const measurementsForExport = Object.fromEntries(fields.map((field) => [field, values[field]]));
+    const measurementsForExport = withEstimatesMerged(fields, values, estimated);
     try {
       await exportSketchPng(sketchRef.current, measurementsForExport);
-    } catch {
-      // Best-effort client-side export; nothing else depends on its result.
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not save the sketch as a PNG");
     }
   }
 
@@ -202,7 +229,9 @@ function NewOrder() {
               type="number"
               step="1"
               value={values.age}
-              onChange={(e) => handleMeasurementChange("age", e.target.value === "" ? "" : Number(e.target.value))}
+              onChange={(e) =>
+                handleMeasurementChange("age", e.target.value === "" ? "" : Math.round(Number(e.target.value)))
+              }
               className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
             />
           </div>
@@ -219,18 +248,20 @@ function NewOrder() {
           />
         </div>
 
-        <label className="block text-sm font-medium text-slate-700">
-          Fit preview: slim to relaxed
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={fitValue}
-            onChange={(e) => setFitValue(Number(e.target.value))}
-            className="mt-1 w-full"
-          />
-        </label>
+        {hasFitCrossfade(dressType, fitType) && (
+          <label className="block text-sm font-medium text-slate-700">
+            Fit preview: slim to relaxed
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={fitValue}
+              onChange={(e) => setFitValue(Number(e.target.value))}
+              className="mt-1 w-full"
+            />
+          </label>
+        )}
 
         <MeasurementSliderPanel
           dressType={dressType}

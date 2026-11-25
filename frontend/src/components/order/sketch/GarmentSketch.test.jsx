@@ -17,10 +17,24 @@ describe("GarmentSketch", () => {
     expect(screen.getByRole("img", { name: "Shirt sketch, linen striped fabric" })).toBeInTheDocument();
   });
 
-  test("dressType paijama renders PaijamaSketch with its props forwarded", () => {
+  // panjabi/suit/paijama have real sketch components (PanjabiSketch/SuitSketch/
+  // PaijamaSketch), but their art is 100% placeholder reused from other
+  // garments, so GarmentSketch deliberately doesn't wire them in yet — each
+  // should render the generic "coming soon" placeholder instead of
+  // confidently showing the wrong garment.
+  test("dressType panjabi renders a placeholder instead of PanjabiSketch", () => {
+    render(<GarmentSketch {...baseProps} dressType="panjabi" />);
+    expect(screen.getByText("Panjabi sketch coming soon")).toBeInTheDocument();
+  });
+
+  test("dressType suit renders a placeholder instead of SuitSketch", () => {
+    render(<GarmentSketch {...baseProps} dressType="suit" />);
+    expect(screen.getByText("Suit sketch coming soon")).toBeInTheDocument();
+  });
+
+  test("dressType paijama renders a placeholder instead of PaijamaSketch", () => {
     render(<GarmentSketch {...baseProps} dressType="paijama" fitType="casual" printPattern="checked" />);
-    // PaijamaSketch's aria-label echoes fitType and printPattern, so this proves they were forwarded.
-    expect(screen.getByRole("img", { name: /casual.*checked/i })).toBeInTheDocument();
+    expect(screen.getByText("Paijama sketch coming soon")).toBeInTheDocument();
   });
 
   test("an unknown dressType renders the placeholder instead of crashing", () => {

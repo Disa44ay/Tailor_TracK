@@ -4,11 +4,16 @@ import suitFormal from "./assets/suit-formal.webp";
 import suitDoubleBreasted from "./assets/suit-double-breasted.webp";
 import { crossfadeOpacities, supportsCssMask } from "./ShirtSketch.jsx";
 
-// Placeholder art (image-generation quota was already exhausted account-wide
-// by Tasks 5/6 before this task's own single confirmation attempt — see
-// task-7-report.md), so these reuse existing assets rather than dedicated
-// suit silhouettes. Replacing them with real art later only means swapping
-// these three files, nothing else in this component changes.
+// Placeholder art: image-generation quota was already exhausted account-wide
+// by Tasks 5/6 before this task's own single confirmation attempt, so these
+// reuse existing assets rather than dedicated suit silhouettes. Replacing
+// them with real art later only means swapping these three files, nothing
+// else in this component changes.
+// Because the art is a placeholder (not real suit art — e.g. double_breasted
+// renders a pant-leg silhouette), GarmentSketch.jsx does NOT wire this
+// component into its live lookup yet — selecting suit shows the generic
+// "coming soon" placeholder instead. Wire it back in once real art replaces
+// suitItalian/suitFormal/suitDoubleBreasted below.
 //
 // italian/formal differ by shoulder structure and ease/length on what is,
 // per plan.md §2, a shared base silhouette — genuinely a continuum, the same

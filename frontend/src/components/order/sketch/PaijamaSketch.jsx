@@ -3,14 +3,18 @@ import paijamaShort from "./assets/paijama-short.webp";
 import paijamaCasual from "./assets/paijama-casual.webp";
 import { supportsCssMask } from "./ShirtSketch.jsx";
 
-// Placeholder art (see task-8-report.md): image-generation quota was still
-// exhausted (same account-wide daily cap Tasks 5-7 hit) when this task's
-// confirmation attempt ran, so these reuse PantSketch's existing assets
-// rather than dedicated paijama silhouettes — paijama is itself a trouser
-// garment, so PantSketch's slim/baggy silhouettes are the closest visual
-// match available, closer than reaching into ShirtSketch/SuitSketch's
+// Placeholder art: image-generation quota was still exhausted (same
+// account-wide daily cap Tasks 5-7 hit) when this task's confirmation
+// attempt ran, so these reuse PantSketch's existing assets rather than
+// dedicated paijama silhouettes — paijama is itself a trouser garment, so
+// PantSketch's slim/baggy silhouettes are the closest visual match
+// available, closer than reaching into ShirtSketch/SuitSketch's
 // torso-garment art. Replacing them with real art later only means
 // swapping these two files, nothing else in this component changes.
+// Because the art is a placeholder (not real paijama art), GarmentSketch.jsx
+// does NOT wire this component into its live lookup yet — selecting paijama
+// shows the generic "coming soon" placeholder instead. Wire it back in once
+// real art replaces SHORT_ASSET/CASUAL_ASSET below.
 const SHORT_ASSET = paijamaShort;
 const CASUAL_ASSET = paijamaCasual;
 

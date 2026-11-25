@@ -3,11 +3,15 @@ import panjabiRegular from "./assets/panjabi-regular.webp";
 import panjabiShort from "./assets/panjabi-short.webp";
 import { supportsCssMask } from "./ShirtSketch.jsx";
 
-// Placeholder art (see task-6-report.md): image-generation quota was already
-// exhausted (same account-wide daily cap Task 5 hit) before this task got to
-// generate anything, so these reuse ShirtSketch's existing assets rather than
+// Placeholder art: image-generation quota was already exhausted (same
+// account-wide daily cap Task 5 hit) before this task got to generate
+// anything, so these reuse ShirtSketch's existing assets rather than
 // dedicated panjabi/kurta silhouettes. Replacing them with real art later only
 // means swapping these two files, nothing else in this component changes.
+// Because the art is a placeholder (not real panjabi art), GarmentSketch.jsx
+// does NOT wire this component into its live lookup yet — selecting panjabi
+// shows the generic "coming soon" placeholder instead. Wire it back in once
+// real art replaces REGULAR_ASSET/SHORT_ASSET below.
 const REGULAR_ASSET = panjabiRegular;
 const SHORT_ASSET = panjabiShort;
 
