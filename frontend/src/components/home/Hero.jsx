@@ -1,8 +1,8 @@
 const STRIP = [
-  { src: "/assets/photos/hero-suit-cuff.jpg", alt: "A man buttoning a dark blue suit jacket", label: "Double-breasted suit" },
+  { src: "/assets/photos/hero-suit-cuff.jpg", alt: "A man buttoning a dark blue suit jacket", label: "Tailored in navy" },
   { src: "/assets/photos/approaches-fabric-swatches.jpg", alt: "Wool suit-fabric swatches on a tailor's table", label: "Fabric, chosen in person" },
   { src: "/assets/photos/process-measure.jpg", alt: "A hand holding a measuring tape", label: "Measured twice" },
-  { src: "/assets/photos/process-stitch.jpg", alt: "A sewing machine at work", label: "Stitched by hand" },
+  { src: "/assets/photos/process-stitch.jpg", alt: "A sewing machine at work", label: "Stitched on the machine" },
   { src: "/assets/photos/process-finish.jpg", alt: "Hands finishing a seam", label: "Finished for you" },
 ];
 
@@ -22,7 +22,7 @@ export default function Hero({ onLetsGo }) {
           <a className="btn btn--secondary" href="#how-it-works">See how it works</a>
         </div>
       </div>
-      <ul className="hero-strip" aria-label="Recent work">
+      <ul className="hero-strip" aria-label="Recent work" tabIndex={0}>
         {STRIP.map((item) => (
           <li key={item.src} className="hero-strip__item">
             <figure>

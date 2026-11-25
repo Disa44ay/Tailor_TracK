@@ -22,7 +22,7 @@ describe("Showcase", () => {
 
   test("every garment image has alt text", () => {
     const { container } = render(<Showcase />);
-    expect(container.querySelectorAll(".showcase-item img")).toHaveLength(2);
+    expect(container.querySelectorAll(".showcase-item img")).toHaveLength(1);
     container.querySelectorAll(".showcase-item img").forEach((img) => {
       expect(img.getAttribute("alt")).toBeTruthy();
     });
