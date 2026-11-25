@@ -8,16 +8,22 @@ function renderHero(props = {}) {
 }
 
 describe("Hero", () => {
-  test("renders the headline and the lead", () => {
+  test("renders the headline and the first caption", () => {
     renderHero();
     expect(screen.getByRole("heading", { name: /custom tailoring, made to your measure/i })).toBeInTheDocument();
-    expect(screen.getByText(/the fabric, the fit and the finish/i)).toBeInTheDocument();
+    expect(screen.getByText("Tailored in navy")).toBeInTheDocument();
   });
 
-  test("renders a background image and a strip of five items", () => {
+  test("renders a background image and a strip of five items with progress bars", () => {
     const { container } = renderHero();
     expect(container.querySelector(".hero-bg img")).not.toBeNull();
     expect(container.querySelectorAll(".hero-strip__item")).toHaveLength(5);
+    expect(container.querySelectorAll(".hero-progress span")).toHaveLength(5);
+  });
+
+  test("no image has a caption under it", () => {
+    const { container } = renderHero();
+    expect(container.querySelector("figcaption")).toBeNull();
   });
 
   test("every image has alt text", () => {
