@@ -180,8 +180,8 @@ const STRIP = [
 export default function Hero({ onLetsGo }) {
   return (
     <section className="hero hero--bg" data-enter aria-labelledby="hero-h">
-      <div className="hero-bg" aria-hidden="true">
-        <img src={STRIP[0].src} alt="" fetchPriority="high" />
+      <div className="hero-bg">
+        <img src={STRIP[0].src} alt={STRIP[0].alt} fetchPriority="high" />
       </div>
       <div className="wrap hero-body">
         <h1 id="hero-h" className="hero-title">Custom tailoring, made to your measure</h1>
@@ -208,7 +208,7 @@ export default function Hero({ onLetsGo }) {
 }
 ```
 
-Note: the `aria-hidden` background image has `alt=""` by design, since it is decorative and the strip carries the content. The test "every image has alt text" would fail on it, so change that test to skip `aria-hidden` elements: replace the `forEach` line with `container.querySelectorAll("img:not([aria-hidden])")`, or give the background `alt` text. Use the second option: in `Hero.jsx` set the background image's `alt` to `"A man buttoning a dark blue suit jacket"` and remove `aria-hidden` from `.hero-bg`.
+Note: the background image reuses the first strip item's `alt`, so the "every image has alt text" test passes with no `aria-hidden` exception.
 
 In `frontend/src/index.css` append:
 
