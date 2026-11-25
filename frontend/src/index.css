@@ -84,3 +84,8 @@ footer.closing { height: auto; min-height: 0; }
 @media (max-width: 1023px) { .garment-list, .process-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .process-tile:nth-child(n) { margin-top: 0; } }
 @media (max-width: 639px) { .garment-list, .process-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .garment-card { transition: none; } .garment-card:hover { transform: none; } }
+
+:root { --font-display-latin: "Instrument Serif", serif; }
+.hero-title, .process-title, .how-title, .approach-item h3, .how-item h3, .garment-card h3, .home-showcase h3, .section h2 {
+  font-family: var(--font-display-latin);
+}
