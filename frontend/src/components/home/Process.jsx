@@ -1,8 +1,8 @@
 const STEPS = [
-  { no: "01", word: "Measure", src: "/assets/photos/process-measure.jpg", alt: "A hand holding a measuring tape" },
-  { no: "02", word: "Cut", src: "/assets/photos/process-cut.jpg", alt: "Fabric being cut with scissors" },
-  { no: "03", word: "Stitch", src: "/assets/photos/process-stitch.jpg", alt: "A sewing machine at work" },
-  { no: "04", word: "Finish", src: "/assets/photos/process-finish.jpg", alt: "Hands finishing a seam with a needle and thread" },
+  { no: "01", word: "Measure", src: "https://i.ibb.co.com/5W6d6jvW/process-measure.jpg", alt: "A hand holding a measuring tape" },
+  { no: "02", word: "Cut", src: "https://i.ibb.co.com/r2kGhzqB/process-cut.jpg", alt: "Fabric being cut with scissors" },
+  { no: "03", word: "Stitch", src: "https://i.ibb.co.com/Dm5WzmW/process-stitch.jpg", alt: "A sewing machine at work" },
+  { no: "04", word: "Finish", src: "https://i.ibb.co.com/zTNjQ1zs/process-finish.jpg", alt: "Hands finishing a seam with a needle and thread" },
 ];
 
 export default function Process() {

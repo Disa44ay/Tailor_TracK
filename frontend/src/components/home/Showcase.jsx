@@ -1,10 +1,10 @@
 const ITEMS = [
-  { name: "Italian suit", note: "A three-piece in blue windowpane check, with a waistcoat under the jacket.", src: "/assets/photos/showcase-italian-suit.jpg", alt: "A blue windowpane-check three-piece suit" },
-  { name: "Double-breasted suit", note: "Two rows of buttons and a wider lapel, for occasions.", src: "/assets/photos/doublebreasted2.jpg", alt: "A brown double-breasted suit worn with its jacket buttoned" },
-  { name: "Bootcut trousers", note: "A gentle flare below the knee, over a clean shoe.", src: "/assets/photos/boptcut1.jpg", alt: "Black bootcut trousers with a gentle flare" },
-  { name: "Straight-fit trousers", note: "A clean line from hip to hem, for daily wear.", src: "/assets/photos/straightFitPant.jpg", alt: "Straight-fit trousers with a clean line" },
-  { name: "Formal shirt", note: "A stiff collar and a fitted body, for work and events.", src: "/assets/photos/formalShirt.jpg", alt: "A formal shirt with a stiff collar" },
-  { name: "Cuban shirt", note: "A relaxed open collar and a boxy cut, for warm days.", src: "/assets/photos/cubanShirt.jpg", alt: "A Cuban-collar shirt with a relaxed cut" },
+  { name: "Italian suit", note: "A three-piece in blue windowpane check, with a waistcoat under the jacket.", src: "https://i.ibb.co.com/WpNdW8Jy/showcase-italian-suit.jpg", alt: "A blue windowpane-check three-piece suit" },
+  { name: "Double-breasted suit", note: "Two rows of buttons and a wider lapel, for occasions.", src: "https://i.ibb.co.com/HpKDRkN8/doublebreasted2.jpg", alt: "A brown double-breasted suit worn with its jacket buttoned" },
+  { name: "Bootcut trousers", note: "A gentle flare below the knee, over a clean shoe.", src: "https://i.ibb.co.com/bgCWWNxM/boptcut1.jpg", alt: "Black bootcut trousers with a gentle flare" },
+  { name: "Straight-fit trousers", note: "A clean line from hip to hem, for daily wear.", src: "https://i.ibb.co.com/0pvP9k21/straight-Fit-Pant.jpg", alt: "Straight-fit trousers with a clean line" },
+  { name: "Formal shirt", note: "A stiff collar and a fitted body, for work and events.", src: "https://i.ibb.co.com/Q33BK7fV/formal-Shirt.jpg", alt: "A formal shirt with a stiff collar" },
+  { name: "Cuban shirt", note: "A relaxed open collar and a boxy cut, for warm days.", src: "https://i.ibb.co.com/6RvHD0c5/cuban-Shirt.jpg", alt: "A Cuban-collar shirt with a relaxed cut" },
 ];
 
 export default function Showcase() {

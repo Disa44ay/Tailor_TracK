@@ -1,9 +1,9 @@
 import { useState, useRef } from "react";
 
 const SLIDES = [
-  { src: "/assets/photos/slider1.jpg", alt: "A navy suit lapel pinned with basting thread before the fitting", pos: "50% 50%", no: "01", title: "Pinned before the fitting", note: "Basted in place, so the line can be judged on you." },
-  { src: "/assets/photos/slider2.jpg", alt: "A tape measure taken across a man's chest", pos: "50% 92%", no: "02", title: "Measured across the chest", note: "A tape first, then the fabric, chosen to fit your build." },
-  { src: "/assets/photos/slider3.jpg", alt: "Tailor's chalk marking a navy pinstripe shoulder", pos: "50% 50%", no: "03", title: "Marked on the cloth", note: "Chalked on the shoulder, then sewn to the mark." },
+  { src: "https://i.ibb.co.com/Q2qwtSp/slider1.jpg", alt: "A navy suit lapel pinned with basting thread before the fitting", pos: "50% 50%", no: "01", title: "Pinned before the fitting", note: "Basted in place, so the line can be judged on you." },
+  { src: "https://i.ibb.co.com/W4YZszFy/slider2.jpg", alt: "A tape measure taken across a man's chest", pos: "50% 92%", no: "02", title: "Measured across the chest", note: "A tape first, then the fabric, chosen to fit your build." },
+  { src: "https://i.ibb.co.com/KjV8Cr20/slider3.jpg", alt: "Tailor's chalk marking a navy pinstripe shoulder", pos: "50% 50%", no: "03", title: "Marked on the cloth", note: "Chalked on the shoulder, then sewn to the mark." },
 ];
 
 export default function Hero({ onLetsGo }) {
@@ -28,7 +28,7 @@ export default function Hero({ onLetsGo }) {
   return (
     <section className="hero hero--tara" data-enter aria-labelledby="hero-h">
       <div className="hero-bg" aria-hidden="true">
-        <img src="/assets/photos/hero_sec_BG2.jpg" alt="" />
+        <img src="https://i.ibb.co.com/hJ3p94fD/hero-sec-BG2.jpg" alt="" />
       </div>
       <div className="wrap hero-tara">
         <h1 id="hero-h" className="hero-title">
