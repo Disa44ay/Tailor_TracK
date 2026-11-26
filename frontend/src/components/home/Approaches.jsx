@@ -32,7 +32,7 @@ export default function Approaches() {
         <div className="frame frame--photo frame--portrait span-5 start-8">
           <img
             className="frame__img"
-            src="/assets/photos/approaches-fabric-swatches.jpg"
+            src="https://i.ibb.co.com/gM1yzPHP/approaches-fabric-swatches.jpg"
             alt="Wool suit-fabric swatches fanned out on a tailor's table"
             fetchPriority="high"
           />
