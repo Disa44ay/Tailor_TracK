@@ -1,7 +1,8 @@
 import { describe, test, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import HomeNav from "./HomeNav.jsx";
+import HomeNav from './HomeNav.jsx';
+ import { AuthProvider } from '../../app/AuthContext.jsx';
 
 function renderNav(props = {}) {
   return render(<MemoryRouter><HomeNav onLogin={() => {}} {...props} /></MemoryRouter>);
@@ -28,5 +29,15 @@ describe("HomeNav", () => {
     fireEvent.click(toggle);
     expect(toggle).toHaveAttribute("aria-expanded", "true");
     expect(toggle.closest(".nav")).toHaveClass("is-open");
+  });
+
+  test("signed-in visitors can log out from the nav", () => {
+    localStorage.setItem("token", "t");
+    localStorage.setItem("user", JSON.stringify({ id: 1, name: "Ada Lovelace", role: "customer" }));
+    render(<MemoryRouter><AuthProvider><HomeNav onLogin={() => {}} /></AuthProvider></MemoryRouter>);
+    fireEvent.click(screen.getByRole("button", { name: /log out/i }));
+    expect(localStorage.getItem("token")).toBeNull();
+    expect(screen.getByRole("button", { name: /log in/i })).toBeInTheDocument();
+    localStorage.clear();
   });
 });

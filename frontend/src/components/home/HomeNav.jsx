@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../brand/Logo.jsx";
+import { useAuth } from "../../app/AuthContext.jsx";
+import { Dot } from "../inquiries/InquiriesPanel.jsx";
 
 const LINKS = [{ label: "How it works", href: "#how-it-works" }];
 
-export default function HomeNav({ onLogin }) {
+export default function HomeNav({ onLogin, onBook, onInquiries, inquiryDot = null }) {
   const [open, setOpen] = useState(false);
+  const auth = useAuth();
+  const user = auth?.user;
+  const signedIn = Boolean(auth?.token && user);
+  const username = user?.firstName || user?.name || "";
+  const logout = auth?.logout;
 
   return (
     <header className={`nav nav--centre${open ? " is-open" : ""}`}>
@@ -25,12 +32,35 @@ export default function HomeNav({ onLogin }) {
               </a>
             </div>
           ))}
+          {signedIn && (
+            <div className="nav__item">
+              <button type="button" className="nav__link" onClick={() => { setOpen(false); onInquiries?.(); }}>
+                My inquiries
+                <Dot color={inquiryDot} />
+              </button>
+            </div>
+          )}
         </nav>
 
         <div className="nav__actions">
-          <button type="button" className="btn btn--primary" onClick={onLogin}>
-            Log in
-          </button>
+          {signedIn ? (
+            <>
+              <button type="button" className="btn btn--primary" onClick={onBook}>
+                Welcome, {username}
+              </button>
+              <button type="button" className="nav__icon" aria-label="Log out" title="Log out" onClick={() => logout?.()}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" aria-hidden="true">
+                  <path d="M10 4H4v16h6" />
+                  <path d="M15 8l4 4-4 4" />
+                  <path d="M19 12H9" />
+                </svg>
+              </button>
+            </>
+          ) : (
+            <button type="button" className="btn btn--primary" onClick={onLogin}>
+              Log in
+            </button>
+          )}
         </div>
 
         <button

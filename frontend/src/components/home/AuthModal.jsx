@@ -39,7 +39,7 @@ export default function AuthModal({ open, onClose }) {
         aria-label="Log in or sign up"
         tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
-        className="relative flex w-full max-w-sm flex-col items-center rounded-xl border-2 border-ink bg-paper p-6 focus:outline-none"
+        className="relative flex w-full max-w-sm flex-col items-center rounded-none border-2 border-ink bg-paper p-6 focus:outline-none"
       >
         <button
           type="button"

@@ -37,6 +37,9 @@ export default function Footer({ onBookConsultation }) {
                 <li>
                   <a href="#how-it-works">How it works</a>
                 </li>
+                <li>
+                  <a href="#top">Book a consultation</a>
+                </li>
               </ul>
             </div>
             <div className="span-3 start-10 footer__col">

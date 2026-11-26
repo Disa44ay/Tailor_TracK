@@ -26,10 +26,10 @@ export function AuthProvider({ children }) {
     return data;
   }
 
-  async function signup({ name, email, password, countryCode, phoneNumber }) {
+  async function signup({ firstName, lastName, phone, email, password, confirmPassword }) {
     const data = await apiFetch("/auth/signup", {
       method: "POST",
-      body: JSON.stringify({ name, email, password, countryCode, phoneNumber }),
+      body: JSON.stringify({ firstName, lastName, phone, email, password, confirmPassword }),
     });
     persist(data);
     return data;
@@ -43,7 +43,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, token, login, signup, logout, startSession: persist }}>
       {children}
     </AuthContext.Provider>
   );

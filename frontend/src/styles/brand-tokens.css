@@ -7,7 +7,9 @@
  */
 :root {
   --p-bg: #f6f1e8; --p-surface: #eae5dc; --p-ink: #241d18; --p-muted: #665f59;
-  --p-accent: #a1472f; --p-accent-ink: #f6f1e8; --p-action: #a1472f; --p-action-ink: #f6f1e8;
+  --p-accent: #2f4b3e; --p-accent-ink: #f6f1e8; --p-action: #2f4b3e; --p-action-ink: #f6f1e8;
+  --p-glass: #eae5dc; --p-scrim: rgba(36, 29, 24, 0.45); --p-line: #241d18; --p-alert: #7a2e22;
+  --p-dot-sent: #3b5b7a; --p-dot-reply: #7a2e22;
   --p-inv-bg: #241d18; --p-inv-surface: #302924; --p-inv-ink: #f6f1e8; --p-inv-muted: #9f9991;
   --p-inv-accent: #f6f1e8; --p-inv-accent-ink: #241d18; --p-inv-action: #f6f1e8; --p-inv-action-ink: #241d18;
   --font-display: "Instrument Serif", serif;
