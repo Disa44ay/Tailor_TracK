@@ -51,7 +51,7 @@ export default function Hero({ onLetsGo }) {
           {SLIDES.map((item) => (
             <li key={item.src} className="hero-slider__item">
               <figure>
-                <img src={item.src} alt={item.alt} style={{ objectPosition: item.pos }} loading="lazy" />
+                <img src={item.src} alt={item.alt} style={{ objectPosition: item.pos }} />
               </figure>
             </li>
           ))}

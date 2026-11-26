@@ -14,7 +14,7 @@ export default function Process() {
           {STEPS.map((s) => (
             <li key={s.no} className="process-tile">
               <div className="frame frame--photo frame--portrait">
-                <img className="frame__img" src={s.src} alt={s.alt} fetchPriority={s.no === "01" ? "high" : undefined} loading={s.no === "01" ? undefined : "lazy"} />
+                <img className="frame__img" src={s.src} alt={s.alt} />
               </div>
               <span className="process-tile__no">{s.no}</span>
               <h3>{s.word}</h3>

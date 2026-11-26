@@ -17,7 +17,7 @@ export default function Showcase() {
             <li key={item.name} className="showcase-item">
               {item.src && (
                 <div className="frame frame--photo frame--portrait">
-                  <img className="frame__img" src={item.src} alt={item.alt} fetchPriority={i === 0 ? "high" : undefined} loading={i === 0 ? undefined : "lazy"} />
+                  <img className="frame__img" src={item.src} alt={item.alt} fetchPriority={i === 0 ? "high" : undefined} />
                 </div>
               )}
               <h3>{item.name}</h3>
