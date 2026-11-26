@@ -39,23 +39,32 @@ export async function adminLogin(req, res) {
   });
 }
 
+// consultations counts confirmed bookings, so a repeat customer is one with two or more.
 export async function listCustomers(req, res) {
   const result = await pool.query(
-    `SELECT name, email FROM users WHERE role = 'customer' ORDER BY created_at`
+    `SELECT u.name, u.email, COUNT(e.id) FILTER (WHERE e.status = 'confirmed')::int AS consultations
+     FROM users u LEFT JOIN enquiries e ON e.user_id = u.id
+     WHERE u.role = 'customer'
+     GROUP BY u.id
+     ORDER BY consultations DESC, u.created_at`
   );
   res.json(result.rows);
 }
 
+// "confirmed" lists upcoming consultations; "archived" lists confirmed ones whose time has passed.
 export async function listEnquiries(req, res) {
   const status = req.query.status;
-  if (status !== undefined && !ENQUIRY_STATUSES.includes(status)) {
-    return res.status(400).json({ message: `status must be one of ${ENQUIRY_STATUSES.join(", ")}` });
+  if (status !== undefined && ![...ENQUIRY_STATUSES, "archived"].includes(status)) {
+    return res.status(400).json({ message: `status must be one of ${[...ENQUIRY_STATUSES, "archived"].join(", ")}` });
   }
   const result = await pool.query(
     `SELECT e.id, e.status, e.consultation_at, e.created_at, e.updated_at,
             u.name AS customer_name, u.email AS customer_email
      FROM enquiries e JOIN users u ON u.id = e.user_id
-     WHERE ($1::text IS NULL OR e.status = $1)
+     WHERE $1::text IS NULL
+        OR ($1 = 'confirmed' AND e.status = 'confirmed' AND e.consultation_at >= now())
+        OR ($1 = 'archived' AND e.status = 'confirmed' AND e.consultation_at < now())
+        OR ($1 NOT IN ('confirmed', 'archived') AND e.status = $1)
      ORDER BY e.created_at DESC`,
     [status ?? null]
   );

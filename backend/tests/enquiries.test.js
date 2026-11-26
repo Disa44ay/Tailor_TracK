@@ -226,3 +226,26 @@ test("customer confirm with an invalid date returns 400", async () => {
     .send({ consultation_at: "soon" });
   assert.equal(res.status, 400);
 });
+
+test("GET /api/enquiries lists garments and the latest requested date", async () => {
+  const { token } = await signupCustomer({ email: "enq-list-fields@example.com" });
+  const created = await createEnquiry(token);
+  await request(app)
+    .post(`/api/enquiries/${created.enquiry.id}/messages`)
+    .set(auth(token))
+    .send({ kind: "date_request", proposed_at: "2099-05-01T09:00:00.000Z" });
+
+  const res = await request(app).get("/api/enquiries").set(auth(token));
+  assert.equal(res.body[0].garments, "shirt");
+  assert.equal(new Date(res.body[0].requested_at).toISOString(), "2099-05-01T09:00:00.000Z");
+});
+
+test("POST /api/enquiries refuses the studio admin account", async () => {
+  await insertAdmin();
+  const admin = await adminToken();
+  const res = await request(app)
+    .post("/api/enquiries")
+    .set(auth(admin))
+    .send({ items: [{ garment: "shirt", fabricType: "Cotton", fabricColour: "Navy" }], height_cm: 175, weight_kg: 70, age: 28 });
+  assert.equal(res.status, 403);
+});

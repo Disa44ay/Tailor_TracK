@@ -155,3 +155,41 @@ test("GET /api/admin/stats needs an admin token", async () => {
   const res = await request(app).get("/api/admin/stats").set(auth(a.token));
   assert.equal(res.status, 403);
 });
+
+test("confirmed enquiries move to archived once their time has passed", async () => {
+  const a = await signupCustomer({ email: "adm-arch-a@example.com" });
+  const past = await createEnquiry(a.token);
+  const future = await createEnquiry(a.token);
+  const pastAt = "2020-01-01T10:00:00.000Z";
+  const futureAt = "2099-01-01T10:00:00.000Z";
+  for (const [e, at] of [[past, pastAt], [future, futureAt]]) {
+    await request(app)
+      .post(`/api/admin/enquiries/${e.enquiry.id}/confirm`)
+      .set(auth(admin))
+      .send({ consultation_at: at });
+  }
+
+  const upcoming = await request(app).get("/api/admin/enquiries?status=confirmed").set(auth(admin));
+  const archived = await request(app).get("/api/admin/enquiries?status=archived").set(auth(admin));
+  assert.deepEqual(upcoming.body.map((r) => r.id), [future.enquiry.id]);
+  assert.deepEqual(archived.body.map((r) => r.id), [past.enquiry.id]);
+});
+
+test("GET /api/admin/customers counts each customer's confirmed consultations", async () => {
+  const a = await signupCustomer({ email: "adm-repeat-a@example.com" });
+  const b = await signupCustomer({ email: "adm-repeat-b@example.com" });
+  const e1 = await createEnquiry(a.token);
+  const e2 = await createEnquiry(a.token);
+  await createEnquiry(b.token);
+  for (const e of [e1, e2]) {
+    await request(app)
+      .post(`/api/admin/enquiries/${e.enquiry.id}/confirm`)
+      .set(auth(admin))
+      .send({ consultation_at: "2099-01-01T10:00:00.000Z" });
+  }
+
+  const res = await request(app).get("/api/admin/customers").set(auth(admin));
+  const byEmail = Object.fromEntries(res.body.map((c) => [c.email, c.consultations]));
+  assert.equal(byEmail["adm-repeat-a@example.com"], 2);
+  assert.equal(byEmail["adm-repeat-b@example.com"], 0);
+});

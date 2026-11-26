@@ -72,5 +72,5 @@ test("GET /api/admin/customers lists customers with name and email", async () =>
     .set("Authorization", `Bearer ${adminToken}`);
   assert.equal(res.status, 200);
   assert.equal(res.body.length, 1);
-  assert.deepEqual(res.body[0], { name: "Lia Khan", email: "listed@example.com" });
+  assert.deepEqual(res.body[0], { name: "Lia Khan", email: "listed@example.com", consultations: 0 });
 });

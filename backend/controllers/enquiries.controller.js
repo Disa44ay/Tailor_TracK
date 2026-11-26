@@ -24,6 +24,8 @@ function checkItems(items) {
 }
 
 export async function createEnquiry(req, res) {
+  // The studio account is not a customer; an enquiry from it would show as "Shop Admin" to the studio.
+  if (req.user.role !== "customer") return res.status(403).json({ message: "Only customer accounts can send enquiries" });
   const { items, height_cm, weight_kg, age } = req.body;
   const error = checkItems(items) ?? checkMeasurements({ height_cm, weight_kg, age });
   if (error) return res.status(400).json({ message: error });
@@ -70,6 +72,10 @@ export async function listMyEnquiries(req, res) {
             e.height_cm::double precision AS height_cm,
             e.weight_kg::double precision AS weight_kg,
             e.age,
+            (SELECT string_agg(garment, ', ' ORDER BY id) FROM enquiry_items WHERE enquiry_id = e.id) AS garments,
+            (SELECT proposed_at FROM enquiry_messages m
+              WHERE m.enquiry_id = e.id AND m.kind = 'date_request'
+              ORDER BY m.created_at DESC LIMIT 1) AS requested_at,
             EXISTS (
               SELECT 1 FROM enquiry_messages m
               WHERE m.enquiry_id = e.id AND m.sender = 'admin'
