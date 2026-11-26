@@ -34,7 +34,7 @@ export default function Approaches() {
             className="frame__img"
             src="/assets/photos/approaches-fabric-swatches.jpg"
             alt="Wool suit-fabric swatches fanned out on a tailor's table"
-            loading="lazy"
+            fetchPriority="high"
           />
         </div>
       </div>

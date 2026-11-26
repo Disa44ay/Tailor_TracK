@@ -13,11 +13,11 @@ export default function Showcase() {
       <div className="wrap">
         <h2 id="what-we-make-h">What we make</h2>
         <ol className="showcase-grid">
-          {ITEMS.map((item) => (
+          {ITEMS.map((item, i) => (
             <li key={item.name} className="showcase-item">
               {item.src && (
                 <div className="frame frame--photo frame--portrait">
-                  <img className="frame__img" src={item.src} alt={item.alt} loading="lazy" />
+                  <img className="frame__img" src={item.src} alt={item.alt} fetchPriority={i === 0 ? "high" : undefined} loading={i === 0 ? undefined : "lazy"} />
                 </div>
               )}
               <h3>{item.name}</h3>

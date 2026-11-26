@@ -34,6 +34,7 @@
 
 html {
   color-scheme: light;
+  scrollbar-color: var(--color-muted) var(--color-paper);
   background-color: var(--color-paper);
   overflow-x: clip;
 }
@@ -185,7 +186,7 @@ main > section.hero--tara { height: auto; min-height: 100svh; }
 .auth-form__link:focus-visible { outline: 2px solid var(--p-accent); outline-offset: 2px; }
 
 .footer.closing { position: relative; overflow: hidden; }
-.footer__lede { font-family: var(--font-display-latin); font-size: clamp(28px, 2.6vw, 40px); line-height: 1.1; margin: 16px 0 0; max-width: 16ch; }
+.footer__lede { font-family: var(--font-display-latin); font-size: clamp(28px, 2.6vw, 40px); line-height: 1.1; margin: 16px 0 0; min-width: 28ch; max-width: 28ch; }
 .footer .footer__col h4 { font-family: var(--font-text); font-size: 15px; font-weight: 500; margin: 0 0 12px; color: var(--p-inv-muted); }
 .footer .footer__col a { color: var(--p-inv-ink); text-decoration: none; border-bottom: 1px solid transparent; }
 .footer .footer__col a:hover { border-bottom-color: var(--p-inv-ink); }
