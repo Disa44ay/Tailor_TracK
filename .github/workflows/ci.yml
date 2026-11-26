@@ -2,11 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, Dev_exp, dev]
   pull_request:
 
 jobs:
-  backend-tests:
+  backend:
+    name: Backend tests and lint
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -40,13 +41,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run database migration (against the CI test database)
+      - name: Lint backend
+        run: npx oxlint backend --ignore-pattern node_modules
+
+      - name: Migrate the CI test database
         run: node backend/db/migrate.js
 
       - name: Run backend tests
         run: npm test --workspace=backend
 
-  frontend-build:
+  frontend:
+    name: Frontend lint, tests and build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -58,6 +63,12 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Lint frontend
+        run: npm run lint --workspace=frontend
+
+      - name: Run frontend tests
+        run: npm test --workspace=frontend
 
       - name: Build frontend
         run: npm run build --workspace=frontend
