@@ -11,6 +11,18 @@ app stores no prices and does no accounting.
 
 The original requirement proposal and design notes are in [`docs/`](docs/).
 
+## Live links
+
+| What | Address |
+| --- | --- |
+| Customer site | https://tailortrackoboyob.vercel.app |
+| Studio login | https://tailortrackoboyob.vercel.app/admin/login |
+| Backend API | https://tailortrackoboyob-api.onrender.com/api |
+| Backend health check | https://tailortrackoboyob-api.onrender.com/health |
+
+The live backend runs on a free plan, so the first request after a pause can
+take up to a minute.
+
 ## Diagrams
 
 | Diagram | What it shows |
@@ -108,72 +120,115 @@ See [`CLAUDE.md`](CLAUDE.md) for why this stack was chosen and how the work is o
 
 ## Installation
 
+These steps work on Windows, macOS and Linux. Run the commands in a terminal
+(PowerShell on Windows, Terminal on macOS and Linux).
+
 ### Requirements
 
-- Node.js 24 (the version CI uses)
-- Docker, for the local PostgreSQL container
-- Git
+- **Node.js 24** (the version CI uses). Check with `node -v`.
+- **Git**, to clone the repository.
+- **Docker** (Docker Desktop on Windows and macOS), to run the local PostgreSQL database.
 
-### 1. Get the code and the packages
+### 1. Clone and install
 
-```powershell
+```bash
 git clone https://github.com/Disa44ay/Tailor_TracK.git
 cd Tailor_TracK
 npm install
 ```
 
-`npm install` at the root installs both workspaces, `frontend` and `backend`.
+`npm install` at the root installs the `frontend` and `backend` packages together.
 
-### 2. Environment files
+### 2. Create the environment files
+
+Copy the two example files. The defaults already match the local database.
+
+Windows (PowerShell):
 
 ```powershell
 Copy-Item backend\.env.example backend\.env
 Copy-Item frontend\.env.example frontend\.env
 ```
 
-The backend needs `JWT_SECRET` (any long random string), the `ADMIN_*` values
-for the studio account, and `DATABASE_URL` and `TEST_DATABASE_URL`. The
-defaults match the local Docker database. The frontend needs `VITE_API_URL`,
-which must end in `/api` (the default is `http://localhost:3001/api`).
+macOS and Linux:
 
-### 3. Database
-
-```powershell
-npm run db:up                                # starts PostgreSQL in Docker
-npm run db:migrate --workspace=backend       # creates the tables
-npm run db:seed:admin --workspace=backend    # creates the studio account from ADMIN_* in backend\.env
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 ```
 
-Create the test database once, then migrate it:
+In `backend/.env`, set:
 
-```powershell
-docker exec tailor_track-db-1 psql -U tailortrack -d tailortrack -c "CREATE DATABASE tailortrack_test"
-$env:DATABASE_URL = $env:TEST_DATABASE_URL   # or set it in backend\.env
+- `JWT_SECRET` to any long random string.
+- `ADMIN_EMAIL` and `ADMIN_PASSWORD` to the studio account you want to use locally.
+
+`frontend/.env` needs only `VITE_API_URL=http://localhost:3001/api`, which is already the default.
+
+### 3. Start the database
+
+```bash
+npm run db:up
+```
+
+This starts PostgreSQL 16 in Docker on port 5432.
+
+### 4. Create the tables and the studio account
+
+```bash
 npm run db:migrate --workspace=backend
+npm run db:seed:admin --workspace=backend
 ```
 
-### 4. Run it
+The migration can be run again safely. The seed step creates the studio account
+from `ADMIN_*` in `backend/.env`.
 
-```powershell
+### 5. Create the test database (once)
+
+The backend tests use a separate database so they never touch your data.
+
+```bash
+docker compose exec db psql -U tailortrack -d tailortrack -c "CREATE DATABASE tailortrack_test"
+```
+
+The tests clear that database every time they run, so don't use it for data you want to keep.
+
+### 6. Run the app
+
+```bash
 npm run dev
 ```
 
-- Frontend: http://localhost:5173
-- Studio login: http://localhost:5173/admin/login
-- Backend: http://localhost:3001 (check http://localhost:3001/health)
+| What | Address |
+| --- | --- |
+| Customer site | http://localhost:5173 |
+| Studio login | http://localhost:5173/admin/login |
+| Backend API | http://localhost:3001/api |
+| Backend health check | http://localhost:3001/health |
 
-### 5. Tests and checks
+Sign up as a customer on the site, or sign in as the studio with the
+`ADMIN_EMAIL` and `ADMIN_PASSWORD` values from `backend/.env`.
 
-```powershell
-npm test --workspace=backend                 # backend suite, against tailortrack_test
-npm test --workspace=frontend                # frontend suite
-npm run lint --workspace=frontend            # frontend lint
+### 7. Run the tests and checks
+
+```bash
+npm test --workspace=backend          # backend tests (uses tailortrack_test)
+npm test --workspace=frontend         # frontend tests
+npm run lint --workspace=frontend     # frontend lint
 npx oxlint backend --ignore-pattern node_modules   # backend lint
-npm run build --workspace=frontend           # production build
+npm run build --workspace=frontend    # production build
 ```
 
-The backend suite clears the test database on every run, so reseed it before
-trying the local servers against it.
+### Stopping
+
+Press `Ctrl+C` in the terminal running `npm run dev`. To stop the database,
+run `npm run db:down`.
+
+### Troubleshooting
+
+- **Port already in use:** another app is using 3001 or 5173. Stop it, or change `PORT` in `backend/.env`.
+- **Database connection refused:** check that Docker is running, then `npm run db:up` again.
+- **Frontend shows network errors:** check that the backend is running at `http://localhost:3001/health`, and that `VITE_API_URL` in `frontend/.env` ends in `/api`. Restart `npm run dev` after changing an env file.
+- **Studio login fails:** the account exists only after step 4. Check `ADMIN_EMAIL` and `ADMIN_PASSWORD`, then run the seed again.
 
 ## Continuous integration
 
