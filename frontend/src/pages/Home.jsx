@@ -1,14 +1,9 @@
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../app/AuthContext.jsx";
 import HomePage from "./HomePage.jsx";
 
-// Public landing route: shows the marketing homepage when logged out,
-// or redirects by role when logged in. The admin side arrives in Task 13.
+// Public landing route. Role-based post-login redirects will return once
+// this branch's authenticated pages exist again.
 function Home() {
-  const { user, token } = useAuth();
-  if (!token) return <HomePage />;
-  if (user?.role === "admin") return <Navigate to="/admin/orders" replace />;
-  return <Navigate to="/orders" replace />;
+  return <HomePage />;
 }
 
 export default Home;

@@ -94,3 +94,42 @@ describe("apiFetch", () => {
     expect(options.headers.Authorization).toBe("Bearer abc123");
   });
 });
+
+describe("apiFetch session choice", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.spyOn(toast, "error").mockImplementation(() => {});
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  test("studio paths send the admin token, other paths the customer token", async () => {
+    localStorage.setItem("token", "customer-token");
+    localStorage.setItem("adminToken", "studio-token");
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await apiFetch("/admin/stats");
+    expect(fetchMock.mock.calls[0][1].headers.Authorization).toBe("Bearer studio-token");
+
+    await apiFetch("/enquiries");
+    expect(fetchMock.mock.calls[1][1].headers.Authorization).toBe("Bearer customer-token");
+  });
+
+  test("a 401 on a studio path clears only the studio session", async () => {
+    localStorage.setItem("token", "customer-token");
+    localStorage.setItem("user", "{}");
+    localStorage.setItem("adminToken", "studio-token");
+    localStorage.setItem("adminUser", "{}");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 401, json: async () => ({ message: "expired" }) }));
+    const assign = vi.fn();
+    Object.defineProperty(window, "location", { configurable: true, value: { ...window.location, assign } });
+
+    await expect(apiFetch("/admin/stats")).rejects.toThrow();
+    expect(localStorage.getItem("adminToken")).toBeNull();
+    expect(localStorage.getItem("token")).toBe("customer-token");
+    expect(assign).toHaveBeenCalledWith("/admin/login");
+  });
+});

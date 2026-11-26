@@ -1,6 +1,8 @@
--- TailorTrack schema. Six tables, FK order. Re-runnable (IF NOT EXISTS).
--- Enums are enforced as CHECK constraints rather than Postgres ENUM types,
--- so the allowed values are visible right here and easy to extend.
+-- Tailor_Track schema: accounts, consultation requests and their conversation.
+-- Re-runnable (IF NOT EXISTS / ADD COLUMN IF NOT EXISTS).
+-- Enums are CHECK constraints so the allowed values stay visible here.
+-- Money is never stored: pricing per gauge is handled by phone or in the
+-- consultation, so the web app has no accounting tables.
 
 CREATE TABLE IF NOT EXISTS users (
   id serial PRIMARY KEY,
@@ -13,127 +15,58 @@ CREATE TABLE IF NOT EXISTS users (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS measurements (
-  id serial PRIMARY KEY,
-  customer_id integer NOT NULL UNIQUE REFERENCES users(id),
-  chest numeric,
-  waist numeric,
-  hip numeric,
-  shoulder_width numeric,
-  sleeve_length numeric,
-  inseam numeric,
-  neck numeric,
-  bicep numeric,
-  wrist numeric,
-  thigh numeric,
-  knee numeric,
-  rise numeric,
-  hem numeric,
-  garment_length numeric,
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS first_name text;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_name text;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS height_cm numeric(5,1) CHECK (height_cm IS NULL OR height_cm BETWEEN 50 AND 250);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS weight_kg numeric(5,1) CHECK (weight_kg IS NULL OR weight_kg BETWEEN 20 AND 300);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS age smallint CHECK (age IS NULL OR age BETWEEN 1 AND 120);
 
-CREATE TABLE IF NOT EXISTS orders (
+-- One admin only. A partial unique index allows at most one row with role = 'admin'.
+CREATE UNIQUE INDEX IF NOT EXISTS one_admin_account ON users (role) WHERE role = 'admin';
+
+-- A consultation request: one visit that can hold several garments.
+CREATE TABLE IF NOT EXISTS enquiries (
   id serial PRIMARY KEY,
-  customer_id integer NOT NULL REFERENCES users(id),
-  garment_type text NOT NULL CHECK (
-    garment_type IN (
-      'shirt', 'pant', 'panjabi', 'suit_2pc', 'suit_3pc', 'kurta', 'blouse', 'suit', 'paijama', 'other'
-    )
-  ),
-  style_notes text,
-  fabric_note text,
-  fit_type text,
-  lapel_style text CHECK (lapel_style IS NULL OR lapel_style IN ('notch', 'peak', 'shawl')),
-  measurements_snapshot jsonb,
-  priority text NOT NULL DEFAULT 'normal' CHECK (priority IN ('normal', 'fast', 'urgent')),
-  status text NOT NULL DEFAULT 'requested' CHECK (
-    status IN (
-      'requested', 'needs_changes', 'quoted', 'declined',
-      'confirmed', 'cutting', 'stitching', 'ready', 'completed'
-    )
-  ),
-  due_date date,
-  quoted_price numeric,
-  advance_required numeric,
-  pending_tran_id text,
+  user_id integer NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  status text NOT NULL DEFAULT 'sent'
+    CHECK (status IN ('sent', 'in_conversation', 'confirmed', 'closed')),
+  consultation_at timestamptz,
+  customer_last_seen_at timestamptz,
+  admin_last_seen_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+-- Snapshot of the body measurements at submit time, so an old enquiry keeps the
+-- numbers the customer sent even after their profile changes.
+ALTER TABLE enquiries ADD COLUMN IF NOT EXISTS height_cm numeric(5,1) CHECK (height_cm IS NULL OR height_cm BETWEEN 50 AND 250);
+ALTER TABLE enquiries ADD COLUMN IF NOT EXISTS weight_kg numeric(5,1) CHECK (weight_kg IS NULL OR weight_kg BETWEEN 20 AND 300);
+ALTER TABLE enquiries ADD COLUMN IF NOT EXISTS age smallint CHECK (age IS NULL OR age BETWEEN 1 AND 120);
 
-CREATE TABLE IF NOT EXISTS order_status_history (
+CREATE INDEX IF NOT EXISTS enquiries_user_idx ON enquiries (user_id);
+CREATE INDEX IF NOT EXISTS enquiries_status_idx ON enquiries (status);
+
+-- One garment inside an enquiry (one shirt, one pant, one suit, ...).
+CREATE TABLE IF NOT EXISTS enquiry_items (
   id serial PRIMARY KEY,
-  order_id integer NOT NULL REFERENCES orders(id),
-  from_status text,
-  to_status text NOT NULL,
-  note text,
-  changed_by text NOT NULL CHECK (changed_by IN ('admin', 'system', 'customer')),
+  enquiry_id integer NOT NULL REFERENCES enquiries(id) ON DELETE CASCADE,
+  garment text NOT NULL CHECK (garment IN ('shirt', 'pant', 'pajama', 'suit')),
+  fabric_type text NOT NULL,
+  fabric_colour text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS enquiry_items_enquiry_idx ON enquiry_items (enquiry_id);
 
-CREATE TABLE IF NOT EXISTS payments (
+-- The conversation: customer messages, admin replies, date proposals and answers.
+CREATE TABLE IF NOT EXISTS enquiry_messages (
   id serial PRIMARY KEY,
-  order_id integer NOT NULL REFERENCES orders(id),
-  type text NOT NULL CHECK (type IN ('advance', 'balance')),
-  amount numeric NOT NULL,
-  gateway_transaction_id text,
-  recorded_at timestamptz NOT NULL DEFAULT now()
+  enquiry_id integer NOT NULL REFERENCES enquiries(id) ON DELETE CASCADE,
+  sender text NOT NULL CHECK (sender IN ('customer', 'admin')),
+  kind text NOT NULL CHECK (kind IN ('message', 'date_proposal', 'date_confirmed', 'date_request')),
+  body text,
+  proposed_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  -- a text message needs a body; a date proposal or request needs a date
+  CHECK (kind <> 'message' OR body IS NOT NULL),
+  CHECK (kind NOT IN ('date_proposal', 'date_request') OR proposed_at IS NOT NULL)
 );
-
-CREATE TABLE IF NOT EXISTS notifications (
-  id serial PRIMARY KEY,
-  sender text NOT NULL CHECK (sender IN ('admin', 'system')),
-  recipient_id integer NOT NULL REFERENCES users(id),
-  message text NOT NULL,
-  order_id integer REFERENCES orders(id),
-  is_read boolean NOT NULL DEFAULT false,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-
-CREATE TABLE IF NOT EXISTS fabrics (
-  id serial PRIMARY KEY,
-  name text NOT NULL UNIQUE,
-  color_hex text NOT NULL CHECK (color_hex ~ '^#[0-9a-fA-F]{6}$'),
-  print_pattern text NOT NULL DEFAULT 'solid' CHECK (print_pattern IN ('solid', 'striped', 'checked')),
-  texture text NOT NULL CHECK (texture IN ('cotton', 'linen', 'silk', 'wool', 'denim')),
-  swatch_image_url text,
-  price_modifier numeric NOT NULL DEFAULT 0,
-  is_active boolean NOT NULL DEFAULT true,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-
--- Columns added after their table's initial CREATE TABLE already ran in
--- dev/test. IF NOT EXISTS makes re-running this file safe either way, but
--- these must come LAST — each references a table that must already exist,
--- which isn't guaranteed yet on a brand-new database if these ran earlier
--- in the file (the bug CI caught: ALTER TABLE orders before CREATE TABLE
--- orders broke a fresh database, even though it was harmless on one that
--- already had the table).
-ALTER TABLE users ADD COLUMN IF NOT EXISTS country_code text;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_number text
-  CHECK (phone_number IS NULL OR phone_number ~ '^[0-9]{11}$');
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS measurements_snapshot jsonb;
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS pending_tran_id text;
-ALTER TABLE measurements ADD COLUMN IF NOT EXISTS bicep numeric;
-ALTER TABLE measurements ADD COLUMN IF NOT EXISTS wrist numeric;
-ALTER TABLE measurements ADD COLUMN IF NOT EXISTS thigh numeric;
-ALTER TABLE measurements ADD COLUMN IF NOT EXISTS knee numeric;
-ALTER TABLE measurements ADD COLUMN IF NOT EXISTS rise numeric;
-ALTER TABLE measurements ADD COLUMN IF NOT EXISTS hem numeric;
-ALTER TABLE measurements ADD COLUMN IF NOT EXISTS garment_length numeric;
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS fit_type text;
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS lapel_style text
-  CHECK (lapel_style IS NULL OR lapel_style IN ('notch', 'peak', 'shawl'));
-ALTER TABLE measurements ADD COLUMN IF NOT EXISTS height_cm numeric;
-ALTER TABLE measurements ADD COLUMN IF NOT EXISTS weight_kg numeric;
-ALTER TABLE measurements ADD COLUMN IF NOT EXISTS age integer;
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS fabric_id integer REFERENCES fabrics(id);
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS body_profile_snapshot jsonb;
--- Re-runnable widening of the garment_type CHECK: IF NOT EXISTS doesn't
--- apply to constraints, so drop-and-recreate is the only re-runnable way.
-ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_garment_type_check;
-ALTER TABLE orders ADD CONSTRAINT orders_garment_type_check CHECK (
-  garment_type IN (
-    'shirt', 'pant', 'panjabi', 'suit_2pc', 'suit_3pc', 'kurta', 'blouse', 'suit', 'paijama', 'other'
-  )
-);
+CREATE INDEX IF NOT EXISTS enquiry_messages_enquiry_idx ON enquiry_messages (enquiry_id, created_at);

@@ -12,67 +12,80 @@ beforeEach(async () => {
 });
 
 const validSignupFields = {
-  name: "Rafi",
+  firstName: "Rafi",
+  lastName: "Ahmed",
   password: "secret123",
-  countryCode: "+880",
-  phoneNumber: "01712345678",
+  confirmPassword: "secret123",
+  phone: "01712345678",
 };
 
 test("signup creates a customer and returns a token", async () => {
   const res = await request(app)
-    .post("/auth/signup")
+    .post("/api/auth/signup")
     .send({ ...validSignupFields, email: "rafi@example.com" });
   assert.equal(res.status, 201);
   assert.ok(res.body.token);
 });
 
+test("signup sets name to first name and last name joined by a space", async () => {
+  const res = await request(app)
+    .post("/api/auth/signup")
+    .send({ ...validSignupFields, email: "joined@example.com" });
+  assert.equal(res.body.user.name, "Rafi Ahmed");
+  assert.equal(res.body.user.first_name, "Rafi");
+  assert.equal(res.body.user.last_name, "Ahmed");
+});
+
 test("signup with an already-used email returns 409", async () => {
   await request(app)
-    .post("/auth/signup")
+    .post("/api/auth/signup")
     .send({ ...validSignupFields, email: "dup@example.com" });
   const res = await request(app)
-    .post("/auth/signup")
-    .send({ ...validSignupFields, name: "B", email: "dup@example.com" });
+    .post("/api/auth/signup")
+    .send({ ...validSignupFields, firstName: "B", email: "dup@example.com" });
   assert.equal(res.status, 409);
 });
 
-test("signup without a phone number returns 400", async () => {
-  const { phoneNumber, ...rest } = validSignupFields;
+test("signup without a phone returns 400", async () => {
+  const { phone: _phone, ...rest } = validSignupFields;
   const res = await request(app)
-    .post("/auth/signup")
+    .post("/api/auth/signup")
     .send({ ...rest, email: "no-phone@example.com" });
   assert.equal(res.status, 400);
 });
 
-test("signup with a phone number that isn't 11 digits returns 400", async () => {
+test("signup with a phone that isn't 11 digits returns 400", async () => {
   const res = await request(app)
-    .post("/auth/signup")
-    .send({ ...validSignupFields, email: "short-phone@example.com", phoneNumber: "12345" });
+    .post("/api/auth/signup")
+    .send({ ...validSignupFields, email: "short-phone@example.com", phone: "12345" });
   assert.equal(res.status, 400);
 });
 
-test("signup with a country code not in the known list returns 400", async () => {
+test("signup with mismatched passwords returns 400 and creates no account", async () => {
   const res = await request(app)
-    .post("/auth/signup")
-    .send({ ...validSignupFields, email: "bad-code@example.com", countryCode: "+999" });
+    .post("/api/auth/signup")
+    .send({ ...validSignupFields, email: "mismatch@example.com", confirmPassword: "different1" });
   assert.equal(res.status, 400);
+  const retry = await request(app)
+    .post("/api/auth/signup")
+    .send({ ...validSignupFields, email: "mismatch@example.com" });
+  assert.equal(retry.status, 201);
 });
 
-test("signup response includes the saved country code and phone number", async () => {
+test("signup response includes the saved phone number", async () => {
   const res = await request(app)
-    .post("/auth/signup")
+    .post("/api/auth/signup")
     .send({ ...validSignupFields, email: "phone-echo@example.com" });
   assert.equal(res.status, 201);
-  assert.equal(res.body.user.country_code, "+880");
   assert.equal(res.body.user.phone_number, "01712345678");
 });
 
 test("login with correct credentials returns a token", async () => {
   await request(app)
-    .post("/auth/signup")
+    .post("/api/auth/signup")
     .send({ ...validSignupFields, email: "login-ok@example.com" });
   const res = await request(app)
-    .post("/auth/login")
+    .post("/api/auth/login")
     .send({ email: "login-ok@example.com", password: "secret123" });
   assert.equal(res.status, 200);
   assert.ok(res.body.token);
@@ -80,10 +93,10 @@ test("login with correct credentials returns a token", async () => {
 
 test("login with the wrong password returns 401", async () => {
   await request(app)
-    .post("/auth/signup")
+    .post("/api/auth/signup")
     .send({ ...validSignupFields, email: "login-bad@example.com" });
   const res = await request(app)
-    .post("/auth/login")
+    .post("/api/auth/login")
     .send({ email: "login-bad@example.com", password: "wrongpassword" });
   assert.equal(res.status, 401);
 });

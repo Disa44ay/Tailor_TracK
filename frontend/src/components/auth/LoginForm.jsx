@@ -24,14 +24,11 @@ function LoginForm({ idPrefix = "", showSwitchLink = true, onSwitchToSignup, onS
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8"
-    >
-      <h1 className="text-xl font-semibold text-slate-900">Log in</h1>
-      <p className="mt-1 text-sm text-slate-500">Welcome back to TailorTrack.</p>
+    <form onSubmit={handleSubmit} className="auth-form">
+      <h1 className="auth-form__title">Log in</h1>
+      <p className="auth-form__lead">Welcome back to Oboyob.</p>
 
-      <label htmlFor={`${idPrefix}email`} className="mt-6 block text-sm font-medium text-slate-700">
+      <label htmlFor={`${idPrefix}email`} className="auth-form__label">
         Email
       </label>
       <input
@@ -40,10 +37,10 @@ function LoginForm({ idPrefix = "", showSwitchLink = true, onSwitchToSignup, onS
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        className="auth-form__input"
       />
 
-      <label htmlFor={`${idPrefix}password`} className="mt-4 block text-sm font-medium text-slate-700">
+      <label htmlFor={`${idPrefix}password`} className="auth-form__label">
         Password
       </label>
       <input
@@ -52,30 +49,22 @@ function LoginForm({ idPrefix = "", showSwitchLink = true, onSwitchToSignup, onS
         required
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        className="auth-form__input"
       />
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="mt-6 w-full rounded-md bg-slate-900 py-2 text-sm font-medium text-white disabled:opacity-60"
-      >
+      <button type="submit" disabled={submitting} className="auth-form__submit">
         Log in
       </button>
 
       {showSwitchLink && (
-        <p className="mt-4 text-center text-sm text-slate-500">
+        <p className="auth-form__switch">
           New here?{" "}
           {onSwitchToSignup ? (
-            <button
-              type="button"
-              onClick={onSwitchToSignup}
-              className="font-medium text-slate-900 underline"
-            >
+            <button type="button" onClick={onSwitchToSignup} className="auth-form__link">
               Sign up
             </button>
           ) : (
-            <Link to="/signup" className="font-medium text-slate-900 underline">
+            <Link to="/signup" className="auth-form__link">
               Sign up
             </Link>
           )}

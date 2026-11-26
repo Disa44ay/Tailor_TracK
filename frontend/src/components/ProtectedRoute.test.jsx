@@ -5,8 +5,8 @@ import { AuthProvider } from "../app/AuthContext.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 
 function renderWithRole(userRole) {
-  localStorage.setItem("token", "abc");
-  localStorage.setItem("user", JSON.stringify({ id: 1, role: userRole }));
+  localStorage.setItem("adminToken", "abc");
+  localStorage.setItem("adminUser", JSON.stringify({ id: 1, role: userRole }));
 
   return render(
     <MemoryRouter initialEntries={["/admin/orders"]}>

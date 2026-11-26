@@ -9,8 +9,7 @@
     "start": "node server.js",
     "test": "node --test --test-concurrency=1 \"tests/**/*.test.js\"",
     "db:migrate": "node db/migrate.js",
-    "db:seed:admin": "node db/seedAdmin.js",
-    "db:seed:fabrics": "node db/seedFabrics.js"
+    "db:seed:admin": "node db/seedAdmin.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -18,8 +17,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.13.1",
-    "sslcommerz-lts": "^1.2.0"
+    "pg": "^8.13.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.7",

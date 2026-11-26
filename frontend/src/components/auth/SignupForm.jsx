@@ -2,28 +2,19 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../app/AuthContext.jsx";
 
-// Mirrors backend/constants/countryCodes.js — kept in sync by hand since
-// frontend and backend are separate packages with no shared import.
-const COUNTRY_CODES = [
-  { code: "+880", country: "Bangladesh" },
-  { code: "+91", country: "India" },
-  { code: "+1", country: "USA/Canada" },
-  { code: "+44", country: "UK" },
-  { code: "+971", country: "UAE" },
-  { code: "+966", country: "Saudi Arabia" },
-];
-
 function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onSuccess }) {
   const { signup } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
     email: "",
     password: "",
-    countryCode: COUNTRY_CODES[0].code,
-    phoneNumber: "",
+    confirmPassword: "",
   });
   const [submitting, setSubmitting] = useState(false);
+  const [mismatch, setMismatch] = useState(false);
 
   function update(field) {
     return (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -31,6 +22,11 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (form.password !== form.confirmPassword) {
+      setMismatch(true);
+      return;
+    }
+    setMismatch(false);
     setSubmitting(true);
     try {
       await signup(form);
@@ -44,25 +40,53 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8"
-    >
-      <h1 className="text-xl font-semibold text-slate-900">Sign up</h1>
-      <p className="mt-1 text-sm text-slate-500">Create your TailorTrack account.</p>
+    <form onSubmit={handleSubmit} className="auth-form">
+      <h1 className="auth-form__title">Sign up</h1>
+      <p className="auth-form__lead">Create your Oboyob account.</p>
 
-      <label htmlFor={`${idPrefix}name`} className="mt-6 block text-sm font-medium text-slate-700">
-        Name
+      <div className="auth-form__row">
+        <div>
+          <label htmlFor={`${idPrefix}firstName`} className="auth-form__label auth-form__label--inline">
+            First name
+          </label>
+          <input
+            id={`${idPrefix}firstName`}
+            required
+            value={form.firstName}
+            onChange={update("firstName")}
+            className="auth-form__input"
+          />
+        </div>
+
+        <div>
+          <label htmlFor={`${idPrefix}lastName`} className="auth-form__label auth-form__label--inline">
+            Last name
+          </label>
+          <input
+            id={`${idPrefix}lastName`}
+            required
+            value={form.lastName}
+            onChange={update("lastName")}
+            className="auth-form__input"
+          />
+        </div>
+      </div>
+
+      <label htmlFor={`${idPrefix}phone`} className="auth-form__label">
+        Phone number
       </label>
       <input
-        id={`${idPrefix}name`}
+        id={`${idPrefix}phone`}
         required
-        value={form.name}
-        onChange={update("name")}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        pattern="\d{11}"
+        maxLength={11}
+        title="11-digit local number"
+        value={form.phone}
+        onChange={update("phone")}
+        className="auth-form__input"
       />
 
-      <label htmlFor={`${idPrefix}email`} className="mt-4 block text-sm font-medium text-slate-700">
+      <label htmlFor={`${idPrefix}email`} className="auth-form__label">
         Email
       </label>
       <input
@@ -71,10 +95,10 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
         required
         value={form.email}
         onChange={update("email")}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        className="auth-form__input"
       />
 
-      <label htmlFor={`${idPrefix}password`} className="mt-4 block text-sm font-medium text-slate-700">
+      <label htmlFor={`${idPrefix}password`} className="auth-form__label">
         Password
       </label>
       <input
@@ -83,67 +107,39 @@ function SignupForm({ idPrefix = "", showSwitchLink = true, onSwitchToLogin, onS
         required
         value={form.password}
         onChange={update("password")}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        className="auth-form__input"
       />
 
-      <div className="mt-4 flex gap-2">
-        <div>
-          <label htmlFor={`${idPrefix}countryCode`} className="block text-sm font-medium text-slate-700">
-            Country
-          </label>
-          <select
-            id={`${idPrefix}countryCode`}
-            required
-            value={form.countryCode}
-            onChange={update("countryCode")}
-            className="mt-1 rounded-md border border-slate-300 px-2 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          >
-            {COUNTRY_CODES.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.code} {c.country}
-              </option>
-            ))}
-          </select>
-        </div>
+      <label htmlFor={`${idPrefix}confirmPassword`} className="auth-form__label">
+        Confirm password
+      </label>
+      <input
+        id={`${idPrefix}confirmPassword`}
+        type="password"
+        required
+        value={form.confirmPassword}
+        onChange={update("confirmPassword")}
+        className="auth-form__input"
+      />
+      {mismatch && (
+        <p role="alert" className="auth-form__switch">
+          Passwords do not match.
+        </p>
+      )}
 
-        <div className="flex-1">
-          <label htmlFor={`${idPrefix}phoneNumber`} className="block text-sm font-medium text-slate-700">
-            Phone number
-          </label>
-          <input
-            id={`${idPrefix}phoneNumber`}
-            required
-            pattern="\d{11}"
-            maxLength={11}
-            title="11-digit local number"
-            value={form.phoneNumber}
-            onChange={update("phoneNumber")}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          />
-        </div>
-      </div>
-
-      <button
-        type="submit"
-        disabled={submitting}
-        className="mt-6 w-full rounded-md bg-slate-900 py-2 text-sm font-medium text-white disabled:opacity-60"
-      >
+      <button type="submit" disabled={submitting} className="auth-form__submit">
         Sign up
       </button>
 
       {showSwitchLink && (
-        <p className="mt-4 text-center text-sm text-slate-500">
+        <p className="auth-form__switch">
           Already have an account?{" "}
           {onSwitchToLogin ? (
-            <button
-              type="button"
-              onClick={onSwitchToLogin}
-              className="font-medium text-slate-900 underline"
-            >
+            <button type="button" onClick={onSwitchToLogin} className="auth-form__link">
               Log in
             </button>
           ) : (
-            <Link to="/login" className="font-medium text-slate-900 underline">
+            <Link to="/login" className="auth-form__link">
               Log in
             </Link>
           )}

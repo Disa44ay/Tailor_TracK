@@ -26,16 +26,14 @@ describe("HomePage", () => {
   test("renders nav, hero, and how-it-works together", () => {
     renderHomePage();
     expect(screen.getAllByText(/log in/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/you imagine it\. we tailor it/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /custom tailoring, made to your measure/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /how it works/i })).toBeInTheDocument();
   });
 
-  test("clicking Let's go opens the auth modal with both forms, no page navigation", () => {
+  test("clicking Book a consultation opens the auth modal, no page navigation", () => {
     renderHomePage();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: /let's go/i }));
-
+    fireEvent.click(screen.getAllByRole("button", { name: /book a consultation/i })[0]);
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /log in/i })).toBeInTheDocument();
   });
