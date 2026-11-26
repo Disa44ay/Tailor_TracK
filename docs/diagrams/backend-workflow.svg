@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 330" width="1040" height="330" role="img" aria-label="Backend workflow">
+<defs>
+<marker id="arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#241D18"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F4B3E"/></marker>
+</defs>
+<rect width="1040" height="330" fill="#F6F1E8" />
+<text x="20" y="44" font-family="'Instrument Serif', Georgia, serif" font-size="30" fill="#241D18">Backend workflow</text>
+<text x="20" y="68" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" fill="#665F59">Every request passes the same guards before it touches the database.</text>
+<line x1="210" y1="158" x2="250" y2="158" stroke="#241D18" stroke-width="1.5" marker-end="url(#arrow-ink)" />
+<line x1="420" y1="158" x2="460" y2="158" stroke="#241D18" stroke-width="1.5" marker-end="url(#arrow-ink)" />
+<line x1="630" y1="158" x2="670" y2="158" stroke="#241D18" stroke-width="1.5" marker-end="url(#arrow-ink)" />
+<line x1="755" y1="186" x2="755" y2="260" stroke="#241D18" stroke-width="1.5" marker-end="url(#arrow-ink)" />
+<line x1="670" y1="288" x2="630" y2="288" stroke="#241D18" stroke-width="1.5" marker-end="url(#arrow-ink)" />
+<line x1="460" y1="288" x2="420" y2="288" stroke="#241D18" stroke-width="1.5" marker-end="url(#arrow-ink)" />
+<rect x="40" y="130" width="170" height="56" fill="#F6F1E8" stroke="#241D18" stroke-width="1.5" />
+<text x="125" y="163" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="700" fill="#241D18">Browser</text>
+<rect x="250" y="130" width="170" height="56" fill="#F6F1E8" stroke="#241D18" stroke-width="1.5" />
+<text x="335" y="154" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="700" fill="#241D18">Express routes</text>
+<text x="335" y="172" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="400" fill="#241D18">/api/*</text>
+<rect x="460" y="130" width="170" height="56" fill="#F6F1E8" stroke="#241D18" stroke-width="1.5" />
+<text x="545" y="154" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="700" fill="#241D18">requireAuth</text>
+<text x="545" y="172" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="400" fill="#241D18">JWT, sets req.user</text>
+<rect x="670" y="130" width="170" height="56" fill="#2F4B3E" stroke="#2F4B3E" stroke-width="1.5" />
+<text x="755" y="154" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="700" fill="#F6F1E8">requireAdmin</text>
+<text x="755" y="172" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="400" fill="#F6F1E8">/api/admin only</text>
+<rect x="670" y="260" width="170" height="56" fill="#F6F1E8" stroke="#241D18" stroke-width="1.5" />
+<text x="755" y="284" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="700" fill="#241D18">Controller</text>
+<text x="755" y="302" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="400" fill="#241D18">validates input</text>
+<rect x="460" y="260" width="170" height="56" fill="#F6F1E8" stroke="#241D18" stroke-width="1.5" />
+<text x="545" y="284" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="700" fill="#241D18">lib/enquiries</text>
+<text x="545" y="302" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="400" fill="#241D18">SQL, one transaction</text>
+<rect x="250" y="260" width="170" height="56" fill="#F6F1E8" stroke="#241D18" stroke-width="1.5" />
+<text x="335" y="275" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="700" fill="#241D18">PostgreSQL</text>
+<text x="335" y="293" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="400" fill="#241D18">users, enquiries,</text>
+<text x="335" y="311" text-anchor="middle" font-family="'Instrument Sans', system-ui, sans-serif" font-size="14" font-weight="400" fill="#241D18">items, messages</text>
+</svg>
