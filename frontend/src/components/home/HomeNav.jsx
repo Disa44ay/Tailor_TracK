@@ -10,7 +10,9 @@ export default function HomeNav({ onLogin, onBook, onInquiries, inquiryDot = nul
   const [open, setOpen] = useState(false);
   const auth = useAuth();
   const user = auth?.user;
-  const signedIn = Boolean(auth?.token && user);
+  // Customer and studio sessions are independent: a device can hold both at once.
+  const isCustomer = Boolean(auth?.token && user?.role === "customer");
+  const isStudio = Boolean(auth?.adminToken && auth?.adminUser?.role === "admin");
   const username = user?.firstName || user?.name || "";
   const logout = auth?.logout;
 
@@ -32,7 +34,7 @@ export default function HomeNav({ onLogin, onBook, onInquiries, inquiryDot = nul
               </a>
             </div>
           ))}
-          {signedIn && (
+          {isCustomer && (
             <div className="nav__item">
               <button type="button" className="nav__link" onClick={() => { setOpen(false); onInquiries?.(); }}>
                 My inquiries
@@ -43,7 +45,7 @@ export default function HomeNav({ onLogin, onBook, onInquiries, inquiryDot = nul
         </nav>
 
         <div className="nav__actions">
-          {signedIn ? (
+          {isCustomer && (
             <>
               <button type="button" className="btn btn--primary" onClick={onBook}>
                 Welcome, {username}
@@ -56,7 +58,13 @@ export default function HomeNav({ onLogin, onBook, onInquiries, inquiryDot = nul
                 </svg>
               </button>
             </>
-          ) : (
+          )}
+          {isStudio && (
+            <Link to="/admin" className="btn btn--primary">
+              Studio dashboard
+            </Link>
+          )}
+          {!isCustomer && !isStudio && (
             <button type="button" className="btn btn--primary" onClick={onLogin}>
               Log in
             </button>

@@ -2,8 +2,13 @@ import toast from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
+// Studio routes send the admin token; everything else sends the customer token.
+const isStudioPath = (path) => path.startsWith("/admin");
+
 export async function apiFetch(path, options = {}) {
-  const token = localStorage.getItem("token");
+  const studio = isStudioPath(path);
+  const tokenKey = studio ? "adminToken" : "token";
+  const token = localStorage.getItem(tokenKey);
   const headers = { "Content-Type": "application/json", ...options.headers };
   if (token) headers.Authorization = `Bearer ${token}`;
 
@@ -20,9 +25,9 @@ export async function apiFetch(path, options = {}) {
     const message = body.message || "Something went wrong";
     toast.error(message);
     if (res.status === 401 && token) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.assign("/");
+      const keys = studio ? ["adminToken", "adminUser"] : ["token", "user"];
+      keys.forEach((k) => localStorage.removeItem(k));
+      window.location.assign(studio ? "/admin/login" : "/");
     }
     throw new Error(message);
   }

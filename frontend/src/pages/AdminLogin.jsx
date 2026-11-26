@@ -16,7 +16,7 @@ export default function AdminLogin() {
     setSubmitting(true);
     try {
       const data = await adminLogin(email, password);
-      auth.startSession(data);
+      auth.startAdminSession(data);
       navigate("/admin");
     } catch {
       // apiFetch already showed a toast

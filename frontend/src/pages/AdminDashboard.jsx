@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../app/AuthContext.jsx";
 import {
   adminCustomers,
   adminEnquiries,
@@ -14,25 +16,30 @@ const MORE = 10;
 // One screen. Each list shows PAGE rows; "See more" adds rows inside its own panel,
 // which scrolls. The page itself never grows.
 export default function AdminDashboard() {
+  const auth = useAuth();
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [pending, setPending] = useState([]);
   const [confirmed, setConfirmed] = useState([]);
+  const [archived, setArchived] = useState([]);
   const [stats, setStats] = useState({ byGarment: [], byFabric: [] });
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState("");
 
   async function refresh() {
     try {
-      const [c, sent, talking, cf, s] = await Promise.all([
+      const [c, sent, talking, cf, past, s] = await Promise.all([
         adminCustomers(),
         adminEnquiries("sent"),
         adminEnquiries("in_conversation"),
         adminEnquiries("confirmed"),
+        adminEnquiries("archived"),
         adminStats(),
       ]);
       setCustomers(c);
       setPending([...sent, ...talking].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)));
       setConfirmed(cf);
+      setArchived(past);
       setStats(s);
     } catch (err) {
       setError(err.message);
@@ -68,7 +75,7 @@ export default function AdminDashboard() {
   const kpis = [
     { label: "Customers", value: customers.length },
     { label: "Awaiting reply", value: pending.length, alert: pending.length > 0 },
-    { label: "Confirmed", value: confirmed.length },
+    { label: "Upcoming", value: confirmed.length },
     { label: "Garments booked", value: stats.byGarment.reduce((n, r) => n + r.count, 0) },
   ];
 
@@ -76,7 +83,19 @@ export default function AdminDashboard() {
     <main className="admin">
       <header className="admin__top">
         <h1 className="admin__title">Consultations</h1>
-        <span className="admin__stamp">Studio admin</span>
+        <span className="admin__stamp">
+          Studio admin{" "}
+          <button
+            type="button"
+            className="admin__button admin__button--ghost"
+            onClick={() => {
+              auth.logoutAdmin();
+              navigate("/admin/login");
+            }}
+          >
+            Log out
+          </button>
+        </span>
       </header>
 
       {error && <p role="alert" className="admin__empty">{error}</p>}
@@ -164,28 +183,51 @@ export default function AdminDashboard() {
       </div>
 
       <div className="admin__work admin__work--bottom">
-        <Panel title="Confirmed consultations" className="admin__confirmed">
+        <Panel title="Upcoming consultations" className="admin__confirmed">
           <ExpandableList
             items={confirmed}
             empty="None yet."
             render={(e) => (
-              <div className="admin__row admin__row--static">
+              <div className="admin__row admin__row--log">
                 <span>#{e.id}</span>
-                <span>{e.customer_name}</span>
-                <span>{e.consultation_at && new Date(e.consultation_at).toLocaleString()}</span>
+                <span className="admin__stack">
+                  <span>{e.customer_name}</span>
+                  <span className="admin__meta">{e.consultation_at && new Date(e.consultation_at).toLocaleString()}</span>
+                </span>
               </div>
             )}
           />
         </Panel>
 
-        <Panel title="All customers" className="admin__customers">
+        <Panel title="Archived consultations" className="admin__archived">
+          <ExpandableList
+            items={archived}
+            empty="None yet."
+            render={(e) => (
+              <div className="admin__row admin__row--log">
+                <span>#{e.id}</span>
+                <span className="admin__stack">
+                  <span>{e.customer_name}</span>
+                  <span className="admin__meta">{e.consultation_at && new Date(e.consultation_at).toLocaleString()}</span>
+                </span>
+              </div>
+            )}
+          />
+        </Panel>
+
+        <Panel title="Customers" className="admin__customers">
           <ExpandableList
             items={customers}
             empty="No customers yet."
             render={(c) => (
-              <div className="admin__row admin__row--static">
-                <span>{c.name}</span>
-                <span>{c.email}</span>
+              <div className="admin__row admin__row--customer">
+                <span className="admin__stack">
+                  <span>{c.name}</span>
+                  <span className="admin__meta">{c.email}</span>
+                  <span className="admin__status">
+                    {c.consultations} booked{c.consultations >= 2 ? ", repeat" : ""}
+                  </span>
+                </span>
               </div>
             )}
           />

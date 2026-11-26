@@ -16,7 +16,7 @@ import { listEnquiries } from "../api/booking.js";
 
 function HomePage() {
   const auth = useAuth();
-  const signedIn = Boolean(auth?.token);
+  const signedIn = Boolean(auth?.token && auth?.user?.role === "customer");
   const [authOpen, setAuthOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [inquiriesOpen, setInquiriesOpen] = useState(false);
@@ -74,7 +74,7 @@ function HomePage() {
         <BookingForm onSubmitted={() => setBookingOpen(false)} />
       </Dialog>
       <Dialog open={inquiriesOpen} onClose={() => setInquiriesOpen(false)} label="My inquiries">
-        <InquiriesPanel />
+        <InquiriesPanel onBook={() => { setInquiriesOpen(false); handleBook(); }} />
       </Dialog>
     </>
   );
