@@ -1,3 +1,4 @@
+import { retryOnce } from "../../lib/retryOnce.js";
 export default function Approaches() {
   return (
     <section className="section ground-inverse approaches" id="approaches" aria-labelledby="approaches-h">
@@ -35,6 +36,7 @@ export default function Approaches() {
             src="https://i.ibb.co.com/gM1yzPHP/approaches-fabric-swatches.jpg"
             alt="Wool suit-fabric swatches fanned out on a tailor's table"
             fetchPriority="high"
+            onError={retryOnce}
           />
         </div>
       </div>
