@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { retryOnce } from "../../lib/retryOnce.js";
 
 const SLIDES = [
   { src: "https://i.ibb.co.com/Q2qwtSp/slider1.jpg", alt: "A navy suit lapel pinned with basting thread before the fitting", pos: "50% 50%", no: "01", title: "Pinned before the fitting", note: "Basted in place, so the line can be judged on you." },
@@ -28,7 +29,7 @@ export default function Hero({ onLetsGo }) {
   return (
     <section className="hero hero--tara" data-enter aria-labelledby="hero-h">
       <div className="hero-bg" aria-hidden="true">
-        <img src="https://i.ibb.co.com/hJ3p94fD/hero-sec-BG2.jpg" alt="" />
+        <img src="https://i.ibb.co.com/hJ3p94fD/hero-sec-BG2.jpg" alt="" onError={retryOnce} />
       </div>
       <div className="wrap hero-tara">
         <h1 id="hero-h" className="hero-title">
@@ -51,7 +52,7 @@ export default function Hero({ onLetsGo }) {
           {SLIDES.map((item) => (
             <li key={item.src} className="hero-slider__item">
               <figure>
-                <img src={item.src} alt={item.alt} style={{ objectPosition: item.pos }} />
+                <img src={item.src} alt={item.alt} style={{ objectPosition: item.pos }} onError={retryOnce} />
               </figure>
             </li>
           ))}

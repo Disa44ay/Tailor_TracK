@@ -1,3 +1,4 @@
+import { retryOnce } from "../../lib/retryOnce.js";
 const STEPS = [
   { no: "01", word: "Measure", src: "https://i.ibb.co.com/5W6d6jvW/process-measure.jpg", alt: "A hand holding a measuring tape" },
   { no: "02", word: "Cut", src: "https://i.ibb.co.com/r2kGhzqB/process-cut.jpg", alt: "Fabric being cut with scissors" },
@@ -14,7 +15,7 @@ export default function Process() {
           {STEPS.map((s) => (
             <li key={s.no} className="process-tile">
               <div className="frame frame--photo frame--portrait">
-                <img className="frame__img" src={s.src} alt={s.alt} />
+                <img className="frame__img" src={s.src} alt={s.alt} onError={retryOnce} />
               </div>
               <span className="process-tile__no">{s.no}</span>
               <h3>{s.word}</h3>
