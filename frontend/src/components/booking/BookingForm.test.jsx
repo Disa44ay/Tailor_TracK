@@ -44,3 +44,23 @@ describe("BookingForm", () => {
     expect(payload.height_cm).toBe(175);
   });
 });
+
+describe("BookingForm fields", () => {
+  test("fabric type and colour are dropdowns and there is no fabric note", () => {
+    vi.spyOn(api, "getProfile").mockResolvedValue({});
+    render(<BookingForm />);
+    const fabric = screen.getByLabelText(/fabric type/i);
+    const colour = screen.getByLabelText(/fabric colour/i);
+    expect(fabric.tagName).toBe("SELECT");
+    expect(colour.tagName).toBe("SELECT");
+    expect(screen.getByRole("option", { name: "Linen" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Navy" })).toBeInTheDocument();
+    expect(screen.queryByLabelText(/fabric note/i)).toBeNull();
+  });
+
+  test("the preferred date is required before the enquiry can be sent", () => {
+    vi.spyOn(api, "getProfile").mockResolvedValue({});
+    render(<BookingForm />);
+    expect(screen.getByLabelText(/preferred date/i)).toBeRequired();
+  });
+});
