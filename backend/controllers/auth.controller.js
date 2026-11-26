@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { pool } from "../db/pool.js";
-import { COUNTRY_CODE_VALUES } from "../constants/countryCodes.js";
 
 const PHONE_NUMBER_PATTERN = /^[0-9]{11}$/;
 
@@ -10,26 +9,26 @@ export function signToken({ id, role }) {
 }
 
 export async function signup(req, res) {
-  const { name, email, password, countryCode, phoneNumber } = req.body;
-  if (!name || !email || !password || !countryCode || !phoneNumber) {
+  const { firstName, lastName, email, password, confirmPassword, phone } = req.body;
+  if (!firstName || !lastName || !email || !password || !confirmPassword || !phone) {
     return res.status(400).json({
-      message: "name, email, password, countryCode, and phoneNumber are required",
+      message: "firstName, lastName, email, password, confirmPassword, and phone are required",
     });
   }
-  if (!COUNTRY_CODE_VALUES.includes(countryCode)) {
-    return res.status(400).json({ message: "Unrecognized country code" });
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords do not match" });
   }
-  if (!PHONE_NUMBER_PATTERN.test(phoneNumber)) {
-    return res.status(400).json({ message: "phoneNumber must be exactly 11 digits" });
+  if (!PHONE_NUMBER_PATTERN.test(phone)) {
+    return res.status(400).json({ message: "phone must be exactly 11 digits" });
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
   try {
     const result = await pool.query(
-      `INSERT INTO users (name, email, password_hash, role, country_code, phone_number)
-       VALUES ($1, $2, $3, 'customer', $4, $5)
-       RETURNING id, name, role, country_code, phone_number`,
-      [name, email, passwordHash, countryCode, phoneNumber]
+      `INSERT INTO users (name, first_name, last_name, email, password_hash, role, phone_number)
+       VALUES ($1, $2, $3, $4, $5, 'customer', $6)
+       RETURNING id, name, first_name, last_name, role, phone_number`,
+      [`${firstName} ${lastName}`, firstName, lastName, email, passwordHash, phone]
     );
     const user = result.rows[0];
     res.status(201).json({ token: signToken(user), user });

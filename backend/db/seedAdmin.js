@@ -10,18 +10,16 @@ async function seedAdmin() {
     throw new Error("ADMIN_NAME, ADMIN_EMAIL, and ADMIN_PASSWORD must be set.");
   }
   const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
-  const result = await pool.query(
+  // Upsert on the single admin slot (one_admin_account index), so rerunning with
+  // a changed ADMIN_EMAIL updates the admin instead of violating the index.
+  await pool.query(
     `INSERT INTO users (name, email, password_hash, role)
      VALUES ($1, $2, $3, 'admin')
-     ON CONFLICT (email) DO NOTHING
-     RETURNING id`,
+     ON CONFLICT (role) WHERE role = 'admin'
+     DO UPDATE SET name = EXCLUDED.name, email = EXCLUDED.email, password_hash = EXCLUDED.password_hash`,
     [ADMIN_NAME, ADMIN_EMAIL, passwordHash]
   );
-  if (result.rows.length) {
-    console.log(`Admin created: ${ADMIN_EMAIL}`);
-  } else {
-    console.log(`Admin already exists: ${ADMIN_EMAIL}`);
-  }
+  console.log(`Admin set: ${ADMIN_EMAIL}`);
   await pool.end();
 }
 
