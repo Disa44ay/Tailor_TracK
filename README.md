@@ -11,6 +11,15 @@ app stores no prices and does no accounting.
 
 The original requirement proposal and design notes are in [`docs/`](docs/).
 
+## How this project was built
+
+This project was built with help from an AI coding assistant (Claude Code,
+using Claude Haiku 5.5). The assistant wrote most of the code in response to
+the team's requirements, plans and reviews. Each commit that it helped with
+carries a `Co-Authored-By: Claude Haiku 5.5` line, so the history shows which
+changes it was involved in. The team reviewed the work, ran the tests and
+made the decisions about scope, design and deployment.
+
 ## Diagrams
 
 | Diagram | What it shows |
